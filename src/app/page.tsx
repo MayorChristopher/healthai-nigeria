@@ -1,0 +1,531 @@
+'use client'
+import Link from 'next/link'
+import { useEffect, useState } from 'react'
+
+export default function Home() {
+  const [scrolled, setScrolled] = useState(false)
+
+  useEffect(() => {
+    const handleScroll = () => setScrolled(window.scrollY > 20)
+    window.addEventListener('scroll', handleScroll)
+    return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  return (
+    <div className="min-h-screen bg-black text-white">
+      {/* Background Grid */}
+      <div className="fixed inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_110%)]" />
+
+      {/* Nav */}
+      <nav className={`fixed top-0 w-full z-50 transition-all duration-200 ${
+        scrolled ? 'bg-black/60 backdrop-blur-md' : 'bg-transparent'
+      }`}>
+        <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
+          <Link href="/" className="text-lg font-semibold hover:opacity-80 transition-opacity relative z-10">
+            Health<span className="text-green-500">AI</span>
+          </Link>
+          <div className="flex items-center gap-6">
+            <Link href="#problem" className="text-sm text-gray-400 hover:text-white transition-colors">
+              Problem
+            </Link>
+            <Link href="#hospitals" className="text-sm text-gray-400 hover:text-white transition-colors">
+              Hospitals
+            </Link>
+            <Link 
+              href="/chat" 
+              className="text-sm bg-white text-black px-4 py-1.5 rounded-md hover:bg-gray-200 transition-colors font-medium"
+            >
+              Launch Chat
+            </Link>
+          </div>
+        </div>
+      </nav>
+
+      {/* Hero */}
+      <section className="relative pt-40 pb-24 px-6">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="max-w-4xl">
+            <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 bg-white/5 border border-white/10 rounded-md text-xs">
+              <span className="relative flex h-2 w-2">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+              </span>
+              <span className="text-gray-400">Free • No Registration Required</span>
+            </div>
+            <h1 className="text-6xl lg:text-8xl font-bold leading-[1.05] mb-8 tracking-tight">
+              Medical advice
+              <br />
+              when hospitals
+              <br />
+              are far away
+            </h1>
+            <p className="text-xl text-gray-400 mb-10 leading-relaxed max-w-2xl">
+              AI-powered symptom analysis in English and Pidgin. Emergency detection. 
+              Hospital finder. Available 24/7 across Nigeria.
+            </p>
+            <div className="flex gap-3">
+              <Link 
+                href="/chat" 
+                className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-md font-medium hover:bg-gray-200 transition-colors"
+              >
+                Start Free Consultation
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+              <Link 
+                href="#problem" 
+                className="inline-flex items-center gap-2 border border-white/10 px-6 py-3 rounded-md font-medium hover:bg-white/5 transition-colors"
+              >
+                Learn More
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gradient Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* Problem Statement */}
+      <section id="problem" className="relative py-24 px-6">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="grid lg:grid-cols-2 gap-16 items-center">
+            <div>
+              <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-md text-xs text-red-400">
+                The Problem
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-bold mb-6">Healthcare is out of reach for millions</h2>
+              <div className="space-y-6 text-lg text-gray-400">
+                <p>
+                  In rural Nigeria, over 60% of people live more than 5km from the nearest hospital. 
+                  When medical emergencies happen at night, families don't know what to do.
+                </p>
+                <p>
+                  Language barriers, lack of information, and distance to healthcare facilities 
+                  create life-threatening delays in getting proper medical attention.
+                </p>
+              </div>
+            </div>
+            <div className="bg-white/5 p-10 rounded-2xl border border-white/10">
+              <h3 className="text-2xl font-bold mb-8">The Reality</h3>
+              <div className="space-y-6">
+                <div>
+                  <div className="text-4xl font-bold text-red-400 mb-2">5km+</div>
+                  <div className="text-sm text-gray-400">Average distance to nearest hospital in rural areas</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-bold text-red-400 mb-2">Night</div>
+                  <div className="text-sm text-gray-400">When most emergencies happen with no help available</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-bold text-green-500 mb-2">Now</div>
+                  <div className="text-sm text-gray-400">HealthAI provides instant guidance, 24/7</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gradient Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* How it Works */}
+      <section id="how" className="relative py-24 px-6">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="max-w-2xl mb-20">
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">How it works</h2>
+            <p className="text-lg text-gray-400">Simple, fast, and built for Nigerian communities</p>
+          </div>
+
+          <div className="grid lg:grid-cols-2 gap-16">
+            {/* Chat Demo */}
+            <div>
+              <div className="relative">
+                <div className="absolute -inset-4 bg-gradient-to-r from-green-500/20 to-blue-500/20 blur-3xl opacity-30"></div>
+                <div className="relative bg-zinc-900 rounded-xl border border-white/10 overflow-hidden">
+                  <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                        <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                        </svg>
+                      </div>
+                      <div>
+                        <div className="text-sm font-medium">HealthAI Assistant</div>
+                        <div className="flex items-center gap-1.5 text-xs text-gray-400">
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                          Powered by Google Gemini
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="p-5 space-y-4 h-80 overflow-y-auto">
+                    <div className="flex gap-3">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0"></div>
+                      <div className="bg-white/5 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%]">
+                        <p className="text-sm">Wetin dey worry you? Tell me your symptoms.</p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-3 justify-end">
+                      <div className="bg-green-500/20 border border-green-500/30 rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%]">
+                        <p className="text-sm">I get headache and fever since yesterday</p>
+                      </div>
+                      <div className="w-7 h-7 rounded-full bg-white/10 flex-shrink-0"></div>
+                    </div>
+
+                    <div className="flex gap-3">
+                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0"></div>
+                      <div className="bg-white/5 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
+                        <p className="text-sm mb-3">Based on your symptoms, this could be a viral infection. I recommend:</p>
+                        <ul className="text-sm space-y-1 text-gray-300">
+                          <li>• Rest and stay hydrated</li>
+                          <li>• Take paracetamol for fever</li>
+                          <li>• Monitor temperature</li>
+                        </ul>
+                        <p className="text-xs text-gray-400 mt-3">⚠️ If symptoms worsen, visit a hospital immediately.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="px-5 py-4 border-t border-white/10">
+                    <div className="flex items-center gap-2 bg-white/5 rounded-lg px-4 py-2.5">
+                      <input 
+                        type="text" 
+                        placeholder="Describe your symptoms..." 
+                        className="flex-1 bg-transparent text-sm outline-none placeholder:text-gray-500"
+                        disabled
+                      />
+                      <button className="text-green-500">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Features List */}
+            <div className="space-y-12">
+              <div>
+                <div className="text-green-500 text-xs mb-3">Multilingual</div>
+                <h3 className="text-2xl font-bold mb-3">English and Pidgin support</h3>
+                <p className="text-gray-400">Communicate in the language you're most comfortable with. Our AI understands both English and Nigerian Pidgin.</p>
+              </div>
+
+              <div>
+                <div className="text-green-500 text-xs mb-3">Emergency Detection</div>
+                <h3 className="text-2xl font-bold mb-3">Automatic critical symptom identification</h3>
+                <p className="text-gray-400">The AI detects emergency symptoms like chest pain, severe bleeding, or difficulty breathing and immediately recommends calling 112 and nearby hospitals.</p>
+              </div>
+
+              <div>
+                <div className="text-green-500 text-xs mb-3">When to Seek Care</div>
+                <h3 className="text-2xl font-bold mb-3">Clear guidance on next steps</h3>
+                <p className="text-gray-400">Get advice on whether to self-care at home, visit a pharmacy, schedule a doctor visit, or go to emergency immediately.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gradient Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* Hospital Network */}
+      <section id="hospitals" className="relative py-24 px-6">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="max-w-2xl mb-16">
+            <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-white/5 border border-white/10 rounded-md text-xs text-gray-400">
+              Hospital Network
+            </div>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">Find care near you</h2>
+            <p className="text-lg text-gray-400">Teaching hospitals and federal medical centers across Nigeria with emergency services</p>
+          </div>
+
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              { name: "UNTH Enugu", type: "Teaching Hospital", state: "Enugu", phone: "+234 42 252 3165", address: "Ituku-Ozalla", emergency: true, coords: "6.4281,7.5243" },
+              { name: "LUTH Lagos", type: "Teaching Hospital", state: "Lagos", phone: "+234 1 263 2626", address: "Idi-Araba, Mushin", emergency: true, coords: "6.5244,3.3792" },
+              { name: "UCH Ibadan", type: "Teaching Hospital", state: "Oyo", phone: "+234 2 241 3545", address: "Queen Elizabeth Rd", emergency: true, coords: "7.3775,3.9470" },
+              { name: "ABUTH Zaria", type: "Teaching Hospital", state: "Kaduna", phone: "+234 69 550 477", address: "Zaria-Kaduna Rd", emergency: true, coords: "11.0667,7.7000" },
+              { name: "OAUTH Ile-Ife", type: "Teaching Hospital", state: "Osun", phone: "+234 36 230 210", address: "Ile-Ife", emergency: true, coords: "7.4905,4.5600" },
+              { name: "FMC Owerri", type: "Federal Medical Center", state: "Imo", phone: "+234 83 230 092", address: "Owerri", emergency: true, coords: "5.4840,7.0351" }
+            ].map((hospital, i) => (
+              <div 
+                key={i} 
+                className="group bg-white/5 p-6 rounded-xl border border-white/10 hover:border-green-500/50 hover:bg-white/10 transition-all"
+              >
+                <div className="flex justify-between items-start mb-3">
+                  <div>
+                    <h3 className="font-semibold mb-0.5">{hospital.name}</h3>
+                    <p className="text-xs text-gray-500 mb-1">{hospital.type}</p>
+                    <p className="text-xs text-gray-600">{hospital.address}, {hospital.state}</p>
+                  </div>
+                  {hospital.emergency && (
+                    <div className="px-2 py-1 bg-green-500/10 border border-green-500/20 rounded text-green-500 text-xs whitespace-nowrap">
+                      24/7
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-2 mt-4">
+                  <a 
+                    href={`tel:${hospital.phone.replace(/\s/g, '')}`}
+                    className="flex items-center gap-2 text-sm text-green-500 hover:text-green-400 transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                    </svg>
+                    <span>{hospital.phone}</span>
+                  </a>
+                  <a 
+                    href={`https://www.google.com/maps/search/?api=1&query=${hospital.coords}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    <span>Get Directions</span>
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-sm text-gray-500">Hospital information verified • Updated regularly</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Gradient Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* AI Limitations */}
+      <section className="relative py-24 px-6">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="max-w-3xl mx-auto">
+            <h2 className="text-3xl font-bold mb-12 text-center">How our AI works</h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+                <div className="text-green-500 mb-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="font-semibold mb-2">What it can do</h3>
+                <ul className="text-sm text-gray-400 space-y-1">
+                  <li>• Analyze common symptoms</li>
+                  <li>• Suggest home remedies</li>
+                  <li>• Detect emergency situations</li>
+                  <li>• Find nearby hospitals</li>
+                  <li>• Communicate in Pidgin</li>
+                </ul>
+              </div>
+              <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+                <div className="text-red-400 mb-3">
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <h3 className="font-semibold mb-2">What it cannot do</h3>
+                <ul className="text-sm text-gray-400 space-y-1">
+                  <li>• Diagnose medical conditions</li>
+                  <li>• Prescribe medications</li>
+                  <li>• Replace doctor visits</li>
+                  <li>• Guarantee accuracy</li>
+                  <li>• Handle all emergencies</li>
+                </ul>
+              </div>
+            </div>
+            <div className="mt-8 text-center">
+              <p className="text-sm text-gray-500">
+                Powered by{' '}
+                <a 
+                  href="https://ai.google.dev/gemini-api/terms" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-green-500 hover:text-green-400 transition-colors"
+                >
+                  Google Gemini API
+                </a>
+                {' '}• AI responses may contain errors • Always verify with healthcare professionals
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gradient Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* Safety Disclaimer */}
+      <section className="relative py-20 px-6">
+        <div className="max-w-4xl mx-auto relative z-10">
+          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-8">
+            <div className="flex gap-4">
+              <div className="flex-shrink-0">
+                <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-xl font-bold mb-3 text-yellow-500">Important Medical Disclaimer</h3>
+                <div className="space-y-2 text-sm text-gray-300">
+                  <p>• HealthAI is NOT a replacement for professional medical care</p>
+                  <p>• This tool provides general health information only</p>
+                  <p>• For emergencies, always call <strong>112</strong> (Nigeria's emergency number) or visit the nearest hospital immediately</p>
+                  <p>• Consult a licensed healthcare provider for diagnosis and treatment</p>
+                  <p>• We do not store your conversations or personal health data</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gradient Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* Tech Stack */}
+      <section className="relative py-20 px-6">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-12">
+            <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-white/5 border border-white/10 rounded-md text-xs text-gray-400">
+              Built for Nigeria National AI Hackathon 2025
+            </div>
+            <h2 className="text-3xl font-bold mb-4">Technology Stack</h2>
+            <p className="text-gray-400">Addressing UN SDG 3: Good Health and Well-being</p>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4">
+            {['Next.js 14', 'TypeScript', 'Google Gemini AI', 'Tailwind CSS', 'Vercel'].map((tech) => (
+              <div key={tech} className="px-4 py-2 bg-white/5 border border-white/10 rounded-lg text-sm">
+                {tech}
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Gradient Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* CTA */}
+      <section className="relative py-32 px-6">
+        <div className="max-w-4xl mx-auto text-center relative z-10">
+          <h2 className="text-5xl lg:text-7xl font-bold mb-6 leading-[1.1]">
+            Get medical advice
+            <br />
+            right now
+          </h2>
+          <p className="text-lg text-gray-400 mb-12">
+            Free. No registration. Available 24/7 across Nigeria.
+          </p>
+          <Link 
+            href="/chat" 
+            className="inline-flex items-center gap-2 bg-white text-black px-8 py-3 rounded-md text-lg font-medium hover:bg-gray-200 transition-colors"
+          >
+            Launch Chat
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+            </svg>
+          </Link>
+        </div>
+      </section>
+
+      {/* Footer */}
+      <footer className="border-t border-white/10 py-16 px-6 relative z-10">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between gap-12 mb-12">
+            <div className="max-w-sm">
+              <div className="text-xl font-semibold mb-3">
+                Health<span className="text-green-500">AI</span>
+              </div>
+              <p className="text-gray-500 text-sm leading-relaxed">
+                AI-powered medical assistant for Nigerian communities. Built for Nigeria National AI Hackathon 2025.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
+              <div>
+                <div className="text-xs text-gray-500 mb-3">Product</div>
+                <div className="space-y-2">
+                  <div><Link href="/chat" className="text-sm text-gray-400 hover:text-white transition-colors">Chat</Link></div>
+                  <div><Link href="#hospitals" className="text-sm text-gray-400 hover:text-white transition-colors">Hospitals</Link></div>
+                  <div><Link href="#how" className="text-sm text-gray-400 hover:text-white transition-colors">How it works</Link></div>
+                </div>
+              </div>
+              
+              <div>
+                <div className="text-xs text-gray-500 mb-3">Resources</div>
+                <div className="space-y-2">
+                  <div><Link href="#problem" className="text-sm text-gray-400 hover:text-white transition-colors">About</Link></div>
+                  <div>
+                    <a 
+                      href="https://github.com/MayorChristopher" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                    >
+                      GitHub
+                    </a>
+                  </div>
+                  <div>
+                    <a 
+                      href="mailto:mayoru24@gmail.com" 
+                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                    >
+                      Contact
+                    </a>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <div className="text-xs text-gray-500 mb-3">Emergency</div>
+                <div className="space-y-2">
+                  <p className="text-sm text-gray-400">Call <span className="text-green-500">112</span></p>
+                  <p className="text-sm text-gray-400">Nigeria Emergency Line</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
+            <div>
+              © 2025 HealthAI Nigeria • Built by{' '}
+              <a 
+                href="https://github.com/MayorChristopher" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Mayor Christopher
+              </a>
+            </div>
+            <div>
+              Uses{' '}
+              <a 
+                href="https://ai.google.dev/gemini-api/terms" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                Google Gemini API
+              </a>
+              {' '}• Not endorsed by Google
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
+}
