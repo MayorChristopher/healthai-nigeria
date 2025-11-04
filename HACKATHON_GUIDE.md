@@ -3,6 +3,49 @@
 ## 🎯 Goal
 Build an **adaptive AI chat** (not a simple recommender) that understands context, learns within conversations, and provides intelligent health guidance.
 
+## 🔑 FIRST: Get Your Gemini API Key (5 mins)
+
+**You MUST do this before the hackathon starts!**
+
+### Step-by-Step:
+
+1. **Go to Google AI Studio**
+   - Visit: https://aistudio.google.com/app/apikey
+   - Sign in with your Google account (any Gmail works)
+
+2. **Create API Key**
+   - Click "Get API Key" or "Create API Key"
+   - Click "Create API key in new project" (easiest option)
+   - Copy the key (looks like: `AIzaSyD...`)
+
+3. **Add to Your Project**
+   - Open your project folder
+   - Create file: `.env.local`
+   - Add this line:
+   ```
+   GEMINI_API_KEY=AIzaSyD_your_actual_key_here
+   ```
+   - Save the file
+
+4. **Test It Works**
+   ```bash
+   npm run dev
+   ```
+   - If you see no errors about GEMINI_API_KEY, you're good!
+
+### Important Notes:
+- **Free tier**: 15 requests per minute, 1500 per day (enough for hackathon)
+- **No credit card needed** for free tier
+- **Keep it secret**: Don't commit `.env.local` to GitHub (already in .gitignore)
+- **Share with team**: Send the key to Victor and Comfort via WhatsApp/email
+
+### Troubleshooting:
+- If you get "API key not valid" → Make sure you copied the full key
+- If you get "429 error" → You hit rate limit, wait 1 minute
+- If you get "SAFETY" error → Message was blocked, try rephrasing
+
+---
+
 ## 📁 File Structure to Create
 
 ```
