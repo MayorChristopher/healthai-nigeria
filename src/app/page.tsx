@@ -408,12 +408,12 @@ export default function Home() {
                 M
               </div>
               <h3 className="text-xl font-bold mb-1">Mayor Christopher</h3>
-              <p className="text-green-500 text-sm mb-4">Lead Developer</p>
+              <p className="text-green-500 text-sm mb-4">Full Stack Developer</p>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li>• Landing page & UI/UX</li>
-                <li>• Project architecture</li>
+                <li>• Backend development (shared)</li>
+                <li>• Self-learning AI (shared)</li>
                 <li>• Deployment & hosting</li>
-                <li>• Hospital integration</li>
               </ul>
             </div>
             <div className="bg-white/5 p-8 rounded-xl border border-white/10">
@@ -421,12 +421,12 @@ export default function Home() {
                 V
               </div>
               <h3 className="text-xl font-bold mb-1">Victor</h3>
-              <p className="text-blue-500 text-sm mb-4">AI Engineer</p>
+              <p className="text-blue-500 text-sm mb-4">Backend Developer</p>
               <ul className="text-sm text-gray-400 space-y-2">
-                <li>• Self-learning AI model</li>
+                <li>• Backend API development</li>
+                <li>• Self-learning AI (shared)</li>
                 <li>• Gemini API integration</li>
-                <li>• Emergency detection logic</li>
-                <li>• Symptom analysis engine</li>
+                <li>• Database management</li>
               </ul>
             </div>
             <div className="bg-white/5 p-8 rounded-xl border border-white/10">
@@ -434,12 +434,12 @@ export default function Home() {
                 C
               </div>
               <h3 className="text-xl font-bold mb-1">Comfort</h3>
-              <p className="text-purple-500 text-sm mb-4">Backend Developer</p>
+              <p className="text-purple-500 text-sm mb-4">Documentation & Frontend</p>
               <ul className="text-sm text-gray-400 space-y-2">
-                <li>• Chat interface backend</li>
-                <li>• Pidgin language support</li>
-                <li>• API endpoints & routing</li>
-                <li>• Data flow management</li>
+                <li>• Project documentation</li>
+                <li>• Chat UI components</li>
+                <li>• Frontend styling</li>
+                <li>• User guides & README</li>
               </ul>
             </div>
           </div>

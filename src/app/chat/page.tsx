@@ -40,34 +40,35 @@ export default function ChatPage() {
           
           <div className="space-y-6">
             <div>
-              <h3 className="font-semibold text-green-500 mb-2">Mayor Christopher - Lead Developer</h3>
+              <h3 className="font-semibold text-green-500 mb-2">Mayor Christopher - Full Stack Developer</h3>
               <ul className="text-sm text-gray-400 space-y-1">
                 <li>• Complete landing page (DONE ✓)</li>
                 <li>• Deploy to Vercel</li>
-                <li>• Hospital finder integration</li>
-                <li>• UI/UX polish</li>
+                <li>• Backend API development (shared)</li>
+                <li>• Self-learning AI integration (shared)</li>
+                <li>• Hospital finder & UI/UX</li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold text-blue-500 mb-2">Victor - AI Engineer</h3>
+              <h3 className="font-semibold text-blue-500 mb-2">Victor - Backend Developer</h3>
               <ul className="text-sm text-gray-400 space-y-1">
-                <li>• Build self-learning AI model (not just recommender)</li>
-                <li>• Integrate Google Gemini API with learning layer</li>
-                <li>• Implement emergency detection algorithm</li>
-                <li>• Create symptom pattern recognition</li>
-                <li>• Design AI that grows smarter with use</li>
+                <li>• Backend API development (shared)</li>
+                <li>• Self-learning AI logic (shared)</li>
+                <li>• Google Gemini API integration</li>
+                <li>• Emergency detection algorithm</li>
+                <li>• Database & data management</li>
               </ul>
             </div>
 
             <div>
-              <h3 className="font-semibold text-purple-500 mb-2">Comfort - Backend Developer</h3>
+              <h3 className="font-semibold text-purple-500 mb-2">Comfort - Documentation & Frontend</h3>
               <ul className="text-sm text-gray-400 space-y-1">
-                <li>• Build chat interface UI</li>
-                <li>• Implement Pidgin language support</li>
-                <li>• Create API routes for chat</li>
-                <li>• Handle message history & state</li>
-                <li>• Connect frontend to AI backend</li>
+                <li>• Project documentation</li>
+                <li>• Chat interface UI components</li>
+                <li>• Frontend styling & polish</li>
+                <li>• User testing & feedback</li>
+                <li>• README & guides</li>
               </ul>
             </div>
           </div>
