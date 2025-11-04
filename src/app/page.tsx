@@ -1,6 +1,6 @@
 'use client'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useRef } from 'react'
 
 export default function Home() {
   const [scrolled, setScrolled] = useState(false)
@@ -9,6 +9,23 @@ export default function Home() {
     const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  // Scroll animation
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in')
+          }
+        })
+      },
+      { threshold: 0.1 }
+    )
+
+    document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el))
+    return () => observer.disconnect()
   }, [])
 
   return (
@@ -88,7 +105,7 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Problem Statement */}
-      <section id="problem" className="relative py-24 px-6">
+      <section id="problem" className="relative py-24 px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
@@ -132,7 +149,7 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* How it Works */}
-      <section id="how" className="relative py-24 px-6">
+      <section id="how" className="relative py-24 px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-2xl mb-20">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">How it works</h2>
@@ -238,7 +255,7 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Hospital Network */}
-      <section id="hospitals" className="relative py-24 px-6">
+      <section id="hospitals" className="relative py-24 px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-2xl mb-16">
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-white/5 border border-white/10 rounded-md text-xs text-gray-400">
@@ -310,7 +327,7 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* AI Limitations */}
-      <section className="relative py-24 px-6">
+      <section className="relative py-24 px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-3xl mx-auto">
             <h2 className="text-3xl font-bold mb-12 text-center">How our AI works</h2>
@@ -368,7 +385,7 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Safety Disclaimer */}
-      <section className="relative py-20 px-6">
+      <section className="relative py-20 px-6 fade-in">
         <div className="max-w-4xl mx-auto relative z-10">
           <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-8">
             <div className="flex gap-4">
@@ -396,7 +413,7 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Team Section */}
-      <section className="relative py-24 px-6">
+      <section className="relative py-24 px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold mb-4">Meet the Team</h2>
@@ -450,7 +467,7 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Tech Stack */}
-      <section className="relative py-20 px-6">
+      <section className="relative py-20 px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-white/5 border border-white/10 rounded-md text-xs text-gray-400">
@@ -473,7 +490,7 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* CTA */}
-      <section className="relative py-32 px-6">
+      <section className="relative py-32 px-6 fade-in">
         <div className="max-w-4xl mx-auto text-center relative z-10">
           <h2 className="text-5xl lg:text-7xl font-bold mb-6 leading-[1.1]">
             Get medical advice
