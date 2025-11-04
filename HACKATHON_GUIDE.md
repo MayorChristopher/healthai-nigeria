@@ -29,17 +29,51 @@ src/
 ```typescript
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!)
+if (!process.env.GEMINI_API_KEY) {
+  throw new Error('GEMINI_API_KEY is not set')
+}
 
-export async function getGeminiResponse(prompt: string, conversationHistory: string[]) {
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
-  
-  // Build context from conversation history
-  const context = conversationHistory.join('\n')
-  const fullPrompt = `${context}\n\nUser: ${prompt}`
-  
-  const result = await model.generateContent(fullPrompt)
-  return result.response.text()
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+
+export async function getGeminiResponse(systemPrompt: string, userMessage: string) {
+  try {
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-1.5-flash',
+      safetySettings: [
+        {
+          category: 'HARM_CATEGORY_HARASSMENT',
+          threshold: 'BLOCK_NONE'
+        },
+        {
+          category: 'HARM_CATEGORY_HATE_SPEECH',
+          threshold: 'BLOCK_NONE'
+        }
+      ]
+    })
+    
+    const fullPrompt = `${systemPrompt}\n\nUser: ${userMessage}`
+    const result = await model.generateContent(fullPrompt)
+    
+    if (!result.response) {
+      throw new Error('No response from Gemini')
+    }
+    
+    return result.response.text()
+  } catch (error: any) {
+    console.error('Gemini API error:', error)
+    
+    // Handle rate limiting
+    if (error.message?.includes('429')) {
+      throw new Error('Too many requests. Please wait a moment.')
+    }
+    
+    // Handle safety blocks
+    if (error.message?.includes('SAFETY')) {
+      throw new Error('Message blocked for safety reasons.')
+    }
+    
+    throw new Error('Failed to get AI response. Please try again.')
+  }
 }
 ```
 
@@ -81,20 +115,30 @@ export class AdaptiveAI {
 
   // Build adaptive prompt
   buildPrompt(userMessage: string): string {
-    const systemPrompt = `You are HealthAI, a medical assistant for Nigeria.
-Language: Respond in ${this.userProfile.language === 'pidgin' ? 'Nigerian Pidgin' : 'English'}.
-Context: User has mentioned these symptoms: ${this.userProfile.symptoms.join(', ')}.
-Conversation history: ${this.conversationContext.slice(-5).join('\n')}
+    const recentHistory = this.conversationContext.slice(-6).join('\n')
+    const symptomsContext = this.userProfile.symptoms.length > 0 
+      ? `Previous symptoms mentioned: ${this.userProfile.symptoms.join(', ')}.` 
+      : ''
+    
+    const systemPrompt = `You are HealthAI, a medical assistant for Nigerian communities.
 
-Rules:
-- Be conversational, not robotic
-- Ask follow-up questions based on previous answers
-- Detect emergencies (chest pain, severe bleeding, difficulty breathing)
-- Recommend calling 112 for emergencies
-- Suggest nearby hospitals when needed
-- NEVER diagnose or prescribe medication
+Language: ${this.userProfile.language === 'pidgin' ? 'Respond in Nigerian Pidgin (e.g., "How you dey feel now?")' : 'Respond in clear English'}.
 
-User's new message: ${userMessage}`
+${symptomsContext}
+
+Recent conversation:
+${recentHistory}
+
+IMPORTANT RULES:
+1. Be warm and conversational, like talking to a friend
+2. Ask ONE follow-up question based on what they just said
+3. If you detect emergency symptoms (chest pain, can't breathe, severe bleeding), immediately tell them to call 112
+4. NEVER diagnose conditions or prescribe medication
+5. Suggest home remedies for minor issues (rest, hydration, paracetamol)
+6. If unsure, recommend visiting a doctor
+7. Keep responses short (2-3 sentences max)
+
+Respond to this message naturally:`
 
     return systemPrompt
   }
@@ -167,6 +211,16 @@ import { detectEmergency, getEmergencyResponse } from '@/lib/emergency-detector'
 // Store sessions in memory (no database needed)
 const sessions = new Map<string, AdaptiveAI>()
 
+// Clean up old sessions every 30 minutes
+setInterval(() => {
+  if (sessions.size > 100) {
+    const entries = Array.from(sessions.entries())
+    const toDelete = entries.slice(0, 50)
+    toDelete.forEach(([key]) => sessions.delete(key))
+    console.log(`Cleaned up ${toDelete.length} old sessions`)
+  }
+}, 30 * 60 * 1000)
+
 export async function POST(req: NextRequest) {
   try {
     const { message, sessionId } = await req.json()
@@ -191,10 +245,10 @@ export async function POST(req: NextRequest) {
     ai.addToContext(message, true)
 
     // Build adaptive prompt
-    const prompt = ai.buildPrompt(message)
+    const systemPrompt = ai.buildPrompt(message)
 
     // Get AI response
-    const response = await getGeminiResponse(prompt, ai.getContext())
+    const response = await getGeminiResponse(systemPrompt, message)
 
     // Add AI response to context
     ai.addToContext(response, false)
@@ -204,11 +258,14 @@ export async function POST(req: NextRequest) {
       isEmergency: false
     })
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Chat error:', error)
     return NextResponse.json(
-      { error: 'Failed to process message' },
-      { status: 500 }
+      { 
+        response: error.message || 'Sorry, something went wrong. Please try again.',
+        isEmergency: false 
+      },
+      { status: 200 } // Return 200 so frontend shows error message
     )
   }
 }
