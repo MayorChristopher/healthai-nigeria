@@ -1,91 +1,157 @@
-# Hackathon Build Guide - Adaptive AI Chat
+# 🏥 HealthAI Nigeria - Hackathon Build Guide
 
-## 🎯 Goal
-Build an **adaptive AI chat** (not a simple recommender) that understands context, learns within conversations, and provides intelligent health guidance.
+## 🎯 What We're Building
 
-## 🔑 FIRST: Get Your Gemini API Key (5 mins)
-
-**You MUST do this before the hackathon starts!**
-
-### Step-by-Step:
-
-1. **Go to Google AI Studio**
-   - Visit: https://aistudio.google.com/app/apikey
-   - Sign in with your Google account (any Gmail works)
-
-2. **Create API Key**
-   - Click "Get API Key" or "Create API Key"
-   - Click "Create API key in new project" (easiest option)
-   - Copy the key (looks like: `AIzaSyD...`)
-
-3. **Add to Your Project**
-   - Open your project folder
-   - Create file: `.env.local`
-   - Add this line:
-   ```
-   GEMINI_API_KEY=AIzaSyD_your_actual_key_here
-   ```
-   - Save the file
-
-4. **Test It Works**
-   ```bash
-   npm run dev
-   ```
-   - If you see no errors about GEMINI_API_KEY, you're good!
-
-### Important Notes:
-- **Free tier**: 15 requests per minute, 1500 per day (enough for hackathon)
-- **No credit card needed** for free tier
-- **Keep it secret**: Don't commit `.env.local` to GitHub (already in .gitignore)
-- **Share with team**: Send the key to Victor and Comfort via WhatsApp/email
-
-### Troubleshooting:
-- If you get "API key not valid" → Make sure you copied the full key
-- If you get "429 error" → You hit rate limit, wait 1 minute
-- If you get "SAFETY" error → Message was blocked, try rephrasing
+An **adaptive AI medical assistant** that:
+- Understands context (remembers what you said before)
+- Learns your language preference (English or Pidgin)
+- Detects emergencies automatically
+- Gets smarter during the conversation
+- **NOT** a simple recommender that just matches symptoms to responses
 
 ---
 
-## 📁 File Structure to Create
+## 🔑 STEP 0: Get Gemini API Key (DO THIS FIRST!)
+
+**⏰ Time: 5 minutes | 👤 Who: Mayor (then share with team)**
+
+### Why We Need This:
+Google Gemini is the AI brain that powers our chat. Without this key, the chat won't work.
+
+### How to Get It:
+
+1. **Visit:** https://aistudio.google.com/app/apikey
+2. **Sign in** with any Google account (Gmail)
+3. **Click** "Create API Key" → "Create API key in new project"
+4. **Copy** the key (looks like `AIzaSyD...`)
+5. **In your project folder**, create a file named `.env.local`
+6. **Paste this inside:**
+   ```
+   GEMINI_API_KEY=AIzaSyD_your_actual_key_here
+   ```
+7. **Save** and close
+
+### ✅ Test It Works:
+```bash
+npm run dev
+```
+If no errors about GEMINI_API_KEY appear, you're good!
+
+### 📤 Share with Team:
+Send the API key to Victor and Comfort via WhatsApp/email so they can test locally.
+
+**Important:** 
+- Free tier = 15 requests/min, 1500/day (enough for hackathon)
+- No credit card needed
+- Keep it secret (don't post on GitHub)
+
+---
+
+## 📁 Project Structure
 
 ```
 src/
 ├── app/
 │   ├── api/
 │   │   └── chat/
-│   │       └── route.ts          # API endpoint for chat
+│   │       └── route.ts          ← Backend API (Mayor + Victor)
 │   └── chat/
-│       └── page.tsx               # Chat UI (already exists)
+│       └── page.tsx               ← Chat UI (Mayor + Comfort)
 ├── lib/
-│   ├── gemini.ts                  # Gemini AI setup
-│   ├── adaptive-ai.ts             # Adaptive logic layer
-│   └── emergency-detector.ts      # Emergency detection
-└── types/
-    └── chat.ts                    # TypeScript types
+│   ├── gemini.ts                  ← AI setup (Victor)
+│   ├── adaptive-ai.ts             ← Smart logic (Mayor + Victor)
+│   └── emergency-detector.ts      ← Emergency detection (Victor)
 ```
 
-## 🚀 Step-by-Step Build Order
+---
 
-### Step 1: Setup Gemini API (10 mins)
-**File:** `src/lib/gemini.ts`
+## 👥 Team Roles & Tasks
+
+### 🟢 Mayor Christopher - Full Stack Developer
+
+**Your Tasks:**
+1. ✅ Landing page (DONE)
+2. Chat UI (Step 5) - 40 mins
+3. Help Victor with backend (Steps 2, 4) - 30 mins
+4. Deploy to Vercel - 10 mins
+
+**Skills Needed:**
+- React/Next.js (you already know this from landing page)
+- TypeScript basics
+- API calls with fetch
+
+---
+
+### 🔵 Victor - Backend Developer
+
+**Your Tasks:**
+1. Gemini API setup (Step 1) - 10 mins
+2. Adaptive AI logic (Step 2) - 30 mins with Mayor
+3. Emergency detector (Step 3) - 20 mins
+4. API route (Step 4) - 20 mins with Mayor
+
+**Skills Needed:**
+- TypeScript/JavaScript
+- Understanding APIs
+- Basic logic (if/else, loops)
+
+**What You'll Learn:**
+- How to use Google Gemini API
+- How to build "smart" AI (not just pattern matching)
+- How to handle sessions without a database
+
+---
+
+### 🟣 Comfort - Documentation & Frontend
+
+**Your Tasks:**
+1. Help Mayor with Chat UI styling (Step 5) - 20 mins
+2. Test the chat thoroughly - 20 mins
+3. Write project documentation - 30 mins
+4. Create user guide/README updates - 20 mins
+
+**Skills Needed:**
+- Basic HTML/CSS understanding
+- Attention to detail
+- Good writing skills
+
+**What You'll Learn:**
+- React components basics
+- Tailwind CSS styling
+- How to test AI applications
+
+---
+
+## 🚀 Build Steps (2 Hours Total)
+
+### STEP 1: Setup Gemini API (10 mins)
+**👤 Who: Victor**
+
+**What This Does:** Connects our app to Google's AI
+
+**Create file:** `src/lib/gemini.ts`
 
 ```typescript
 import { GoogleGenerativeAI } from '@google/generative-ai'
 
+// Check if API key exists
 if (!process.env.GEMINI_API_KEY) {
   throw new Error('GEMINI_API_KEY is not set')
 }
 
+// Initialize Gemini
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
 
+// Function to get AI response
 export async function getGeminiResponse(systemPrompt: string, userMessage: string) {
   try {
+    // Create model with settings
     const model = genAI.getGenerativeModel({ 
-      model: 'gemini-1.5-flash',
+      model: 'gemini-1.5-flash', // Fast and free
       safetySettings: [
         {
           category: 'HARM_CATEGORY_HARASSMENT',
-          threshold: 'BLOCK_NONE'
+          threshold: 'BLOCK_NONE' // Allow medical content
         },
         {
           category: 'HARM_CATEGORY_HATE_SPEECH',
@@ -94,7 +160,10 @@ export async function getGeminiResponse(systemPrompt: string, userMessage: strin
       ]
     })
     
+    // Combine system instructions with user message
     const fullPrompt = `${systemPrompt}\n\nUser: ${userMessage}`
+    
+    // Get AI response
     const result = await model.generateContent(fullPrompt)
     
     if (!result.response) {
@@ -102,15 +171,15 @@ export async function getGeminiResponse(systemPrompt: string, userMessage: strin
     }
     
     return result.response.text()
+    
   } catch (error: any) {
     console.error('Gemini API error:', error)
     
-    // Handle rate limiting
+    // Handle different error types
     if (error.message?.includes('429')) {
       throw new Error('Too many requests. Please wait a moment.')
     }
     
-    // Handle safety blocks
     if (error.message?.includes('SAFETY')) {
       throw new Error('Message blocked for safety reasons.')
     }
@@ -120,14 +189,32 @@ export async function getGeminiResponse(systemPrompt: string, userMessage: strin
 }
 ```
 
-### Step 2: Adaptive AI Layer (30 mins)
-**File:** `src/lib/adaptive-ai.ts`
+**Victor's Checklist:**
+- [ ] Create `src/lib/` folder if it doesn't exist
+- [ ] Create `gemini.ts` file
+- [ ] Copy code above
+- [ ] Save file
+- [ ] Test: Run `npm run dev` - should see no errors
 
-This is what makes it NOT a recommender - it adapts based on conversation context.
+---
+
+### STEP 2: Adaptive AI Layer (30 mins)
+**👤 Who: Mayor + Victor (pair programming)**
+
+**What This Does:** Makes the AI "smart" - remembers conversation, detects language, tracks symptoms
+
+**Why It's NOT a Recommender:**
+- Recommender: "headache" → always same response
+- Adaptive AI: Remembers you said "headache yesterday", asks "is it better today?"
+
+**Create file:** `src/lib/adaptive-ai.ts`
 
 ```typescript
 export class AdaptiveAI {
+  // Store conversation history
   private conversationContext: string[] = []
+  
+  // Store user profile (learns during chat)
   private userProfile: {
     language: 'english' | 'pidgin'
     symptoms: string[]
@@ -135,6 +222,7 @@ export class AdaptiveAI {
   }
 
   constructor() {
+    // Start with defaults
     this.userProfile = {
       language: 'english',
       symptoms: [],
@@ -142,27 +230,31 @@ export class AdaptiveAI {
     }
   }
 
-  // Learns from conversation
+  // Add message to conversation memory
   addToContext(message: string, isUser: boolean) {
     this.conversationContext.push(`${isUser ? 'User' : 'AI'}: ${message}`)
     
-    // Adapt language detection
+    // Learn language preference
     if (isUser && this.detectPidgin(message)) {
       this.userProfile.language = 'pidgin'
     }
     
-    // Extract symptoms
+    // Extract and remember symptoms
     const symptoms = this.extractSymptoms(message)
     this.userProfile.symptoms.push(...symptoms)
   }
 
-  // Build adaptive prompt
+  // Build smart prompt for Gemini
   buildPrompt(userMessage: string): string {
+    // Get last 6 messages for context
     const recentHistory = this.conversationContext.slice(-6).join('\n')
+    
+    // Build symptoms context
     const symptomsContext = this.userProfile.symptoms.length > 0 
       ? `Previous symptoms mentioned: ${this.userProfile.symptoms.join(', ')}.` 
       : ''
     
+    // Create system prompt with context
     const systemPrompt = `You are HealthAI, a medical assistant for Nigerian communities.
 
 Language: ${this.userProfile.language === 'pidgin' ? 'Respond in Nigerian Pidgin (e.g., "How you dey feel now?")' : 'Respond in clear English'}.
@@ -186,37 +278,56 @@ Respond to this message naturally:`
     return systemPrompt
   }
 
+  // Detect if user is speaking Pidgin
   private detectPidgin(text: string): boolean {
     const pidginWords = ['wetin', 'dey', 'abeg', 'oga', 'wahala', 'no', 'fit']
     return pidginWords.some(word => text.toLowerCase().includes(word))
   }
 
+  // Extract symptoms from message
   private extractSymptoms(text: string): string[] {
-    const symptoms = ['headache', 'fever', 'cough', 'pain', 'bleeding', 'vomiting']
+    const symptoms = ['headache', 'fever', 'cough', 'pain', 'bleeding', 'vomiting', 'dizzy', 'nausea']
     return symptoms.filter(s => text.toLowerCase().includes(s))
   }
 
+  // Get conversation history
   getContext() {
     return this.conversationContext
   }
 }
 ```
 
-### Step 3: Emergency Detector (20 mins)
-**File:** `src/lib/emergency-detector.ts`
+**Team Checklist:**
+- [ ] Mayor creates file structure
+- [ ] Victor explains how AdaptiveAI class works
+- [ ] Mayor types code while Victor reviews
+- [ ] Both understand: detectPidgin(), extractSymptoms(), buildPrompt()
+- [ ] Save file
+
+---
+
+### STEP 3: Emergency Detector (20 mins)
+**👤 Who: Victor**
+
+**What This Does:** Detects life-threatening symptoms and triggers immediate response
+
+**Create file:** `src/lib/emergency-detector.ts`
 
 ```typescript
+// Check if message contains emergency keywords
 export function detectEmergency(message: string): {
   isEmergency: boolean
   reason?: string
 } {
   const emergencyKeywords = [
     'chest pain', 'can\'t breathe', 'severe bleeding', 'unconscious',
-    'seizure', 'stroke', 'heart attack', 'suicide', 'overdose'
+    'seizure', 'stroke', 'heart attack', 'suicide', 'overdose',
+    'not breathing', 'choking', 'severe burn'
   ]
 
   const lowerMessage = message.toLowerCase()
   
+  // Check each keyword
   for (const keyword of emergencyKeywords) {
     if (lowerMessage.includes(keyword)) {
       return {
@@ -229,6 +340,7 @@ export function detectEmergency(message: string): {
   return { isEmergency: false }
 }
 
+// Get emergency response message
 export function getEmergencyResponse(): string {
   return `🚨 EMERGENCY DETECTED
 
@@ -242,8 +354,21 @@ Would you like me to show you nearby hospitals?`
 }
 ```
 
-### Step 4: API Route (20 mins)
-**File:** `src/app/api/chat/route.ts`
+**Victor's Checklist:**
+- [ ] Create `emergency-detector.ts` file
+- [ ] Copy code
+- [ ] Add more emergency keywords if you think of any
+- [ ] Save file
+
+---
+
+### STEP 4: API Route (20 mins)
+**👤 Who: Mayor + Victor**
+
+**What This Does:** Backend endpoint that receives messages, processes them, returns AI responses
+
+**Create folder:** `src/app/api/chat/`
+**Create file:** `src/app/api/chat/route.ts`
 
 ```typescript
 import { NextRequest, NextResponse } from 'next/server'
@@ -251,10 +376,10 @@ import { getGeminiResponse } from '@/lib/gemini'
 import { AdaptiveAI } from '@/lib/adaptive-ai'
 import { detectEmergency, getEmergencyResponse } from '@/lib/emergency-detector'
 
-// Store sessions in memory (no database needed)
+// Store user sessions in memory (no database needed)
 const sessions = new Map<string, AdaptiveAI>()
 
-// Clean up old sessions every 30 minutes
+// Clean up old sessions every 30 minutes to prevent memory leak
 setInterval(() => {
   if (sessions.size > 100) {
     const entries = Array.from(sessions.entries())
@@ -264,18 +389,20 @@ setInterval(() => {
   }
 }, 30 * 60 * 1000)
 
+// Handle POST requests to /api/chat
 export async function POST(req: NextRequest) {
   try {
+    // Get message and sessionId from request
     const { message, sessionId } = await req.json()
 
-    // Get or create adaptive AI session
+    // Get or create AI session for this user
     let ai = sessions.get(sessionId)
     if (!ai) {
       ai = new AdaptiveAI()
       sessions.set(sessionId, ai)
     }
 
-    // Check for emergency
+    // Check for emergency first
     const emergency = detectEmergency(message)
     if (emergency.isEmergency) {
       return NextResponse.json({
@@ -284,18 +411,19 @@ export async function POST(req: NextRequest) {
       })
     }
 
-    // Add user message to context
+    // Add user message to conversation context
     ai.addToContext(message, true)
 
-    // Build adaptive prompt
+    // Build adaptive prompt with context
     const systemPrompt = ai.buildPrompt(message)
 
-    // Get AI response
+    // Get AI response from Gemini
     const response = await getGeminiResponse(systemPrompt, message)
 
-    // Add AI response to context
+    // Add AI response to conversation context
     ai.addToContext(response, false)
 
+    // Return response to frontend
     return NextResponse.json({
       response,
       isEmergency: false
@@ -303,6 +431,8 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('Chat error:', error)
+    
+    // Return error message to user
     return NextResponse.json(
       { 
         response: error.message || 'Sorry, something went wrong. Please try again.',
@@ -314,14 +444,29 @@ export async function POST(req: NextRequest) {
 }
 ```
 
-### Step 5: Chat UI (40 mins)
-**File:** `src/app/chat/page.tsx` (replace existing)
+**Team Checklist:**
+- [ ] Mayor creates `src/app/api/chat/` folder
+- [ ] Create `route.ts` file
+- [ ] Victor explains the flow: receive → check emergency → get AI response → return
+- [ ] Mayor types code
+- [ ] Both understand: sessions Map, error handling
+- [ ] Save file
+
+---
+
+### STEP 5: Chat UI (40 mins)
+**👤 Who: Mayor + Comfort**
+
+**What This Does:** The chat interface users see and interact with
+
+**Replace file:** `src/app/chat/page.tsx`
 
 ```typescript
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 
+// Message type definition
 type Message = {
   role: 'user' | 'ai'
   content: string
@@ -329,20 +474,23 @@ type Message = {
 }
 
 export default function ChatPage() {
+  // State management
   const [messages, setMessages] = useState<Message[]>([
     { role: 'ai', content: 'Wetin dey worry you? Tell me your symptoms.' }
   ])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
-  const [sessionId] = useState(() => Math.random().toString(36))
+  const [sessionId] = useState(() => Math.random().toString(36)) // Unique session ID
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
+  // Auto-scroll to bottom when new message arrives
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
   useEffect(scrollToBottom, [messages])
 
+  // Send message to backend
   const sendMessage = async () => {
     if (!input.trim() || loading) return
 
@@ -352,6 +500,7 @@ export default function ChatPage() {
     setLoading(true)
 
     try {
+      // Call API
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -360,12 +509,14 @@ export default function ChatPage() {
 
       const data = await res.json()
       
+      // Add AI response to messages
       setMessages(prev => [...prev, {
         role: 'ai',
         content: data.response,
         isEmergency: data.isEmergency
       }])
     } catch (error) {
+      // Show error message
       setMessages(prev => [...prev, {
         role: 'ai',
         content: 'Sorry, something went wrong. Please try again.'
@@ -384,7 +535,7 @@ export default function ChatPage() {
             <h1 className="text-xl font-bold">HealthAI Chat</h1>
             <p className="text-xs text-gray-500">Adaptive AI • Not a recommender</p>
           </div>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white">
+          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
             ← Home
           </Link>
         </div>
@@ -417,18 +568,21 @@ export default function ChatPage() {
               )}
             </div>
           ))}
+          
+          {/* Loading indicator */}
           {loading && (
             <div className="flex gap-3">
               <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600" />
               <div className="bg-white/5 rounded-2xl px-4 py-3">
                 <div className="flex gap-1">
                   <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" />
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-100" />
-                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce delay-200" />
+                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{animationDelay: '0.1s'}} />
+                  <div className="w-2 h-2 bg-gray-500 rounded-full animate-bounce" style={{animationDelay: '0.2s'}} />
                 </div>
               </div>
             </div>
           )}
+          
           <div ref={messagesEndRef} />
         </div>
       </div>
@@ -442,13 +596,13 @@ export default function ChatPage() {
             onChange={(e) => setInput(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
             placeholder="Describe your symptoms..."
-            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-green-500/50"
+            className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3 outline-none focus:border-green-500/50 transition-colors"
             disabled={loading}
           />
           <button
             onClick={sendMessage}
             disabled={loading || !input.trim()}
-            className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
             Send
           </button>
@@ -459,33 +613,142 @@ export default function ChatPage() {
 }
 ```
 
-## ⏱️ Time Breakdown (2 hours total)
+**Mayor + Comfort Checklist:**
+- [ ] Mayor explains React hooks: useState, useEffect, useRef
+- [ ] Comfort helps with styling adjustments
+- [ ] Test: Type message, click Send
+- [ ] Test: Try "chest pain" (should show emergency)
+- [ ] Test: Try "wetin dey worry me" (should respond in Pidgin)
+- [ ] Comfort documents any bugs found
 
-1. **Setup Gemini** (10 mins) - Victor
-2. **Adaptive AI Layer** (30 mins) - Mayor + Victor
-3. **Emergency Detector** (20 mins) - Victor
-4. **API Route** (20 mins) - Mayor + Victor
-5. **Chat UI** (40 mins) - Mayor + Comfort
+---
+
+## ✅ Testing Checklist
+
+**Everyone tests together:**
+
+- [ ] Chat sends and receives messages
+- [ ] Emergency detection works (try "chest pain")
+- [ ] Pidgin detection works (try "wetin dey worry me")
+- [ ] Context memory works (ask follow-up: "is it better?")
+- [ ] UI looks good on mobile (use browser dev tools)
+- [ ] Loading indicator shows while waiting
+- [ ] Error messages display properly
+- [ ] Multiple conversations work (open in 2 tabs)
+
+---
+
+## 📝 Comfort's Documentation Tasks
+
+**After chat is working:**
+
+1. **Update README.md** with:
+   - How to use the chat
+   - Example conversations
+   - Troubleshooting section
+
+2. **Create USER_GUIDE.md** with:
+   - Screenshots of chat
+   - Step-by-step usage
+   - What to do in emergencies
+
+3. **Document bugs/issues** in a file called `KNOWN_ISSUES.md`
+
+4. **Test and document:**
+   - What works well
+   - What needs improvement
+   - Edge cases found
+
+---
+
+## 🚀 Deployment (Mayor)
+
+**After everything works locally:**
+
+1. Push to GitHub:
+   ```bash
+   git add .
+   git commit -m "Complete adaptive AI chat implementation"
+   git push origin main
+   ```
+
+2. Deploy to Vercel:
+   - Go to vercel.com
+   - Import GitHub repo
+   - Add environment variable: `GEMINI_API_KEY`
+   - Click Deploy
+
+3. Share live URL with team!
+
+---
 
 ## 🎯 What Makes This "Adaptive" Not "Recommender"
 
-1. **Context Memory** - Remembers conversation, adapts responses
-2. **Language Detection** - Switches to Pidgin automatically
-3. **Symptom Tracking** - Builds profile during conversation
-4. **Follow-up Questions** - Based on previous answers
-5. **Session Learning** - Gets smarter within conversation
+| Feature | Recommender System | Our Adaptive AI |
+|---------|-------------------|-----------------|
+| Memory | None | Remembers conversation |
+| Language | Fixed | Detects and adapts |
+| Responses | Template-based | Context-aware |
+| Learning | Static | Learns during session |
+| Follow-ups | Generic | Based on previous answers |
 
-## 🚨 Testing Checklist
+---
 
+## 💡 Tips for Success
+
+**For Victor:**
+- Test each file as you create it
+- Use `console.log()` to debug
+- Ask Mayor if stuck on TypeScript
+
+**For Mayor:**
+- Explain code to Comfort as you write
+- Test API with Postman/Thunder Client first
+- Keep UI simple, focus on functionality
+
+**For Comfort:**
+- Take notes while they code
+- Ask questions when confused
+- Test thoroughly - find bugs early!
+
+**For Everyone:**
+- Communicate constantly
+- Help each other
+- Don't panic if something breaks
+- Google is your friend!
+
+---
+
+## 🆘 Common Issues & Solutions
+
+**"GEMINI_API_KEY is not set"**
+- Check `.env.local` file exists
+- Restart dev server: `npm run dev`
+
+**"429 error"**
+- Hit rate limit, wait 1 minute
+- Reduce testing frequency
+
+**"Module not found"**
+- Run `npm install`
+- Check file paths are correct
+
+**Chat not responding**
+- Check browser console for errors
+- Check terminal for backend errors
+- Verify API key is valid
+
+---
+
+## 🏆 Success Criteria
+
+You're done when:
 - [ ] Chat sends/receives messages
-- [ ] Emergency detection works (try "chest pain")
-- [ ] Pidgin detection works (try "wetin dey worry me")
-- [ ] Context memory works (ask follow-up questions)
-- [ ] UI is responsive on mobile
+- [ ] Emergency detection works
+- [ ] Pidgin support works
+- [ ] Context memory works
+- [ ] Deployed to Vercel
+- [ ] Documentation complete
+- [ ] Team can explain how it works
 
-## 📝 Notes
-
-- No database needed - sessions stored in memory
-- Privacy-safe - no permanent storage
-- Can handle multiple users (different sessionIds)
-- Gemini API key must be in `.env.local`
+**Good luck! You got this! 🚀**
