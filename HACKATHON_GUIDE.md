@@ -11,6 +11,99 @@ An **adaptive AI medical assistant** that:
 
 ---
 
+## 🛠️ PRE-HACKATHON SETUP (30 mins - DO THIS FIRST!)
+
+**Complete this BEFORE hackathon day. Critical for success.**
+
+### Part 1: Verify Project Setup (10 mins)
+
+**1. Check Node.js version:**
+```bash
+node --version
+```
+Should be 18+. If not, download from nodejs.org
+
+**2. Install all dependencies:**
+```bash
+cd healthai-nigeria
+npm install
+```
+This installs `@google/generative-ai` and everything else
+
+**3. Check TypeScript paths:**
+Open `tsconfig.json`, verify this exists:
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"]
+    }
+  }
+}
+```
+If missing, add it!
+
+**4. Verify .gitignore:**
+Check `.gitignore` includes:
+```
+.env.local
+.env
+```
+
+**5. Test dev server:**
+```bash
+npm run dev
+```
+Should open http://localhost:3000 with no errors
+
+### Part 2: Create Folder Structure (5 mins)
+
+**Run these commands:**
+
+**Mac/Linux:**
+```bash
+mkdir -p src/lib
+mkdir -p src/app/api/chat
+ls -la src/lib
+ls -la src/app/api/chat
+```
+
+**Windows:**
+```cmd
+mkdir src\lib
+mkdir src\app\api\chat
+dir src\lib
+dir src\app\api\chat
+```
+
+### Part 3: Test Import Paths (5 mins)
+
+**1. Create test file:** `src/lib/test.ts`
+```typescript
+export function testSetup() {
+  return "Setup works!"
+}
+```
+
+**2. Add to page.tsx** (temporarily at top):
+```typescript
+import { testSetup } from '@/lib/test'
+console.log(testSetup())
+```
+
+**3. Run dev server:**
+```bash
+npm run dev
+```
+
+**4. Open browser console** - Should see "Setup works!"
+
+**5. Remove test code** - Delete `test.ts` and the import
+
+✅ **If all above works, continue to Part 4**
+
+---
+
 ## 🔑 STEP 0: Get Gemini API Key (DO THIS FIRST!)
 
 **⏰ Time: 5 minutes | 👤 Who: Mayor (then share with team)**
