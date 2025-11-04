@@ -411,8 +411,8 @@ export default function Home() {
               <p className="text-green-500 text-sm mb-4">Full Stack Developer</p>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li>• Landing page & UI/UX</li>
-                <li>• Backend development (shared)</li>
-                <li>• Self-learning AI (shared)</li>
+                <li>• Chat interface (hackathon)</li>
+                <li>• Backend API (shared)</li>
                 <li>• Deployment & hosting</li>
               </ul>
             </div>
@@ -423,10 +423,10 @@ export default function Home() {
               <h3 className="text-xl font-bold mb-1">Victor</h3>
               <p className="text-blue-500 text-sm mb-4">Backend Developer</p>
               <ul className="text-sm text-gray-400 space-y-2">
-                <li>• Backend API development</li>
-                <li>• Self-learning AI (shared)</li>
+                <li>• Backend API (shared)</li>
+                <li>• Adaptive AI logic</li>
                 <li>• Gemini API integration</li>
-                <li>• Database management</li>
+                <li>• Emergency detection</li>
               </ul>
             </div>
             <div className="bg-white/5 p-8 rounded-xl border border-white/10">
