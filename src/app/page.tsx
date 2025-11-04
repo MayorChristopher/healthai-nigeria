@@ -21,7 +21,7 @@ export default function Home() {
           }
         })
       },
-      { threshold: 0.1 }
+      { threshold: 0.15, rootMargin: '0px 0px -100px 0px' }
     )
 
     document.querySelectorAll('.fade-in').forEach((el) => observer.observe(el))
