@@ -395,6 +395,60 @@ export default function Home() {
       {/* Gradient Divider */}
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
+      {/* Team Section */}
+      <section className="relative py-24 px-6">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="text-center mb-16">
+            <h2 className="text-4xl font-bold mb-4">Meet the Team</h2>
+            <p className="text-gray-400">Building self-learning AI for Nigerian healthcare</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
+            <div className="bg-white/5 p-8 rounded-xl border border-white/10">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-2xl font-bold mb-4">
+                M
+              </div>
+              <h3 className="text-xl font-bold mb-1">Mayor Christopher</h3>
+              <p className="text-green-500 text-sm mb-4">Lead Developer</p>
+              <ul className="text-sm text-gray-400 space-y-2">
+                <li>• Landing page & UI/UX</li>
+                <li>• Project architecture</li>
+                <li>• Deployment & hosting</li>
+                <li>• Hospital integration</li>
+              </ul>
+            </div>
+            <div className="bg-white/5 p-8 rounded-xl border border-white/10">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-2xl font-bold mb-4">
+                V
+              </div>
+              <h3 className="text-xl font-bold mb-1">Victor</h3>
+              <p className="text-blue-500 text-sm mb-4">AI Engineer</p>
+              <ul className="text-sm text-gray-400 space-y-2">
+                <li>• Self-learning AI model</li>
+                <li>• Gemini API integration</li>
+                <li>• Emergency detection logic</li>
+                <li>• Symptom analysis engine</li>
+              </ul>
+            </div>
+            <div className="bg-white/5 p-8 rounded-xl border border-white/10">
+              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-2xl font-bold mb-4">
+                C
+              </div>
+              <h3 className="text-xl font-bold mb-1">Comfort</h3>
+              <p className="text-purple-500 text-sm mb-4">Backend Developer</p>
+              <ul className="text-sm text-gray-400 space-y-2">
+                <li>• Chat interface backend</li>
+                <li>• Pidgin language support</li>
+                <li>• API endpoints & routing</li>
+                <li>• Data flow management</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Gradient Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
       {/* Tech Stack */}
       <section className="relative py-20 px-6">
         <div className="max-w-7xl mx-auto relative z-10">

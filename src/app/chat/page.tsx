@@ -3,28 +3,84 @@ import Link from 'next/link'
 
 export default function ChatPage() {
   return (
-    <div className="min-h-screen bg-black text-white flex items-center justify-center px-6">
-      <div className="max-w-2xl text-center">
-        <h1 className="text-4xl font-bold mb-4">Chat Interface</h1>
-        <p className="text-gray-400 mb-8">
-          Coming soon! This is where the AI chat will be implemented.
-        </p>
-        <div className="bg-white/5 border border-white/10 rounded-xl p-8 mb-8">
-          <h2 className="text-xl font-semibold mb-4">TODO for Team:</h2>
-          <ul className="text-left text-gray-400 space-y-2">
-            <li>• Integrate Google Gemini API</li>
-            <li>• Build chat UI with message history</li>
-            <li>• Add Pidgin language support</li>
-            <li>• Implement emergency detection logic</li>
-            <li>• Add hospital recommendations based on symptoms</li>
-          </ul>
+    <div className="min-h-screen bg-black text-white px-6 py-20">
+      <div className="max-w-4xl mx-auto">
+        <div className="text-center mb-12">
+          <h1 className="text-4xl font-bold mb-4">Self-Learning AI Chat</h1>
+          <p className="text-gray-400">
+            Building an AI that learns and grows from interactions, not just a simple recommender system.
+          </p>
         </div>
-        <Link 
-          href="/" 
-          className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-md font-medium hover:bg-gray-200 transition-colors"
-        >
-          ← Back to Home
-        </Link>
+
+        <div className="grid md:grid-cols-2 gap-6 mb-12">
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h3 className="text-xl font-bold mb-4 text-green-500">Self-Learning AI</h3>
+            <ul className="text-sm text-gray-400 space-y-2">
+              <li>• Learns from user interactions</li>
+              <li>• Adapts to Nigerian health patterns</li>
+              <li>• Improves accuracy over time</li>
+              <li>• Context-aware responses</li>
+              <li>• Not just input-output matching</li>
+            </ul>
+          </div>
+          <div className="bg-white/5 border border-white/10 rounded-xl p-6">
+            <h3 className="text-xl font-bold mb-4 text-blue-500">Intelligence Features</h3>
+            <ul className="text-sm text-gray-400 space-y-2">
+              <li>• Pattern recognition in symptoms</li>
+              <li>• Predictive health insights</li>
+              <li>• Personalized recommendations</li>
+              <li>• Emergency priority detection</li>
+              <li>• Continuous model improvement</li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-xl p-8 mb-12">
+          <h2 className="text-2xl font-bold mb-6">Team Responsibilities</h2>
+          
+          <div className="space-y-6">
+            <div>
+              <h3 className="font-semibold text-green-500 mb-2">Mayor Christopher - Lead Developer</h3>
+              <ul className="text-sm text-gray-400 space-y-1">
+                <li>• Complete landing page (DONE ✓)</li>
+                <li>• Deploy to Vercel</li>
+                <li>• Hospital finder integration</li>
+                <li>• UI/UX polish</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-blue-500 mb-2">Victor - AI Engineer</h3>
+              <ul className="text-sm text-gray-400 space-y-1">
+                <li>• Build self-learning AI model (not just recommender)</li>
+                <li>• Integrate Google Gemini API with learning layer</li>
+                <li>• Implement emergency detection algorithm</li>
+                <li>• Create symptom pattern recognition</li>
+                <li>• Design AI that grows smarter with use</li>
+              </ul>
+            </div>
+
+            <div>
+              <h3 className="font-semibold text-purple-500 mb-2">Comfort - Backend Developer</h3>
+              <ul className="text-sm text-gray-400 space-y-1">
+                <li>• Build chat interface UI</li>
+                <li>• Implement Pidgin language support</li>
+                <li>• Create API routes for chat</li>
+                <li>• Handle message history & state</li>
+                <li>• Connect frontend to AI backend</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <Link 
+            href="/" 
+            className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-md font-medium hover:bg-gray-200 transition-colors"
+          >
+            ← Back to Home
+          </Link>
+        </div>
       </div>
     </div>
   )
