@@ -55,17 +55,27 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to view the app.
 
+## 📚 Documentation
+
+See [docs/GUIDE.md](docs/GUIDE.md) for complete setup and build instructions.
+
 ## 📂 Project Structure
 
 ```
 healthai-nigeria/
 ├── src/
-│   └── app/
-│       ├── page.tsx          # Landing page
-│       ├── chat/             # Chat interface (coming soon)
-│       ├── layout.tsx        # Root layout
-│       └── globals.css       # Global styles
-├── public/                   # Static assets
+│   ├── app/
+│   │   ├── page.tsx          # Landing page
+│   │   ├── chat/page.tsx     # Chat interface
+│   │   ├── layout.tsx        # Root layout
+│   │   └── globals.css       # Global styles
+│   └── lib/
+│       ├── hospital-recommender.ts
+│       └── google-maps-integration.ts
+├── public/
+│   └── team/                 # Team photos
+├── docs/
+│   └── GUIDE.md              # Complete guide
 └── README.md
 ```
 

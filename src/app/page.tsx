@@ -41,11 +41,11 @@ export default function Home() {
           <Link href="/" className="text-lg font-semibold hover:opacity-80 transition-opacity relative z-10">
             Health<span className="text-green-500">AI</span>
           </Link>
-          <div className="flex items-center gap-6">
-            <Link href="#problem" className="text-sm text-gray-400 hover:text-white transition-colors">
+          <div className="flex items-center gap-3 md:gap-6">
+            <Link href="#problem" className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors">
               Problem
             </Link>
-            <Link href="#hospitals" className="text-sm text-gray-400 hover:text-white transition-colors">
+            <Link href="#hospitals" className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors">
               Hospitals
             </Link>
             <Link 
@@ -69,14 +69,14 @@ export default function Home() {
               </span>
               <span className="text-gray-400">Free • No Registration Required</span>
             </div>
-            <h1 className="text-6xl lg:text-8xl font-bold leading-[1.05] mb-8 tracking-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.05] mb-8 tracking-tight">
               Medical advice
               <br />
               when hospitals
               <br />
               are far away
             </h1>
-            <p className="text-xl text-gray-400 mb-10 leading-relaxed max-w-2xl">
+            <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-10 leading-relaxed max-w-2xl">
               AI-powered symptom analysis in English and Pidgin. Emergency detection. 
               Hospital finder. Available 24/7 across Nigeria.
             </p>
@@ -101,8 +101,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Gradient Divider */}
-      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      {/* Connecting Thread */}
+      <div className="relative h-24 flex items-center justify-center">
+        <div className="w-1 md:w-0.5 h-full bg-gradient-to-b from-transparent via-green-500 to-transparent opacity-80 md:opacity-60"></div>
+      </div>
 
       {/* Problem Statement */}
       <section id="problem" className="relative py-24 px-6 fade-in">
@@ -179,10 +181,12 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="p-5 space-y-4 h-80 overflow-y-auto">
+                  <div className="p-4 md:p-5 space-y-4 h-80 overflow-y-auto">
                     <div className="flex gap-3">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0"></div>
-                      <div className="bg-white/5 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%]">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">
+                        AI
+                      </div>
+                      <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%]">
                         <p className="text-sm">Wetin dey worry you? Tell me your symptoms.</p>
                       </div>
                     </div>
@@ -195,8 +199,10 @@ export default function Home() {
                     </div>
 
                     <div className="flex gap-3">
-                      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0"></div>
-                      <div className="bg-white/5 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">
+                        AI
+                      </div>
+                      <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
                         <p className="text-sm mb-3">Based on your symptoms, this could be a viral infection. I recommend:</p>
                         <ul className="text-sm space-y-1 text-gray-300">
                           <li>• Rest and stay hydrated</li>
@@ -265,7 +271,7 @@ export default function Home() {
             <p className="text-lg text-gray-400">Teaching hospitals and federal medical centers across Nigeria with emergency services</p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {[
               { name: "UNTH Enugu", type: "Teaching Hospital", state: "Enugu", phone: "+234 42 252 3165", address: "Ituku-Ozalla", emergency: true, coords: "6.4281,7.5243" },
               { name: "LUTH Lagos", type: "Teaching Hospital", state: "Lagos", phone: "+234 1 263 2626", address: "Idi-Araba, Mushin", emergency: true, coords: "6.5244,3.3792" },
@@ -420,35 +426,74 @@ export default function Home() {
             <p className="text-gray-400">Building self-learning AI for Nigerian healthcare</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
-            <div className="bg-white/5 p-8 rounded-xl border border-white/10">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-2xl font-bold mb-4">
-                M
+            <div className="bg-white/5 p-6 md:p-8 rounded-xl border border-white/10">
+              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-2xl font-bold mb-4 overflow-hidden">
+                <img 
+                  src="/team/mayor.jpg"
+                  alt="Mayor Ugochukwu"
+                  className="absolute inset-0 w-full h-full object-cover z-20"
+                  onError={(e) => { 
+                    e.currentTarget.style.display = 'none'
+                    const parent = e.currentTarget.parentElement
+                    if (parent) {
+                      const letter = parent.querySelector('.avatar-letter')
+                      if (letter) (letter as HTMLElement).style.display = 'flex'
+                    }
+                  }}
+                />
+                <span className="avatar-letter absolute inset-0 hidden items-center justify-center">M</span>
               </div>
-              <h3 className="text-xl font-bold mb-1">Mayor Christopher</h3>
+              <h3 className="text-xl font-bold mb-1">Mayor Ugochukwu</h3>
               <p className="text-green-500 text-sm mb-4">Full Stack Developer</p>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li>• Landing page & UI/UX</li>
-                <li>• Chat interface (hackathon)</li>
-                <li>• Backend API (shared)</li>
-                <li>• Deployment & hosting</li>
+                <li>• Chat interface</li>
+                <li>• Backend API</li>
+                <li>• Deployment</li>
               </ul>
             </div>
-            <div className="bg-white/5 p-8 rounded-xl border border-white/10">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-2xl font-bold mb-4">
-                V
+            <div className="bg-white/5 p-6 md:p-8 rounded-xl border border-white/10">
+              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-2xl font-bold mb-4 overflow-hidden">
+                <img 
+                  src="/team/victor.jpg"
+                  alt="Victor"
+                  className="absolute inset-0 w-full h-full object-cover z-20"
+                  onError={(e) => { 
+                    e.currentTarget.style.display = 'none'
+                    const parent = e.currentTarget.parentElement
+                    if (parent) {
+                      const letter = parent.querySelector('.avatar-letter')
+                      if (letter) (letter as HTMLElement).style.display = 'flex'
+                    }
+                  }}
+                />
+                <span className="avatar-letter absolute inset-0 hidden items-center justify-center">V</span>
               </div>
               <h3 className="text-xl font-bold mb-1">Victor</h3>
               <p className="text-blue-500 text-sm mb-4">Backend Developer</p>
               <ul className="text-sm text-gray-400 space-y-2">
-                <li>• Backend API (shared)</li>
+                <li>• Backend API</li>
                 <li>• Adaptive AI logic</li>
-                <li>• Gemini API integration</li>
+                <li>• Gemini integration</li>
                 <li>• Emergency detection</li>
               </ul>
             </div>
-            <div className="bg-white/5 p-8 rounded-xl border border-white/10">
-              <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-2xl font-bold mb-4">
-                C
+            <div className="bg-white/5 p-6 md:p-8 rounded-xl border border-white/10">
+              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-2xl font-bold mb-4 overflow-hidden">
+                <img 
+                  src="/team/comfort.jpg"
+                  alt="Comfort"
+                  className="absolute inset-0 w-full h-full object-cover z-20"
+                  onError={(e) => { 
+                    e.currentTarget.style.display = 'none'
+                    const parent = e.currentTarget.parentElement
+                    if (parent) {
+                      const letter = parent.querySelector('.avatar-letter')
+                      if (letter) (letter as HTMLElement).style.display = 'flex'
+                    }
+                  }}
+                />
+                <span className="avatar-letter absolute inset-0 hidden items-center justify-center">C</span>
               </div>
               <h3 className="text-xl font-bold mb-1">Comfort</h3>
               <p className="text-purple-500 text-sm mb-4">Documentation & Frontend</p>
@@ -456,7 +501,7 @@ export default function Home() {
                 <li>• Project documentation</li>
                 <li>• Chat UI components</li>
                 <li>• Frontend styling</li>
-                <li>• User guides & README</li>
+                <li>• User guides</li>
               </ul>
             </div>
           </div>
@@ -541,11 +586,14 @@ export default function Home() {
                   <div><Link href="#problem" className="text-sm text-gray-400 hover:text-white transition-colors">About</Link></div>
                   <div>
                     <a 
-                      href="https://github.com/MayorChristopher" 
+                      href="https://github.com/MayorChristopher/healthai-nigeria" 
                       target="_blank" 
                       rel="noopener noreferrer"
-                      className="text-sm text-gray-400 hover:text-white transition-colors"
+                      className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
                     >
+                      <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                      </svg>
                       GitHub
                     </a>
                   </div>
