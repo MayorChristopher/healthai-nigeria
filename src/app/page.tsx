@@ -495,7 +495,7 @@ export default function Home() {
                 />
                 <span className="avatar-letter absolute inset-0 hidden items-center justify-center">C</span>
               </div>
-              <h3 className="text-xl font-bold mb-1">Comfort</h3>
+              <h3 className="text-xl font-bold mb-1">Asiribo Comfort</h3>
               <p className="text-purple-500 text-sm mb-4">Documentation & Frontend</p>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li>• Project documentation</li>

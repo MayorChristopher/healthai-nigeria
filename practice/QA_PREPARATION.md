@@ -319,7 +319,7 @@ We're prepared to tackle these systematically."
 - Emergency detection algorithms
 - API architecture
 
-**Comfort** - Documentation & Frontend
+**Asiribo Comfort** - Documentation & Frontend
 - User experience design
 - Project documentation
 - Community outreach planning
