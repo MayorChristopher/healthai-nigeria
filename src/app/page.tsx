@@ -37,11 +37,11 @@ export default function Home() {
       <nav className={`fixed top-0 w-full z-50 transition-all duration-200 ${
         scrolled ? 'bg-black/60 backdrop-blur-md' : 'bg-transparent'
       }`}>
-        <div className="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
-          <Link href="/" className="text-lg font-semibold hover:opacity-80 transition-opacity relative z-10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center">
+          <Link href="/" className="text-base sm:text-lg font-semibold hover:opacity-80 transition-opacity relative z-10">
             Health<span className="text-green-500">AI</span>
           </Link>
-          <div className="flex items-center gap-3 md:gap-6">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
             <Link href="#problem" className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors">
               Problem
             </Link>
@@ -50,16 +50,16 @@ export default function Home() {
             </Link>
             <Link 
               href="/chat" 
-              className="text-sm bg-white text-black px-4 py-1.5 rounded-md hover:bg-gray-200 transition-colors font-medium"
+              className="text-xs sm:text-sm bg-white text-black px-3 sm:px-4 py-1.5 rounded-md hover:bg-gray-200 transition-colors font-medium whitespace-nowrap"
             >
-              Launch Chat
+              Chat
             </Link>
           </div>
         </div>
       </nav>
 
       {/* Hero */}
-      <section className="relative pt-40 pb-24 px-6">
+      <section className="relative pt-32 sm:pt-40 pb-20 sm:pb-24 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-4xl">
             <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 bg-white/5 border border-white/10 rounded-md text-xs">
@@ -67,32 +67,32 @@ export default function Home() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
               </span>
-              <span className="text-gray-400">Free • No Registration Required</span>
+              <span className="text-gray-400">Free • No Registration</span>
             </div>
-            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-bold leading-[1.05] mb-8 tracking-tight">
+            <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 sm:mb-8 tracking-tight">
               Medical advice
               <br />
               when hospitals
               <br />
               are far away
             </h1>
-            <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-10 leading-relaxed max-w-2xl">
+            <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 sm:mb-10 leading-relaxed max-w-2xl">
               AI-powered symptom analysis in English and Pidgin. Emergency detection. 
               Hospital finder. Available 24/7 across Nigeria.
             </p>
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               <Link 
                 href="/chat" 
-                className="inline-flex items-center gap-2 bg-white text-black px-6 py-3 rounded-md font-medium hover:bg-gray-200 transition-colors"
+                className="inline-flex items-center justify-center gap-2 bg-white text-black px-5 sm:px-6 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-gray-200 transition-colors"
               >
-                Start Free Consultation
+                Start Consultation
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               </Link>
               <Link 
                 href="#problem" 
-                className="inline-flex items-center gap-2 border border-white/10 px-6 py-3 rounded-md font-medium hover:bg-white/5 transition-colors"
+                className="inline-flex items-center justify-center gap-2 border border-white/10 px-5 sm:px-6 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-white/5 transition-colors"
               >
                 Learn More
               </Link>
@@ -107,14 +107,14 @@ export default function Home() {
       </div>
 
       {/* Problem Statement */}
-      <section id="problem" className="relative py-24 px-6 fade-in">
+      <section id="problem" className="relative py-16 sm:py-24 px-4 sm:px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
               <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-red-500/10 border border-red-500/20 rounded-md text-xs text-red-400">
                 The Problem
               </div>
-              <h2 className="text-4xl lg:text-5xl font-bold mb-6">Healthcare is out of reach for millions</h2>
+              <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Healthcare is out of reach for millions</h2>
               <div className="space-y-6 text-lg text-gray-400">
                 <p>
                   In rural Nigeria, over 60% of people live more than 5km from the nearest hospital. 
@@ -126,7 +126,7 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="bg-white/5 p-10 rounded-2xl border border-white/10">
+            <div className="bg-white/5 p-6 sm:p-8 lg:p-10 rounded-2xl border border-white/10">
               <h3 className="text-2xl font-bold mb-8">The Reality</h3>
               <div className="space-y-6">
                 <div>
@@ -151,10 +151,10 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* How it Works */}
-      <section id="how" className="relative py-24 px-6 fade-in">
+      <section id="how" className="relative py-16 sm:py-24 px-4 sm:px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="max-w-2xl mb-20">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">How it works</h2>
+          <div className="max-w-2xl mb-12 sm:mb-20">
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">How it works</h2>
             <p className="text-lg text-gray-400">Simple, fast, and built for Nigerian communities</p>
           </div>
 
@@ -195,7 +195,7 @@ export default function Home() {
                       <div className="bg-green-500/20 border border-green-500/30 rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%]">
                         <p className="text-sm">I get headache and fever since yesterday</p>
                       </div>
-                      <div className="w-7 h-7 rounded-full bg-white/10 flex-shrink-0"></div>
+                      <div className="w-8 h-8 rounded-full bg-white/10 flex-shrink-0"></div>
                     </div>
 
                     <div className="flex gap-3">
@@ -261,13 +261,13 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Hospital Network */}
-      <section id="hospitals" className="relative py-24 px-6 fade-in">
+      <section id="hospitals" className="relative py-16 sm:py-24 px-4 sm:px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="max-w-2xl mb-16">
+          <div className="max-w-2xl mb-12 sm:mb-16">
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-white/5 border border-white/10 rounded-md text-xs text-gray-400">
               Hospital Network
             </div>
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">Find care near you</h2>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">Find care near you</h2>
             <p className="text-lg text-gray-400">Teaching hospitals and federal medical centers across Nigeria with emergency services</p>
           </div>
 
@@ -333,10 +333,10 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* AI Limitations */}
-      <section className="relative py-24 px-6 fade-in">
+      <section className="relative py-16 sm:py-24 px-4 sm:px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="max-w-3xl mx-auto">
-            <h2 className="text-3xl font-bold mb-12 text-center">How our AI works</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-12 text-center">How our AI works</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white/5 p-6 rounded-xl border border-white/10">
                 <div className="text-green-500 mb-3">
@@ -391,10 +391,10 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Safety Disclaimer */}
-      <section className="relative py-20 px-6 fade-in">
+      <section className="relative py-16 sm:py-20 px-4 sm:px-6 fade-in">
         <div className="max-w-4xl mx-auto relative z-10">
-          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-8">
-            <div className="flex gap-4">
+          <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-2xl p-5 sm:p-8">
+            <div className="flex flex-col sm:flex-row gap-4">
               <div className="flex-shrink-0">
                 <svg className="w-6 h-6 text-yellow-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
@@ -419,10 +419,10 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Team Section */}
-      <section className="relative py-24 px-6 fade-in">
+      <section className="relative py-16 sm:py-24 px-4 sm:px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl font-bold mb-4">Meet the Team</h2>
+          <div className="text-center mb-12 sm:mb-16">
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Meet the Team</h2>
             <p className="text-gray-400">Building self-learning AI for Nigerian healthcare</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
@@ -512,13 +512,13 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* Tech Stack */}
-      <section className="relative py-20 px-6 fade-in">
+      <section className="relative py-16 sm:py-20 px-4 sm:px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 mb-4 px-3 py-1 bg-white/5 border border-white/10 rounded-md text-xs text-gray-400">
               Built for Nigeria National AI Hackathon 2025
             </div>
-            <h2 className="text-3xl font-bold mb-4">Technology Stack</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Technology Stack</h2>
             <p className="text-gray-400">Addressing UN SDG 3: Good Health and Well-being</p>
           </div>
           <div className="flex flex-wrap justify-center gap-4">
@@ -535,19 +535,19 @@ export default function Home() {
       <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       {/* CTA */}
-      <section className="relative py-32 px-6 fade-in">
+      <section className="relative py-20 sm:py-32 px-4 sm:px-6 fade-in">
         <div className="max-w-4xl mx-auto text-center relative z-10">
-          <h2 className="text-5xl lg:text-7xl font-bold mb-6 leading-[1.1]">
+          <h2 className="text-4xl sm:text-5xl lg:text-7xl font-bold mb-6 leading-[1.1]">
             Get medical advice
             <br />
             right now
           </h2>
-          <p className="text-lg text-gray-400 mb-12">
+          <p className="text-base sm:text-lg text-gray-400 mb-8 sm:mb-12">
             Free. No registration. Available 24/7 across Nigeria.
           </p>
           <Link 
             href="/chat" 
-            className="inline-flex items-center gap-2 bg-white text-black px-8 py-3 rounded-md text-lg font-medium hover:bg-gray-200 transition-colors"
+            className="inline-flex items-center justify-center gap-2 bg-white text-black px-6 sm:px-8 py-3 rounded-md text-base sm:text-lg font-medium hover:bg-gray-200 transition-colors"
           >
             Launch Chat
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -558,7 +558,7 @@ export default function Home() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/10 py-16 px-6 relative z-10">
+      <footer className="border-t border-white/10 py-12 sm:py-16 px-4 sm:px-6 relative z-10">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between gap-12 mb-12">
             <div className="max-w-sm">
@@ -570,7 +570,7 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-12">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-6 sm:gap-8 md:gap-12">
               <div>
                 <div className="text-xs text-gray-500 mb-3">Product</div>
                 <div className="space-y-2">
