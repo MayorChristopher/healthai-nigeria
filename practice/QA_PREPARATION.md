@@ -314,7 +314,7 @@ We're prepared to tackle these systematically."
 - 3+ years experience with Next.js and TypeScript
 - Passionate about healthcare accessibility
 
-**Victor** - Backend Developer
+**Victor Chidoize** - Backend Developer
 - Gemini AI integration and optimization
 - Emergency detection algorithms
 - API architecture

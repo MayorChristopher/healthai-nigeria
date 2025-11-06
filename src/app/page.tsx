@@ -469,7 +469,7 @@ export default function Home() {
                 />
                 <span className="avatar-letter absolute inset-0 hidden items-center justify-center">V</span>
               </div>
-              <h3 className="text-xl font-bold mb-1">Victor</h3>
+              <h3 className="text-xl font-bold mb-1">Victor Chidoize</h3>
               <p className="text-blue-500 text-sm mb-4">Backend Developer</p>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li>• Backend API</li>
