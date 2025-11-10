@@ -112,12 +112,22 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
+      {/* Medical Disclaimer Banner */}
+      <div className="bg-yellow-500/10 border-b border-yellow-500/20 p-2">
+        <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-yellow-500">
+          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+          </svg>
+          <span>Not a diagnosis tool. For emergencies, call 112 immediately.</span>
+        </div>
+      </div>
+      
       {/* Header */}
       <div className="border-b border-white/10 p-3 md:p-4 bg-black/50 backdrop-blur-sm sticky top-0 z-10">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <div>
             <h1 className="text-xl font-bold">HealthAI Chat</h1>
-            <p className="text-xs text-gray-500">Adaptive AI • Learns as you talk</p>
+            <p className="text-xs text-gray-500">Powered by Google Gemini AI</p>
           </div>
           <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
             ← Home
@@ -156,6 +166,13 @@ export default function ChatPage() {
                   </div>
                 )}
                 <p className="text-sm md:text-base whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                
+                {/* AI Response Disclaimer */}
+                {msg.role === 'ai' && !msg.isEmergency && (
+                  <p className="text-xs text-gray-600 mt-3 pt-3 border-t border-white/10">
+                    ⚠️ This is guidance, not medical diagnosis. Consult a healthcare professional.
+                  </p>
+                )}
                 
                 {/* Hospital Recommendations */}
                 {msg.hospitals && msg.hospitals.length > 0 && (
