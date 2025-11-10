@@ -36,6 +36,7 @@ export default function ChatPage() {
   })
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
+  const [copied, setCopied] = useState(false)
   const [sessionId] = useState(() => {
     if (typeof window !== 'undefined') {
       let id = sessionStorage.getItem('healthai-session')
@@ -120,46 +121,35 @@ export default function ChatPage() {
   if (!termsAccepted) {
     return (
       <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
-        <div className="max-w-2xl bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8">
-          <div className="flex items-center gap-3 mb-4">
-            <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-            </svg>
-            <h1 className="text-2xl font-bold">Important Medical Disclaimer</h1>
-          </div>
+        <div className="max-w-2xl w-full">
+          <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Before You Continue</h1>
           
-          <div className="space-y-4 text-sm text-gray-300 mb-6 max-h-96 overflow-y-auto">
-            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
-              <p className="font-bold text-red-500 mb-2">⚠️ THIS IS A PROTOTYPE - NOT MEDICAL SOFTWARE</p>
-              <p>HealthAI is a hackathon demo built in 48 hours. It has NOT been validated by medical professionals and is NOT approved for medical use.</p>
+          <div className="space-y-6 mb-8">
+            <div className="border-l-4 border-red-500 pl-4">
+              <p className="text-red-500 font-bold mb-2">⚠️ This is a prototype</p>
+              <p className="text-gray-400 text-sm">Built in 48 hours for a hackathon. Not validated by medical professionals.</p>
             </div>
 
-            <div>
-              <p className="font-semibold text-white mb-2">By using this service, you understand that:</p>
-              <ul className="space-y-2 list-disc list-inside">
-                <li>This is NOT a medical device or diagnostic tool</li>
-                <li>The AI can make mistakes and give incorrect advice</li>
-                <li>You will NOT rely on this for medical decisions</li>
-                <li>For emergencies, you will call 112 or go to a hospital</li>
-                <li>You will consult healthcare professionals for medical concerns</li>
-                <li>The creators assume NO LIABILITY for any harm</li>
+            <div className="space-y-3 text-gray-400 text-sm">
+              <p>By using HealthAI, you understand:</p>
+              <ul className="space-y-2 pl-4">
+                <li>• This is NOT a medical device</li>
+                <li>• AI can make mistakes</li>
+                <li>• Always consult healthcare professionals</li>
+                <li>• Creators assume no liability</li>
               </ul>
             </div>
 
-            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
-              <p className="font-bold text-yellow-500 mb-2">FOR MEDICAL EMERGENCIES:</p>
-              <p>Call <span className="text-white font-bold">112</span> (Nigeria Emergency) or go to the nearest hospital immediately. DO NOT use this app for emergency medical decisions.</p>
+            <div className="border-l-4 border-yellow-500 pl-4">
+              <p className="text-yellow-500 font-bold mb-2">For emergencies: Call 112</p>
+              <p className="text-gray-400 text-sm">Do not rely on this app for emergency medical decisions.</p>
             </div>
-
-            <p className="text-xs text-gray-500">
-              By clicking "I Understand and Accept", you acknowledge that you have read and agree to use this service entirely at your own risk.
-            </p>
           </div>
 
-          <div className="flex gap-3">
+          <div className="flex gap-4">
             <Link 
               href="/" 
-              className="flex-1 bg-white/5 border border-white/10 text-white px-6 py-3 rounded-lg hover:bg-white/10 transition-colors text-center font-medium"
+              className="flex-1 border border-white/20 text-white px-6 py-3 rounded-lg hover:bg-white/5 transition-colors text-center"
             >
               Go Back
             </Link>
@@ -170,7 +160,7 @@ export default function ChatPage() {
               }}
               className="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors font-medium"
             >
-              I Understand and Accept
+              I Understand
             </button>
           </div>
         </div>
@@ -226,11 +216,8 @@ export default function ChatPage() {
                 }`}
               >
                 {msg.isEmergency && (
-                  <div className="flex items-center gap-2 mb-2 pb-2 border-b border-red-500/30">
-                    <svg className="w-4 h-4 text-red-500" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-xs font-bold text-red-500">EMERGENCY DETECTED</span>
+                  <div className="border-l-4 border-red-500 pl-3 mb-3">
+                    <p className="text-red-500 font-bold text-sm">⚠️ Emergency</p>
                   </div>
                 )}
                 <p className="text-sm md:text-base whitespace-pre-wrap leading-relaxed">{msg.content}</p>
@@ -244,33 +231,27 @@ export default function ChatPage() {
                 
                 {/* Hospital Recommendations */}
                 {msg.hospitals && msg.hospitals.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    <p className="text-xs font-semibold text-green-500 mb-2">🏥 Nearest Hospitals:</p>
+                  <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
+                    <p className="text-sm text-gray-400">Hospitals:</p>
                     {msg.hospitals.map((hospital, idx) => (
-                      <div key={idx} className="bg-black/30 rounded-lg p-3 border border-white/10">
-                        <div className="flex justify-between items-start mb-2">
-                          <div>
-                            <p className="text-sm font-semibold">{hospital.name}</p>
-                            <p className="text-xs text-gray-400">{hospital.address}</p>
-                            {hospital.distance && (
-                              <p className="text-xs text-green-500 mt-1">📍 {hospital.distance}</p>
-                            )}
-                          </div>
-                        </div>
-                        <div className="flex gap-2 mt-2">
+                      <div key={idx} className="space-y-1">
+                        <p className="text-sm font-medium">{hospital.name}</p>
+                        <p className="text-xs text-gray-500">{hospital.address}</p>
+                        <div className="flex gap-2">
                           <a
                             href={`tel:${hospital.phone.replace(/\s/g, '')}`}
-                            className="flex-1 bg-green-500/20 border border-green-500/30 text-green-500 text-xs px-3 py-1.5 rounded hover:bg-green-500/30 transition-colors text-center"
+                            className="text-xs text-green-500 hover:underline"
                           >
-                            📞 Call Now
+                            Call {hospital.phone}
                           </a>
+                          <span className="text-gray-600">•</span>
                           <a
                             href={`https://www.google.com/maps/search/?api=1&query=${hospital.coords}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="flex-1 bg-blue-500/20 border border-blue-500/30 text-blue-500 text-xs px-3 py-1.5 rounded hover:bg-blue-500/30 transition-colors text-center"
+                            className="text-xs text-blue-500 hover:underline"
                           >
-                            🗺️ Directions
+                            Directions
                           </a>
                         </div>
                       </div>
@@ -280,21 +261,21 @@ export default function ChatPage() {
 
                 {/* Online Doctor Suggestion */}
                 {msg.onlineDoctors && (
-                  <div className="mt-4 bg-blue-500/10 border border-blue-500/20 rounded-lg p-3">
-                    <p className="text-xs font-semibold text-blue-500 mb-2">💻 Online Consultation Available</p>
-                    <p className="text-xs text-gray-400 mb-2">Consider speaking with a doctor online:</p>
-                    <div className="space-y-1.5">
-                      <a href="https://www.doctorcare.ng" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-400 hover:underline">• DoctorCare Nigeria</a>
-                      <a href="https://www.heliumhealth.com" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-400 hover:underline">• Helium Health</a>
-                      <a href="https://www.kangpe.com" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-400 hover:underline">• Kangpe Telemedicine</a>
+                  <div className="mt-4 pt-4 border-t border-white/10">
+                    <p className="text-xs text-gray-500 mb-2">Online consultation:</p>
+                    <div className="space-y-1">
+                      <a href="https://www.doctorcare.ng" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-500 hover:underline">DoctorCare Nigeria</a>
+                      <a href="https://www.heliumhealth.com" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-500 hover:underline">Helium Health</a>
+                      <a href="https://www.kangpe.com" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-500 hover:underline">Kangpe Telemedicine</a>
                     </div>
                   </div>
                 )}
 
                 {/* Feedback Buttons (AI messages only) */}
                 {msg.role === 'ai' && (
-                  <div className="flex items-center gap-2 mt-3 pt-3 border-t border-white/10">
-                    <span className="text-xs text-gray-500">Was this helpful?</span>
+                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-gray-500">Was this helpful?</span>
                     <button
                       onClick={() => {
                         const updated = [...messages]
@@ -324,6 +305,26 @@ export default function ChatPage() {
                       <svg className="w-4 h-4" fill={msg.feedback === 'not-helpful' ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
                       </svg>
+                    </button>
+                    </div>
+                    <button
+                      onClick={() => {
+                        navigator.clipboard.writeText(msg.content)
+                        setCopied(true)
+                        setTimeout(() => setCopied(false), 2000)
+                      }}
+                      className="p-1 rounded hover:bg-white/10 transition-colors text-gray-500 hover:text-white relative"
+                      title="Copy response"
+                    >
+                      {copied ? (
+                        <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      ) : (
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                        </svg>
+                      )}
                     </button>
                   </div>
                 )}
