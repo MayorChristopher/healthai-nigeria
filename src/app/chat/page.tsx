@@ -27,6 +27,12 @@ export default function ChatPage() {
     }
     return false
   })
+  const [language, setLanguage] = useState<'auto' | 'english' | 'pidgin'>(() => {
+    if (typeof window !== 'undefined') {
+      return (sessionStorage.getItem('healthai-language') as any) || 'auto'
+    }
+    return 'auto'
+  })
   const [messages, setMessages] = useState<Message[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem('healthai-messages')
@@ -91,7 +97,7 @@ export default function ChatPage() {
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage, sessionId })
+        body: JSON.stringify({ message: userMessage, sessionId, language })
       })
 
       if (!res.ok) throw new Error('Network response was not ok')
@@ -187,9 +193,52 @@ export default function ChatPage() {
             <h1 className="text-xl font-bold">HealthAI Chat</h1>
             <p className="text-xs text-gray-500">Powered by Google Gemini AI</p>
           </div>
-          <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-            ← Home
-          </Link>
+          <div className="flex items-center gap-3">
+            <div className="flex border border-white/10 rounded-lg overflow-hidden">
+              <button
+                onClick={() => {
+                  setLanguage('auto')
+                  sessionStorage.setItem('healthai-language', 'auto')
+                }}
+                className={`px-3 py-1 text-xs transition-colors ${
+                  language === 'auto' 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-transparent text-gray-400 hover:text-white'
+                }`}
+              >
+                Auto
+              </button>
+              <button
+                onClick={() => {
+                  setLanguage('english')
+                  sessionStorage.setItem('healthai-language', 'english')
+                }}
+                className={`px-3 py-1 text-xs border-l border-white/10 transition-colors ${
+                  language === 'english' 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-transparent text-gray-400 hover:text-white'
+                }`}
+              >
+                EN
+              </button>
+              <button
+                onClick={() => {
+                  setLanguage('pidgin')
+                  sessionStorage.setItem('healthai-language', 'pidgin')
+                }}
+                className={`px-3 py-1 text-xs border-l border-white/10 transition-colors ${
+                  language === 'pidgin' 
+                    ? 'bg-green-500 text-white' 
+                    : 'bg-transparent text-gray-400 hover:text-white'
+                }`}
+              >
+                PG
+              </button>
+            </div>
+            <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
+              ← Home
+            </Link>
+          </div>
         </div>
       </div>
 

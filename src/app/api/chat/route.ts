@@ -4,13 +4,16 @@ import { detectEmergencyType, recommendHospitals, shouldSuggestOnlineDoctor } fr
 
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
-const SYSTEM_PROMPT = `You are HealthAI, a medical assistant for Nigerian communities.
+function getSystemPrompt(language: string) {
+  const languageInstruction = 
+    language === 'english' ? 'ALWAYS respond in clear, simple English.' :
+    language === 'pidgin' ? 'ALWAYS respond in Nigerian Pidgin.' :
+    'Detect the user\'s language and respond in the SAME language they use.'
+
+  return `You are HealthAI, a medical assistant for Nigerian communities.
 
 LANGUAGE RULES:
-- Detect the user's language (English or Nigerian Pidgin)
-- Respond in the SAME language they use
-- If English: Use clear, simple English
-- If Pidgin: Use Nigerian Pidgin naturally
+${languageInstruction}
 - Be consistent - don't mix languages
 
 MEDICAL RULES:
@@ -45,10 +48,11 @@ Non-health question: "What's the weather?"
 Response: "I'm a health assistant and can only help with health concerns. Do you have any symptoms or health questions I can help with?"
 
 Be natural, helpful, and safe. Stay focused on health only.`
+}
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, sessionId } = await req.json()
+    const { message, sessionId, language = 'auto' } = await req.json()
 
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(
@@ -82,7 +86,7 @@ export async function POST(req: NextRequest) {
             topK: 40,
           }
         })
-        const result = await model.generateContent(`${SYSTEM_PROMPT}\n\nUser: ${message}`)
+        const result = await model.generateContent(`${getSystemPrompt(language)}\n\nUser: ${message}`)
         response = result.response.text()
         console.log(`✅ Successfully used model: ${modelName}`)
         break
