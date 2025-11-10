@@ -21,6 +21,12 @@ type Message = {
 }
 
 export default function ChatPage() {
+  const [termsAccepted, setTermsAccepted] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('healthai-terms-accepted') === 'true'
+    }
+    return false
+  })
   const [messages, setMessages] = useState<Message[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem('healthai-messages')
@@ -108,6 +114,68 @@ export default function ChatPage() {
     } finally {
       setLoading(false)
     }
+  }
+
+  // Terms acceptance modal
+  if (!termsAccepted) {
+    return (
+      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+        <div className="max-w-2xl bg-white/5 border border-white/10 rounded-2xl p-6 md:p-8">
+          <div className="flex items-center gap-3 mb-4">
+            <svg className="w-8 h-8 text-red-500" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+            </svg>
+            <h1 className="text-2xl font-bold">Important Medical Disclaimer</h1>
+          </div>
+          
+          <div className="space-y-4 text-sm text-gray-300 mb-6 max-h-96 overflow-y-auto">
+            <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4">
+              <p className="font-bold text-red-500 mb-2">⚠️ THIS IS A PROTOTYPE - NOT MEDICAL SOFTWARE</p>
+              <p>HealthAI is a hackathon demo built in 48 hours. It has NOT been validated by medical professionals and is NOT approved for medical use.</p>
+            </div>
+
+            <div>
+              <p className="font-semibold text-white mb-2">By using this service, you understand that:</p>
+              <ul className="space-y-2 list-disc list-inside">
+                <li>This is NOT a medical device or diagnostic tool</li>
+                <li>The AI can make mistakes and give incorrect advice</li>
+                <li>You will NOT rely on this for medical decisions</li>
+                <li>For emergencies, you will call 112 or go to a hospital</li>
+                <li>You will consult healthcare professionals for medical concerns</li>
+                <li>The creators assume NO LIABILITY for any harm</li>
+              </ul>
+            </div>
+
+            <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-lg p-4">
+              <p className="font-bold text-yellow-500 mb-2">FOR MEDICAL EMERGENCIES:</p>
+              <p>Call <span className="text-white font-bold">112</span> (Nigeria Emergency) or go to the nearest hospital immediately. DO NOT use this app for emergency medical decisions.</p>
+            </div>
+
+            <p className="text-xs text-gray-500">
+              By clicking "I Understand and Accept", you acknowledge that you have read and agree to use this service entirely at your own risk.
+            </p>
+          </div>
+
+          <div className="flex gap-3">
+            <Link 
+              href="/" 
+              className="flex-1 bg-white/5 border border-white/10 text-white px-6 py-3 rounded-lg hover:bg-white/10 transition-colors text-center font-medium"
+            >
+              Go Back
+            </Link>
+            <button
+              onClick={() => {
+                sessionStorage.setItem('healthai-terms-accepted', 'true')
+                setTermsAccepted(true)
+              }}
+              className="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors font-medium"
+            >
+              I Understand and Accept
+            </button>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
