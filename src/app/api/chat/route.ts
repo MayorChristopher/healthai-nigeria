@@ -43,7 +43,14 @@ export async function POST(req: NextRequest) {
     const isEmergency = emergencyType !== 'none'
 
     // Get AI response
-    const model = genAI.getGenerativeModel({ model: 'gemini-pro' })
+    const model = genAI.getGenerativeModel({ 
+      model: 'gemini-2.0-flash-lite',
+      generationConfig: {
+        temperature: 0.7,
+        topP: 0.8,
+        topK: 40,
+      }
+    })
     const result = await model.generateContent(`${SYSTEM_PROMPT}\n\nUser: ${message}`)
     const response = result.response.text()
 

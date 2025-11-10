@@ -32,7 +32,7 @@ export default function ChatPage() {
       const saved = sessionStorage.getItem('healthai-messages')
       if (saved) return JSON.parse(saved)
     }
-    return [{ role: 'ai', content: "Hello! I'm HealthAI. Tell me your symptoms in English or Pidgin, and I'll help you understand what might be happening.", timestamp: new Date() }]
+    return [{ role: 'ai', content: "Hello! I'm HealthAI. Tell me your symptoms in English or Pidgin, and I'll help you understand what might be happening." }]
   })
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
