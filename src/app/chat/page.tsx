@@ -1,6 +1,7 @@
 'use client'
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
+import ReactMarkdown from 'react-markdown'
 
 type Hospital = {
   name: string
@@ -40,6 +41,28 @@ export default function ChatPage() {
     }
     return [{ role: 'ai', content: "Hello! I'm HealthAI. Tell me your symptoms in English or Pidgin, and I'll help you understand what might be happening." }]
   })
+
+  // Update initial message when language changes
+  const getInitialMessage = (lang: string) => {
+    switch(lang) {
+      case 'pidgin':
+        return "Hello! I be HealthAI. Tell me wetin dey worry your body, I go help you understand wetin fit dey happen."
+      case 'english':
+        return "Hello! I'm HealthAI, your medical assistant. Please describe your symptoms in detail, and I'll help you understand what might be happening."
+      default:
+        return "Hello! I'm HealthAI. Tell me your symptoms in English or Pidgin, and I'll help you understand what might be happening."
+    }
+  }
+
+  // Update initial message when language changes
+  useEffect(() => {
+    if (messages.length === 1 && messages[0].role === 'ai') {
+      const newMessage = getInitialMessage(language)
+      if (messages[0].content !== newMessage) {
+        setMessages([{ role: 'ai', content: newMessage }])
+      }
+    }
+  }, [language])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -94,10 +117,21 @@ export default function ChatPage() {
     setLoading(true)
 
     try {
+      // Send last 6 messages for context
+      const recentMessages = messages.slice(-6).map(m => ({
+        role: m.role,
+        content: m.content
+      }))
+
       const res = await fetch('/api/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message: userMessage, sessionId, language })
+        body: JSON.stringify({ 
+          message: userMessage, 
+          sessionId, 
+          language,
+          history: recentMessages 
+        })
       })
 
       if (!res.ok) throw new Error('Network response was not ok')
@@ -126,9 +160,9 @@ export default function ChatPage() {
   // Terms acceptance modal
   if (!termsAccepted) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4 sm:p-6">
         <div className="max-w-2xl w-full">
-          <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Before You Continue</h1>
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-8 text-center">Before You Continue</h1>
           
           <div className="space-y-6 mb-8">
             <div className="border-l-4 border-red-500 pl-4">
@@ -152,10 +186,10 @@ export default function ChatPage() {
             </div>
           </div>
 
-          <div className="flex gap-4">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
             <Link 
               href="/" 
-              className="flex-1 border border-white/20 text-white px-6 py-3 rounded-lg hover:bg-white/5 transition-colors text-center"
+              className="flex-1 border border-white/20 text-white px-6 py-3 rounded-lg hover:bg-white/5 transition-colors text-center min-h-[48px] flex items-center justify-center"
             >
               Go Back
             </Link>
@@ -164,7 +198,7 @@ export default function ChatPage() {
                 sessionStorage.setItem('healthai-terms-accepted', 'true')
                 setTermsAccepted(true)
               }}
-              className="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors font-medium"
+              className="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors font-medium min-h-[48px] flex items-center justify-center"
             >
               I Understand
             </button>
@@ -177,86 +211,91 @@ export default function ChatPage() {
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
       {/* Medical Disclaimer Banner */}
-      <div className="bg-yellow-500/10 border-b border-yellow-500/20 p-2">
-        <div className="max-w-4xl mx-auto flex items-center gap-2 text-xs text-yellow-500">
-          <svg className="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <div className="bg-yellow-500/10 border-b border-yellow-500/20 p-3">
+        <div className="max-w-4xl mx-auto flex items-center gap-2 text-sm text-yellow-500">
+          <svg className="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
           </svg>
-          <span>Not a diagnosis tool. For emergencies, call 112 immediately.</span>
+          <span>For emergencies, call 112</span>
         </div>
       </div>
       
       {/* Header */}
-      <div className="border-b border-white/10 p-3 md:p-4 bg-black/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <div>
-            <h1 className="text-xl font-bold">HealthAI Chat</h1>
-            <p className="text-xs text-gray-500">Powered by Google Gemini AI</p>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="flex border border-white/10 rounded-lg overflow-hidden">
-              <button
-                onClick={() => {
-                  setLanguage('auto')
-                  sessionStorage.setItem('healthai-language', 'auto')
-                }}
-                className={`px-3 py-1 text-xs transition-colors ${
-                  language === 'auto' 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-transparent text-gray-400 hover:text-white'
-                }`}
-              >
-                Auto
-              </button>
-              <button
-                onClick={() => {
-                  setLanguage('english')
-                  sessionStorage.setItem('healthai-language', 'english')
-                }}
-                className={`px-3 py-1 text-xs border-l border-white/10 transition-colors ${
-                  language === 'english' 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-transparent text-gray-400 hover:text-white'
-                }`}
-              >
-                EN
-              </button>
-              <button
-                onClick={() => {
-                  setLanguage('pidgin')
-                  sessionStorage.setItem('healthai-language', 'pidgin')
-                }}
-                className={`px-3 py-1 text-xs border-l border-white/10 transition-colors ${
-                  language === 'pidgin' 
-                    ? 'bg-green-500 text-white' 
-                    : 'bg-transparent text-gray-400 hover:text-white'
-                }`}
-              >
-                PG
-              </button>
+      <div className="border-b border-white/10 p-4 bg-black/50 backdrop-blur-sm sticky top-0 z-10">
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-between items-center mb-3">
+            <div className="flex items-center gap-2">
+              <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+              </svg>
+              <div>
+                <h1 className="text-xl md:text-2xl font-bold">HealthAI</h1>
+                <p className="text-xs text-gray-500">AI Medical Assistant</p>
+              </div>
             </div>
             <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
               ← Home
             </Link>
+          </div>
+          <div className="flex border border-white/10 rounded-lg overflow-hidden w-full">
+            <button
+              onClick={() => {
+                setLanguage('auto')
+                sessionStorage.setItem('healthai-language', 'auto')
+              }}
+              className={`flex-1 px-4 py-3 text-sm transition-colors min-h-[44px] ${
+                language === 'auto' 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-transparent text-gray-400 hover:text-white'
+              }`}
+            >
+              Auto
+            </button>
+            <button
+              onClick={() => {
+                setLanguage('english')
+                sessionStorage.setItem('healthai-language', 'english')
+              }}
+              className={`flex-1 px-4 py-3 text-sm border-l border-white/10 transition-colors min-h-[44px] ${
+                language === 'english' 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-transparent text-gray-400 hover:text-white'
+              }`}
+            >
+              English
+            </button>
+            <button
+              onClick={() => {
+                setLanguage('pidgin')
+                sessionStorage.setItem('healthai-language', 'pidgin')
+              }}
+              className={`flex-1 px-4 py-3 text-sm border-l border-white/10 transition-colors min-h-[44px] ${
+                language === 'pidgin' 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-transparent text-gray-400 hover:text-white'
+              }`}
+            >
+              Pidgin
+            </button>
           </div>
         </div>
       </div>
 
       {/* Messages */}
       <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6">
-        <div className="max-w-4xl mx-auto space-y-4">
+        <div className="max-w-4xl mx-auto space-y-6">
           {messages.map((msg, i) => (
             <div
               key={i}
               className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}
             >
               {msg.role === 'ai' && (
-                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0 flex items-center justify-center text-sm font-bold">
                   AI
                 </div>
               )}
               <div
-                className={`rounded-2xl px-4 py-3 max-w-[80%] ${
+                className={`rounded-2xl px-5 py-4 max-w-[85%] md:max-w-[80%] ${
                   msg.role === 'user'
                     ? 'bg-green-500/20 border border-green-500/30'
                     : msg.isEmergency
@@ -269,38 +308,50 @@ export default function ChatPage() {
                     <p className="text-red-500 font-bold text-sm">⚠️ Emergency</p>
                   </div>
                 )}
-                <p className="text-sm md:text-base whitespace-pre-wrap leading-relaxed">{msg.content}</p>
+                <div className="text-base md:text-lg leading-relaxed prose prose-invert prose-sm max-w-none">
+                  <ReactMarkdown
+                    components={{
+                      p: ({children}) => <p className="mb-2 last:mb-0">{children}</p>,
+                      strong: ({children}) => <strong className="font-bold text-white">{children}</strong>,
+                      em: ({children}) => <em className="italic">{children}</em>,
+                      ul: ({children}) => <ul className="list-disc list-inside space-y-1 my-2">{children}</ul>,
+                      ol: ({children}) => <ol className="list-decimal list-inside space-y-1 my-2">{children}</ol>,
+                      li: ({children}) => <li className="text-gray-300">{children}</li>,
+                    }}
+                  >
+                    {msg.content}
+                  </ReactMarkdown>
+                </div>
                 
                 {/* AI Response Disclaimer */}
                 {msg.role === 'ai' && !msg.isEmergency && (
-                  <p className="text-xs text-gray-600 mt-3 pt-3 border-t border-white/10">
-                    ⚠️ This is guidance, not medical diagnosis. Consult a healthcare professional.
+                  <p className="text-sm text-gray-600 mt-4 pt-4 border-t border-white/10">
+                    ⚠️ Not a diagnosis. See a doctor.
                   </p>
                 )}
                 
                 {/* Hospital Recommendations */}
                 {msg.hospitals && msg.hospitals.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-white/10 space-y-3">
-                    <p className="text-sm text-gray-400">Hospitals:</p>
+                  <div className="mt-4 pt-4 border-t border-white/10 space-y-4">
+                    <p className="text-base font-medium text-gray-300">Nearest Hospitals:</p>
                     {msg.hospitals.map((hospital, idx) => (
-                      <div key={idx} className="space-y-1">
-                        <p className="text-sm font-medium">{hospital.name}</p>
-                        <p className="text-xs text-gray-500">{hospital.address}</p>
-                        <div className="flex gap-2">
+                      <div key={idx} className="space-y-2 bg-white/5 p-3 rounded-lg">
+                        <p className="text-base font-medium">{hospital.name}</p>
+                        <p className="text-sm text-gray-400">{hospital.address}</p>
+                        <div className="flex flex-col gap-2 mt-3">
                           <a
                             href={`tel:${hospital.phone.replace(/\s/g, '')}`}
-                            className="text-xs text-green-500 hover:underline"
+                            className="w-full bg-green-500 text-white text-center py-3 px-4 rounded-lg hover:bg-green-600 transition-colors text-sm font-medium min-h-[44px] flex items-center justify-center"
                           >
-                            Call {hospital.phone}
+                            📞 Call {hospital.phone}
                           </a>
-                          <span className="text-gray-600">•</span>
                           <a
                             href={`https://www.google.com/maps/search/?api=1&query=${hospital.coords}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-blue-500 hover:underline"
+                            className="w-full bg-blue-500 text-white text-center py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium min-h-[44px] flex items-center justify-center"
                           >
-                            Directions
+                            🗺️ Directions
                           </a>
                         </div>
                       </div>
@@ -386,8 +437,8 @@ export default function ChatPage() {
                 )}
               </div>
               {msg.role === 'user' && (
-                <div className="w-8 h-8 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center">
-                  <svg className="w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                <div className="w-10 h-10 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center">
+                  <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
                   </svg>
                 </div>
@@ -398,17 +449,17 @@ export default function ChatPage() {
           {/* Loading indicator */}
           {loading && (
             <div className="flex gap-3">
-              <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-xs font-bold">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-sm font-bold">
                 AI
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-2xl px-4 py-3">
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1.5">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" />
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0.15s'}} />
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0.3s'}} />
+              <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-2">
+                    <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-bounce" />
+                    <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0.15s'}} />
+                    <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0.3s'}} />
                   </div>
-                  <span className="text-xs text-gray-400">HealthAI is analyzing...</span>
+                  <span className="text-base text-gray-400">Thinking...</span>
                 </div>
               </div>
             </div>
@@ -432,15 +483,15 @@ export default function ChatPage() {
       </div>
 
       {/* Input */}
-      <div className="border-t border-white/10 p-3 md:p-4 bg-black/50 backdrop-blur-sm">
+      <div className="border-t border-white/10 p-4 bg-black/50 backdrop-blur-sm sticky bottom-0 z-20">
         <div className="max-w-4xl mx-auto">
-          <div className="flex gap-2">
+          <div className="flex gap-3">
             <textarea
               value={input}
               onChange={(e) => {
                 setInput(e.target.value)
                 const target = e.target as HTMLTextAreaElement
-                target.style.height = '48px'
+                target.style.height = '56px'
                 target.style.height = Math.min(target.scrollHeight, 120) + 'px'
               }}
               onKeyPress={(e) => {
@@ -449,26 +500,29 @@ export default function ChatPage() {
                   sendMessage()
                 }
               }}
-              placeholder='Describe your symptoms in English or Pidgin...'
-              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 md:px-4 py-2.5 md:py-3 text-sm md:text-base outline-none focus:border-green-500/50 transition-colors placeholder:text-gray-600 resize-none overflow-hidden"
+              placeholder={
+                language === 'pidgin' 
+                  ? 'Wetin dey worry you? Tell me how your body dey feel...'
+                  : language === 'english'
+                  ? 'Describe your symptoms in detail...'
+                  : 'Tell me your symptoms (English or Pidgin)...'
+              }
+              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3.5 text-base outline-none focus:border-green-500/50 transition-colors placeholder:text-gray-500 resize-none overflow-hidden"
               disabled={loading}
               rows={1}
-              style={{ minHeight: '48px', maxHeight: '120px' }}
+              style={{ minHeight: '56px', maxHeight: '120px' }}
             />
             <button
               onClick={sendMessage}
               disabled={loading || !input.trim()}
-              className="bg-green-500 text-white px-4 md:px-6 py-2.5 md:py-3 text-sm md:text-base rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium self-end"
+              className="bg-green-500 text-white px-6 py-3.5 text-base rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium self-end min-w-[80px]"
             >
-              {loading ? 'Sending...' : 'Send'}
+              {loading ? '...' : 'Send'}
             </button>
           </div>
-          <div className="flex justify-between items-center mt-2">
-            <p className="text-xs text-gray-600">
-              For emergencies, call <span className="text-green-500 font-medium">112</span> immediately
-            </p>
-            <p className="text-xs text-gray-600">
-              {input.length}/500 • <span className="text-gray-500">Shift+Enter for new line</span>
+          <div className="flex justify-center mt-3">
+            <p className="text-sm text-gray-500">
+              Emergency? Call <span className="text-green-500 font-bold">112</span>
             </p>
           </div>
         </div>

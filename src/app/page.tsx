@@ -2,8 +2,51 @@
 import Link from 'next/link'
 import { useEffect, useState, useRef } from 'react'
 
+// Hospital Card Component
+function HospitalCard({ hospital }: { hospital: any }) {
+  return (
+    <div className="group bg-white/5 p-6 rounded-xl border border-white/10 hover:border-green-500/50 hover:bg-white/10 transition-all">
+      <div className="flex justify-between items-start mb-3">
+        <div>
+          <h4 className="font-semibold mb-0.5">{hospital.name}</h4>
+          <p className="text-xs text-gray-600">{hospital.address}, {hospital.state}</p>
+        </div>
+        <div className="px-2 py-1 bg-green-500/10 border border-green-500/20 rounded text-green-500 text-xs whitespace-nowrap">
+          24/7
+        </div>
+      </div>
+      <div className="space-y-2 mt-4">
+        <a 
+          href={`tel:${hospital.phone.replace(/\s/g, '')}`}
+          className="flex items-center gap-2 text-sm text-green-500 hover:text-green-400 transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+          </svg>
+          <span>{hospital.phone}</span>
+        </a>
+        <a 
+          href={`https://www.google.com/maps/search/?api=1&query=${hospital.coords}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
+        >
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
+          <span>Get Directions</span>
+        </a>
+      </div>
+    </div>
+  )
+}
+
 export default function Home() {
   const [scrolled, setScrolled] = useState(false)
+  const [showAllNational, setShowAllNational] = useState(false)
+  const [showAllTeaching, setShowAllTeaching] = useState(false)
+  const [showAllFederal, setShowAllFederal] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -38,7 +81,10 @@ export default function Home() {
         scrolled ? 'bg-black/60 backdrop-blur-md' : 'bg-transparent'
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center">
-          <Link href="/" className="text-base sm:text-lg font-semibold hover:opacity-80 transition-opacity relative z-10">
+          <Link href="/" className="flex items-center gap-2 text-base sm:text-lg font-semibold hover:opacity-80 transition-opacity relative z-10">
+            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
             Health<span className="text-green-500">AI</span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
@@ -83,7 +129,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Link 
                 href="/chat" 
-                className="inline-flex items-center justify-center gap-2 bg-white text-black px-5 sm:px-6 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-gray-200 transition-colors"
+                className="inline-flex items-center justify-center gap-2 bg-white text-black px-6 sm:px-8 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-gray-200 transition-colors"
               >
                 Start Consultation
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -92,7 +138,7 @@ export default function Home() {
               </Link>
               <Link 
                 href="#problem" 
-                className="inline-flex items-center justify-center gap-2 border border-white/10 px-5 sm:px-6 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-white/5 transition-colors"
+                className="inline-flex items-center justify-center gap-2 border border-white/10 px-6 sm:px-8 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-white/5 transition-colors"
               >
                 Learn More
               </Link>
@@ -248,6 +294,12 @@ export default function Home() {
               </div>
 
               <div>
+                <div className="text-green-500 text-xs mb-3">AI Safety Features</div>
+                <h3 className="text-2xl font-bold mb-3">Built-in response filtering & validation</h3>
+                <p className="text-gray-400">Advanced safety filters automatically add medical disclaimers, correct grammar, detect dangerous advice, and ensure emergency guidance includes 112 contact.</p>
+              </div>
+
+              <div>
                 <div className="text-green-500 text-xs mb-3">When to Seek Care</div>
                 <h3 className="text-2xl font-bold mb-3">Clear guidance on next steps</h3>
                 <p className="text-gray-400">Get advice on whether to self-care at home, visit a pharmacy, schedule a doctor visit, or go to emergency immediately.</p>
@@ -271,60 +323,174 @@ export default function Home() {
             <p className="text-lg text-gray-400">Teaching hospitals and federal medical centers across Nigeria with emergency services</p>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {[
-              { name: "UNTH Enugu", type: "Teaching Hospital", state: "Enugu", phone: "+234 42 252 3165", address: "Ituku-Ozalla", emergency: true, coords: "6.4281,7.5243" },
-              { name: "LUTH Lagos", type: "Teaching Hospital", state: "Lagos", phone: "+234 1 263 2626", address: "Idi-Araba, Mushin", emergency: true, coords: "6.5244,3.3792" },
-              { name: "UCH Ibadan", type: "Teaching Hospital", state: "Oyo", phone: "+234 2 241 3545", address: "Queen Elizabeth Rd", emergency: true, coords: "7.3775,3.9470" },
-              { name: "ABUTH Zaria", type: "Teaching Hospital", state: "Kaduna", phone: "+234 69 550 477", address: "Zaria-Kaduna Rd", emergency: true, coords: "11.0667,7.7000" },
-              { name: "OAUTH Ile-Ife", type: "Teaching Hospital", state: "Osun", phone: "+234 36 230 210", address: "Ile-Ife", emergency: true, coords: "7.4905,4.5600" },
-              { name: "FMC Owerri", type: "Federal Medical Center", state: "Imo", phone: "+234 83 230 092", address: "Owerri", emergency: true, coords: "5.4840,7.0351" }
-            ].map((hospital, i) => (
-              <div 
-                key={i} 
-                className="group bg-white/5 p-6 rounded-xl border border-white/10 hover:border-green-500/50 hover:bg-white/10 transition-all"
-              >
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h3 className="font-semibold mb-0.5">{hospital.name}</h3>
-                    <p className="text-xs text-gray-500 mb-1">{hospital.type}</p>
-                    <p className="text-xs text-gray-600">{hospital.address}, {hospital.state}</p>
-                  </div>
-                  {hospital.emergency && (
-                    <div className="px-2 py-1 bg-green-500/10 border border-green-500/20 rounded text-green-500 text-xs whitespace-nowrap">
-                      24/7
-                    </div>
-                  )}
-                </div>
-                <div className="space-y-2 mt-4">
-                  <a 
-                    href={`tel:${hospital.phone.replace(/\s/g, '')}`}
-                    className="flex items-center gap-2 text-sm text-green-500 hover:text-green-400 transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                    </svg>
-                    <span>{hospital.phone}</span>
-                  </a>
-                  <a 
-                    href={`https://www.google.com/maps/search/?api=1&query=${hospital.coords}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                    </svg>
-                    <span>Get Directions</span>
-                  </a>
-                </div>
+          {/* National & Specialist Hospitals */}
+          <div className="mb-12">
+            <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+              National & Specialist Hospitals
+            </h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { name: "National Hospital Abuja", state: "FCT", phone: "+234 9 461 2200", address: "Central Area", coords: "9.0579,7.4951" },
+                { name: "National Orthopaedic Hospital", state: "Lagos", phone: "+234 1 497 4221", address: "Igbobi", coords: "6.5244,3.3792" }
+              ].slice(0, showAllNational ? 2 : 1).map((hospital, i) => (
+                <HospitalCard key={i} hospital={hospital} />
+              ))}
+            </div>
+            {!showAllNational && (
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowAllNational(true)}
+                  className="text-sm text-green-500 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  Show 1 more hospital
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
               </div>
-            ))}
+            )}
           </div>
 
-          <div className="mt-12 text-center">
-            <p className="text-sm text-gray-500">Hospital information verified • Updated regularly</p>
+          {/* Teaching Hospitals */}
+          <div className="mb-12">
+            <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+              University Teaching Hospitals
+            </h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { name: "LUTH Lagos", state: "Lagos", phone: "+234 1 263 2626", address: "Idi-Araba, Mushin", coords: "6.5244,3.3792" },
+                { name: "UCH Ibadan", state: "Oyo", phone: "+234 2 241 3545", address: "Queen Elizabeth Rd", coords: "7.3775,3.9470" },
+                { name: "UNTH Enugu", state: "Enugu", phone: "+234 42 252 3165", address: "Ituku-Ozalla", coords: "6.4281,7.5243" },
+                { name: "ABUTH Zaria", state: "Kaduna", phone: "+234 69 550 477", address: "Zaria-Kaduna Rd", coords: "11.0667,7.7000" },
+                { name: "AKTH Kano", state: "Kano", phone: "+234 64 664 430", address: "Kano", coords: "12.0022,8.5920" },
+                { name: "UPTH Port Harcourt", state: "Rivers", phone: "+234 84 462 638", address: "Port Harcourt", coords: "4.8156,7.0498" },
+                { name: "OAUTH Ile-Ife", state: "Osun", phone: "+234 36 230 210", address: "Ile-Ife", coords: "7.4905,4.5600" },
+                { name: "JUTH Jos", state: "Plateau", phone: "+234 73 610 379", address: "Jos", coords: "9.8965,8.8583" }
+              ].slice(0, showAllTeaching ? 8 : 3).map((hospital, i) => (
+                <HospitalCard key={i} hospital={hospital} />
+              ))}
+            </div>
+            <div className="flex justify-center mt-4">
+              {!showAllTeaching ? (
+                <button
+                  onClick={() => setShowAllTeaching(true)}
+                  className="text-sm text-green-500 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  Show 5 more hospitals
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              ) : (
+                <button
+                  onClick={() => setShowAllTeaching(false)}
+                  className="text-sm text-gray-500 hover:text-gray-400 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  Show less
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                  </svg>
+                </button>
+              )}
+            </div>
+          </div>
+
+          {/* Federal Medical Centers */}
+          <div>
+            <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              Federal Medical Centers
+            </h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                { name: "FMC Owerri", state: "Imo", phone: "+234 83 230 092", address: "Owerri", coords: "5.4840,7.0351" },
+                { name: "NAUTH Nnewi", state: "Anambra", phone: "+234 46 460 674", address: "Nnewi", coords: "6.0177,6.9178" },
+                { name: "UCTH Calabar", state: "Cross River", phone: "+234 87 239 009", address: "Calabar", coords: "4.9517,8.3417" }
+              ].slice(0, showAllFederal ? 3 : 2).map((hospital, i) => (
+                <HospitalCard key={i} hospital={hospital} />
+              ))}
+            </div>
+            {!showAllFederal && (
+              <div className="flex justify-center mt-4">
+                <button
+                  onClick={() => setShowAllFederal(true)}
+                  className="text-sm text-green-500 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
+                >
+                  Show 1 more hospital
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+              </div>
+            )}
+          </div>
+
+          <div className="mt-16 text-center">
+            <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-4">
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                <span className="text-gray-400">National (2)</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                <span className="text-gray-400">Teaching (8)</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <span className="text-gray-400">Federal (3)</span>
+              </div>
+            </div>
+            <p className="text-sm text-gray-500 mb-2">13 major hospitals across Nigeria's 6 geopolitical zones</p>
+            <p className="text-xs text-gray-600">Hospital information verified • Updated regularly • Emergency services available 24/7</p>
+          </div>
+
+          {/* Hospital Card Component */}
+          <div className="hidden">
+            {/* This is just for the component definition */}
+          </div>
+        </div>
+      </section>
+
+      {/* Gradient Divider */}
+      <div className="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+      {/* Technical Reliability */}
+      <section className="relative py-16 sm:py-20 px-4 sm:px-6 fade-in">
+        <div className="max-w-7xl mx-auto relative z-10">
+          <div className="max-w-3xl mx-auto text-center mb-12">
+            <h2 className="text-2xl sm:text-3xl font-bold mb-4">Built for Reliability</h2>
+            <p className="text-gray-400">Advanced safety systems ensure you get help even when technology fails</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-6">
+            <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+              <div className="text-blue-500 mb-3">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold mb-2">Response Filtering</h3>
+              <p className="text-sm text-gray-400">Automatically adds safety disclaimers, corrects grammar, and blocks dangerous medical advice before reaching users.</p>
+            </div>
+            <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+              <div className="text-red-500 mb-3">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L4.082 16.5c-.77.833.192 2.5 1.732 2.5z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold mb-2">Emergency Fallback</h3>
+              <p className="text-sm text-gray-400">If AI fails during emergencies, system provides pre-written emergency guidance and hospital contacts in English or Pidgin.</p>
+            </div>
+            <div className="bg-white/5 p-6 rounded-xl border border-white/10">
+              <div className="text-green-500 mb-3">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <h3 className="font-semibold mb-2">Multiple AI Models</h3>
+              <p className="text-sm text-gray-400">Uses multiple Gemini models with automatic fallback. If one fails, another takes over seamlessly for uninterrupted service.</p>
+            </div>
           </div>
         </div>
       </section>
@@ -346,11 +512,12 @@ export default function Home() {
                 </div>
                 <h3 className="font-semibold mb-2">What it can do</h3>
                 <ul className="text-sm text-gray-400 space-y-1">
-                  <li>• Analyze common symptoms</li>
-                  <li>• Suggest home remedies</li>
-                  <li>• Detect emergency situations</li>
-                  <li>• Find nearby hospitals</li>
-                  <li>• Communicate in Pidgin</li>
+                  <li>• Analyze symptoms with WHO guidelines</li>
+                  <li>• Auto-detect medical emergencies</li>
+                  <li>• Filter responses for safety</li>
+                  <li>• Work even when AI fails (emergency fallback)</li>
+                  <li>• Communicate in English & Pidgin</li>
+                  <li>• Find nearest hospitals with directions</li>
                 </ul>
               </div>
               <div className="bg-white/5 p-6 rounded-xl border border-white/10">
@@ -422,8 +589,8 @@ export default function Home() {
       <section className="relative py-16 sm:py-24 px-4 sm:px-6 fade-in">
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Meet the Team</h2>
-            <p className="text-gray-400">Building self-learning AI for Nigerian healthcare</p>
+            <h2 className="text-3xl sm:text-4xl font-bold mb-4">Meet Health Bridge</h2>
+            <p className="text-gray-400">Building AI-powered healthcare solutions for Nigeria</p>
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             <div className="bg-white/5 p-6 md:p-8 rounded-xl border border-white/10">
@@ -562,7 +729,10 @@ export default function Home() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between gap-12 mb-12">
             <div className="max-w-sm">
-              <div className="text-xl font-semibold mb-3">
+              <div className="flex items-center gap-2 text-xl font-semibold mb-3">
+                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
                 Health<span className="text-green-500">AI</span>
               </div>
               <p className="text-gray-500 text-sm leading-relaxed">
@@ -621,14 +791,9 @@ export default function Home() {
           <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500">
             <div>
               © 2025 HealthAI Nigeria • Built by{' '}
-              <a 
-                href="https://github.com/MayorChristopher" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-gray-400 hover:text-white transition-colors"
-              >
-                Mayor Christopher
-              </a>
+              <span className="text-gray-400">
+                Health Bridge Team
+              </span>
             </div>
             <div>
               Uses{' '}
