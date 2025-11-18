@@ -209,27 +209,39 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Process location if this is a follow-up response
+    // Process location from user message or follow-up response
     let processedLocation = userLocation
+    
+    // Check if user mentioned a location in their message
+    const locationFromMessage = processLocationResponse(message)
+    if (locationFromMessage.lat && locationFromMessage.lon) {
+      processedLocation = locationFromMessage
+    }
+    
+    // Also handle follow-up responses
     if (isFollowUpResponse && followUpContext === 'hospital_recommendation') {
       const locationData = processLocationResponse(message)
       if (locationData.lat && locationData.lon) {
         processedLocation = locationData
       } else if (locationData.address) {
-        // Store the address for potential future geocoding
         processedLocation = { ...userLocation, address: locationData.address }
       }
     }
 
+    // Check if user is asking for hospital locations
+    const isHospitalRequest = message.toLowerCase().includes('hospital') && 
+      (message.toLowerCase().includes(' in ') || message.toLowerCase().includes('near') || 
+       message.toLowerCase().includes('around') || message.toLowerCase().includes('location'))
+    
     // Get hospital recommendations
     const hospitals = isEmergency 
       ? recommendHospitals(emergencyType, processedLocation?.lat, processedLocation?.lon)
-      : followUpContext === 'hospital_recommendation' && processedLocation
+      : (isHospitalRequest || followUpContext === 'hospital_recommendation') && processedLocation
       ? recommendHospitals('general', processedLocation?.lat, processedLocation?.lon)
       : []
 
     // Check for follow-up questions
-    const followUp = !isEmergency && !isFollowUpResponse 
+    const followUp = !isEmergency && !isFollowUpResponse && !processedLocation
       ? detectFollowUpNeeds(response, message) 
       : null
 
