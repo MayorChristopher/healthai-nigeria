@@ -63,7 +63,12 @@ export default function ChatPage() {
     if (messages.length === 1 && messages[0].role === 'ai') {
       const newMessage = getInitialMessage(language)
       if (messages[0].content !== newMessage) {
-        setMessages([{ role: 'ai', content: newMessage }])
+        setMessages([{ 
+          id: '1', 
+          role: 'ai', 
+          content: newMessage, 
+          timestamp: new Date() 
+        }])
       }
     }
   }, [language])
