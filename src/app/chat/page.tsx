@@ -12,6 +12,7 @@ type Hospital = {
   distance?: string
 }
 
+// Updated with follow-up questions and reply threading - v2.0
 export default function ChatPage() {
   const [termsAccepted, setTermsAccepted] = useState(() => {
     if (typeof window !== 'undefined') {
