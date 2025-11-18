@@ -2,6 +2,7 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import { Message, FollowUpQuestion } from '@/types/chat'
 
 type Hospital = {
   name: string
@@ -9,16 +10,6 @@ type Hospital = {
   address: string
   coords: string
   distance?: string
-}
-
-type Message = {
-  role: 'user' | 'ai'
-  content: string
-  isEmergency?: boolean
-  hospitals?: Hospital[]
-  onlineDoctors?: boolean
-  timestamp?: Date
-  feedback?: 'helpful' | 'not-helpful' | null
 }
 
 export default function ChatPage() {
@@ -37,10 +28,22 @@ export default function ChatPage() {
   const [messages, setMessages] = useState<Message[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = sessionStorage.getItem('healthai-messages')
-      if (saved) return JSON.parse(saved)
+      if (saved) return JSON.parse(saved).map((msg: any) => ({
+        ...msg,
+        id: msg.id || Math.random().toString(36),
+        timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date()
+      }))
     }
-    return [{ role: 'ai', content: "Hello! I'm HealthAI. Tell me your symptoms in English or Pidgin, and I'll help you understand what might be happening." }]
+    return [{ 
+      id: '1', 
+      role: 'ai', 
+      content: "Hello! I'm HealthAI. Tell me your symptoms in English or Pidgin, and I'll help you understand what might be happening.",
+      timestamp: new Date()
+    }]
   })
+  const [pendingFollowUp, setPendingFollowUp] = useState<FollowUpQuestion | null>(null)
+  const [replyingTo, setReplyingTo] = useState<string | null>(null)
+  const [userLocation, setUserLocation] = useState<{lat: number, lon: number, city?: string} | null>(null)
 
   // Update initial message when language changes
   const getInitialMessage = (lang: string) => {
@@ -108,13 +111,25 @@ export default function ChatPage() {
     return () => container.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const sendMessage = async () => {
+  const sendMessage = async (isFollowUp = false, followUpContext?: string) => {
     if (!input.trim() || loading) return
 
     const userMessage = input.trim()
+    const messageId = Math.random().toString(36)
     setInput('')
-    setMessages(prev => [...prev, { role: 'user', content: userMessage, timestamp: new Date() }])
+    
+    const newMessage: Message = {
+      id: messageId,
+      role: 'user', 
+      content: userMessage, 
+      timestamp: new Date(),
+      replyToId: replyingTo || undefined,
+      isFollowUpResponse: isFollowUp
+    }
+    
+    setMessages(prev => [...prev, newMessage])
     setLoading(true)
+    setReplyingTo(null)
 
     try {
       // Send last 6 messages for context
@@ -130,7 +145,10 @@ export default function ChatPage() {
           message: userMessage, 
           sessionId, 
           language,
-          history: recentMessages 
+          history: recentMessages,
+          userLocation,
+          isFollowUpResponse: isFollowUp,
+          followUpContext
         })
       })
 
@@ -138,16 +156,34 @@ export default function ChatPage() {
 
       const data = await res.json()
       
-      setMessages(prev => [...prev, {
+      const aiMessage: Message = {
+        id: Math.random().toString(36),
         role: 'ai',
         content: data.response,
         isEmergency: data.isEmergency,
         hospitals: data.hospitals,
         onlineDoctors: data.onlineDoctors,
-        timestamp: new Date()
-      }])
+        timestamp: new Date(),
+        followUp: data.followUp,
+        replyToId: replyingTo || undefined
+      }
+      
+      setMessages(prev => [...prev, aiMessage])
+      
+      // Handle location data
+      if (data.processedLocation) {
+        setUserLocation(data.processedLocation)
+      }
+      
+      // Set pending follow-up
+      if (data.followUp) {
+        setPendingFollowUp(data.followUp)
+      } else {
+        setPendingFollowUp(null)
+      }
     } catch (error) {
       setMessages(prev => [...prev, {
+        id: Math.random().toString(36),
         role: 'ai',
         content: "Sorry, I couldn't process that. Please check your connection and try again.",
         timestamp: new Date()
@@ -346,12 +382,12 @@ export default function ChatPage() {
                             📞 Call {hospital.phone}
                           </a>
                           <a
-                            href={`https://www.google.com/maps/search/?api=1&query=${hospital.coords}`}
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hospital.name + ' ' + hospital.address)}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full bg-blue-500 text-white text-center py-3 px-4 rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium min-h-[44px] flex items-center justify-center"
+                            className="w-full bg-green-500 text-white text-center py-3 px-4 rounded-lg hover:bg-green-600 transition-colors text-sm font-medium min-h-[44px] flex items-center justify-center"
                           >
-                            🗺️ Directions
+                            🗺️ Get Directions
                           </a>
                         </div>
                       </div>
@@ -367,6 +403,50 @@ export default function ChatPage() {
                       <a href="https://www.doctorcare.ng" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-500 hover:underline">DoctorCare Nigeria</a>
                       <a href="https://www.heliumhealth.com" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-500 hover:underline">Helium Health</a>
                       <a href="https://www.kangpe.com" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-500 hover:underline">Kangpe Telemedicine</a>
+                    </div>
+                  </div>
+                )}
+
+                {/* Follow-up Question */}
+                {msg.followUp && (
+                  <div className="mt-4 pt-4 border-t border-white/10 bg-green-500/10 p-3 rounded-lg">
+                    <p className="text-sm text-green-400 mb-2">Follow-up question:</p>
+                    <p className="text-sm mb-3">
+                      {language === 'pidgin' ? msg.followUp.questionPidgin : msg.followUp.question}
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => {
+                          if (msg.followUp?.type === 'location') {
+                            navigator.geolocation?.getCurrentPosition(
+                              (position) => {
+                                const location = {
+                                  lat: position.coords.latitude,
+                                  lon: position.coords.longitude
+                                }
+                                setUserLocation(location)
+                                setInput('I am at my current GPS location')
+                              },
+                              () => {
+                                setInput('I am in ')
+                              }
+                            )
+                          }
+                          setPendingFollowUp(msg.followUp || null)
+                        }}
+                        className="text-xs bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors"
+                      >
+                        📍 Use GPS
+                      </button>
+                      <button
+                        onClick={() => {
+                          setInput('I am in ')
+                          setPendingFollowUp(msg.followUp || null)
+                        }}
+                        className="text-xs bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700 transition-colors"
+                      >
+                        Type Location
+                      </button>
                     </div>
                   </div>
                 )}
@@ -407,25 +487,46 @@ export default function ChatPage() {
                       </svg>
                     </button>
                     </div>
-                    <button
-                      onClick={() => {
-                        navigator.clipboard.writeText(msg.content)
-                        setCopied(true)
-                        setTimeout(() => setCopied(false), 2000)
-                      }}
-                      className="p-1 rounded hover:bg-white/10 transition-colors text-gray-500 hover:text-white relative"
-                      title="Copy response"
-                    >
-                      {copied ? (
-                        <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                        </svg>
-                      ) : (
+                    <div className="flex items-center gap-1">
+                      <button
+                        onClick={() => setReplyingTo(msg.id)}
+                        className="p-1 rounded hover:bg-white/10 transition-colors text-gray-500 hover:text-white"
+                        title="Reply to this message"
+                      >
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                         </svg>
-                      )}
-                    </button>
+                      </button>
+                      <button
+                        onClick={() => {
+                          navigator.clipboard.writeText(msg.content)
+                          setCopied(true)
+                          setTimeout(() => setCopied(false), 2000)
+                        }}
+                        className="p-1 rounded hover:bg-white/10 transition-colors text-gray-500 hover:text-white relative"
+                        title="Copy response"
+                      >
+                        {copied ? (
+                          <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                        ) : (
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                          </svg>
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Reply indicator */}
+                {msg.replyToId && (
+                  <div className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414L2.586 8l3.707-3.707a1 1 0 011.414 0z" clipRule="evenodd" />
+                    </svg>
+                    <span>Replying to previous message</span>
                   </div>
                 )}
 
@@ -485,6 +586,42 @@ export default function ChatPage() {
       {/* Input */}
       <div className="border-t border-white/10 p-4 bg-black/50 backdrop-blur-sm sticky bottom-0 z-20">
         <div className="max-w-4xl mx-auto">
+          {/* Reply Context */}
+          {replyingTo && (
+            <div className="mb-3 p-2 bg-white/5 rounded-lg border-l-2 border-green-500">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-gray-400">Replying to message</span>
+                <button
+                  onClick={() => setReplyingTo(null)}
+                  className="text-gray-400 hover:text-white"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+          
+          {/* Follow-up Context */}
+          {pendingFollowUp && (
+            <div className="mb-3 p-2 bg-green-500/10 rounded-lg border-l-2 border-green-500">
+              <div className="flex items-center justify-between">
+                <span className="text-xs text-green-400">
+                  {language === 'pidgin' ? pendingFollowUp.questionPidgin : pendingFollowUp.question}
+                </span>
+                <button
+                  onClick={() => setPendingFollowUp(null)}
+                  className="text-green-400 hover:text-white"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
+          
           <div className="flex gap-3">
             <textarea
               value={input}
@@ -497,7 +634,7 @@ export default function ChatPage() {
               onKeyPress={(e) => {
                 if (e.key === 'Enter' && !e.shiftKey && !loading) {
                   e.preventDefault()
-                  sendMessage()
+                  sendMessage(!!pendingFollowUp, pendingFollowUp?.context)
                 }
               }}
               placeholder={
@@ -513,11 +650,11 @@ export default function ChatPage() {
               style={{ minHeight: '56px', maxHeight: '120px' }}
             />
             <button
-              onClick={sendMessage}
+              onClick={() => sendMessage(!!pendingFollowUp, pendingFollowUp?.context)}
               disabled={loading || !input.trim()}
               className="bg-green-500 text-white px-6 py-3.5 text-base rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium self-end min-w-[80px]"
             >
-              {loading ? '...' : 'Send'}
+              {loading ? '...' : pendingFollowUp ? 'Answer' : replyingTo ? 'Reply' : 'Send'}
             </button>
           </div>
           <div className="flex justify-center mt-3">

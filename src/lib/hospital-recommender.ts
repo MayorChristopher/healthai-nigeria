@@ -22,6 +22,7 @@ const HOSPITALS = [
   // Oyo State
   { name: "UCH Ibadan", phone: "+234 2 241 3545", address: "Queen Elizabeth Rd, Ibadan", coords: "7.3775,3.9470", lat: 7.3775, lon: 3.9470, specialties: ["emergency", "trauma", "cardiac", "general"] },
   
+  
   // Enugu State
   { name: "UNTH Enugu", phone: "+234 42 252 3165", address: "Ituku-Ozalla, Enugu", coords: "6.4281,7.5243", lat: 6.4281, lon: 7.5243, specialties: ["emergency", "trauma", "cardiac", "general"] },
   

@@ -2,6 +2,7 @@ import { GoogleGenerativeAI } from '@google/generative-ai'
 import { NextRequest, NextResponse } from 'next/server'
 import { detectEmergencyType, recommendHospitals, shouldSuggestOnlineDoctor } from '@/lib/hospital-recommender'
 import { filterMedicalResponse, validateResponseScope } from '@/lib/response-filter'
+import { detectFollowUpNeeds, processLocationResponse } from '@/lib/follow-up-handler'
 
 // Emergency fallback responses when AI fails
 function getEmergencyFallback(emergencyType: string, language: string) {
@@ -77,6 +78,11 @@ HEALTH EDUCATION QUESTIONS:
 - If asked about prevention: Give WHO-recommended prevention tips
 - If asked about general health topics: Educate them
 
+HOSPITAL LOCATION REQUESTS:
+- If asked about hospitals in a location (e.g., "hospitals in Abuja", "find hospitals near me"): This is a valid health-related request
+- Provide helpful response and mention that you can show nearby hospitals
+- Example: "I can help you find hospitals in [location]. Let me show you the nearest medical facilities."
+
 NON-HEALTH QUESTIONS (weather, sports, politics):
 - Politely redirect: "I'm a health assistant. I can only help with health concerns. Do you have any symptoms?"
 
@@ -97,7 +103,7 @@ Be helpful, educational, and safe. Base advice on WHO guidelines.`
 
 export async function POST(req: NextRequest) {
   try {
-    const { message, sessionId, language = 'auto', history = [] } = await req.json()
+    const { message, sessionId, language = 'auto', history = [], userLocation, isFollowUpResponse = false, followUpContext } = await req.json()
 
     if (!process.env.GEMINI_API_KEY) {
       return NextResponse.json(
@@ -203,8 +209,29 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Get hospital recommendations if emergency
-    const hospitals = isEmergency ? recommendHospitals(emergencyType) : []
+    // Process location if this is a follow-up response
+    let processedLocation = userLocation
+    if (isFollowUpResponse && followUpContext === 'hospital_recommendation') {
+      const locationData = processLocationResponse(message)
+      if (locationData.lat && locationData.lon) {
+        processedLocation = locationData
+      } else if (locationData.address) {
+        // Store the address for potential future geocoding
+        processedLocation = { ...userLocation, address: locationData.address }
+      }
+    }
+
+    // Get hospital recommendations
+    const hospitals = isEmergency 
+      ? recommendHospitals(emergencyType, processedLocation?.lat, processedLocation?.lon)
+      : followUpContext === 'hospital_recommendation' && processedLocation
+      ? recommendHospitals('general', processedLocation?.lat, processedLocation?.lon)
+      : []
+
+    // Check for follow-up questions
+    const followUp = !isEmergency && !isFollowUpResponse 
+      ? detectFollowUpNeeds(response, message) 
+      : null
 
     // Check if online doctor consultation is appropriate
     const onlineDoctors = !isEmergency && shouldSuggestOnlineDoctor(message)
@@ -214,6 +241,8 @@ export async function POST(req: NextRequest) {
       isEmergency,
       hospitals,
       onlineDoctors,
+      followUp,
+      processedLocation,
       sessionId
     })
 
