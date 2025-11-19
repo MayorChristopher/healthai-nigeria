@@ -20,18 +20,38 @@ const DANGEROUS_PHRASES = [
 
 // Common grammar/spelling fixes for medical terms
 const GRAMMAR_FIXES = [
-  { wrong: 'difficulty breathing', correct: 'difficulty in breathing' },
-  { wrong: 'trouble breathing', correct: 'difficulty breathing' },
+  // Contractions
   { wrong: 'cant breathe', correct: "can't breathe" },
   { wrong: 'wont stop', correct: "won't stop" },
   { wrong: 'doesnt feel', correct: "doesn't feel" },
   { wrong: 'isnt normal', correct: "isn't normal" },
   { wrong: 'shouldnt ignore', correct: "shouldn't ignore" },
+  { wrong: 'dont wait', correct: "don't wait" },
+  { wrong: 'hasnt improved', correct: "hasn't improved" },
+  
+  // Medical spelling
   { wrong: 'symtoms', correct: 'symptoms' },
   { wrong: 'sympton', correct: 'symptom' },
   { wrong: 'medicin', correct: 'medicine' },
   { wrong: 'hosptial', correct: 'hospital' },
-  { wrong: 'docter', correct: 'doctor' }
+  { wrong: 'docter', correct: 'doctor' },
+  { wrong: 'emergancy', correct: 'emergency' },
+  { wrong: 'treatement', correct: 'treatment' },
+  { wrong: 'diagosis', correct: 'diagnosis' },
+  
+  // Grammar improvements
+  { wrong: 'you need see', correct: 'you need to see' },
+  { wrong: 'go see doctor', correct: 'go see a doctor' },
+  { wrong: 'visit hospital', correct: 'visit a hospital' },
+  { wrong: 'call doctor', correct: 'call a doctor' },
+  { wrong: 'take medicine', correct: 'take the medicine' },
+  
+  // Common errors
+  { wrong: 'alot of', correct: 'a lot of' },
+  { wrong: 'loose weight', correct: 'lose weight' },
+  { wrong: 'there symptoms', correct: 'their symptoms' },
+  { wrong: 'your feeling', correct: "you're feeling" },
+  { wrong: 'its important', correct: "it's important" }
 ]
 
 // Required safety phrases that should be in medical responses
@@ -70,17 +90,36 @@ export function filterMedicalResponse(response: string): FilterResult {
 
   // Apply grammar and spelling fixes
   for (const fix of GRAMMAR_FIXES) {
-    if (filteredResponse.toLowerCase().includes(fix.wrong)) {
-      filteredResponse = filteredResponse.replace(new RegExp(fix.wrong, 'gi'), fix.correct)
+    const regex = new RegExp('\\b' + fix.wrong.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '\\b', 'gi')
+    if (regex.test(filteredResponse)) {
+      filteredResponse = filteredResponse.replace(regex, fix.correct)
       warnings.push(`Fixed grammar: "${fix.wrong}" → "${fix.correct}"`)
     }
   }
+  
+  // Fix sentence structure issues
+  filteredResponse = filteredResponse
+    // Ensure proper capitalization after periods
+    .replace(/\. ([a-z])/g, (match, letter) => '. ' + letter.toUpperCase())
+    // Fix double spaces
+    .replace(/  +/g, ' ')
+    // Ensure sentences end with proper punctuation
+    .replace(/([a-zA-Z])\s*$/g, '$1.')
+    // Fix common word order issues
+    .replace(/\bvery much important\b/gi, 'very important')
+    .replace(/\bmuch very\b/gi, 'very much')
 
   // Block responses that are too definitive
-  if (lowerResponse.includes('you have ') && !lowerResponse.includes('might have')) {
-    filteredResponse = filteredResponse.replace(/you have /gi, 'you might have ')
+  if (lowerResponse.includes('you have ') && !lowerResponse.includes('might have') && !lowerResponse.includes('could have')) {
+    filteredResponse = filteredResponse.replace(/\byou have ([a-z])/gi, 'you might have $1')
     warnings.push('Softened definitive diagnosis language')
   }
+  
+  // Fix other definitive language
+  filteredResponse = filteredResponse
+    .replace(/\bthis is definitely\b/gi, 'this could be')
+    .replace(/\byou definitely need\b/gi, 'you should consider')
+    .replace(/\bwill cure\b/gi, 'may help with')
 
   // Ensure emergency responses are flagged
   const emergencyKeywords = ['chest pain', 'difficulty breathing', 'unconscious', 'severe bleeding']

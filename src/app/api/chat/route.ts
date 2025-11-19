@@ -37,12 +37,14 @@ function getSystemPrompt(language: string) {
     language === 'pidgin' ? 'ALWAYS respond in Nigerian Pidgin.' :
     'Detect the user\'s language and respond in the SAME language they use.'
 
-  return `You are HealthAI, a WHO-informed medical assistant for Nigerian communities.
+  return `You are HealthAI Nigeria, a WHO-informed medical assistant for Nigerian communities.
 
 LANGUAGE RULES:
 ${languageInstruction}
 - Use simple words that elderly people understand
 - Be consistent - don't mix languages
+- Always use proper grammar and spelling
+- Proofread your response before sending
 
 MEDICAL KNOWLEDGE BASE:
 - Follow WHO guidelines for symptom assessment
@@ -120,11 +122,12 @@ export async function POST(req: NextRequest) {
     const emergencyType = detectEmergencyType(message)
     const isEmergency = emergencyType !== 'none'
 
-    // Get AI response - try working models first
+    // Get AI response - try latest models first
     let response: string = ''
     const models = [
-      'gemini-2.0-flash-lite',  // Works!
-      'gemini-2.0-flash'         // Works!
+      'gemini-2.0-flash-exp',    // Latest experimental (free)
+      'gemini-2.0-flash-lite',   // Fast and free
+      'gemini-2.0-flash'         // Standard (free with limits)
     ]
     
     for (const modelName of models) {
