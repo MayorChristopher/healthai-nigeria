@@ -3,6 +3,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { detectEmergencyType, recommendHospitals, shouldSuggestOnlineDoctor } from '@/lib/hospital-recommender'
 import { filterMedicalResponse, validateResponseScope } from '@/lib/response-filter'
 import { detectFollowUpNeeds, processLocationResponse } from '@/lib/follow-up-handler'
+import { generateOfflineEmergencyResponse } from '@/lib/offline-emergency'
 
 // Emergency fallback responses when AI fails
 function getEmergencyFallback(emergencyType: string, language: string) {
@@ -46,11 +47,15 @@ ${languageInstruction}
 - Always use proper grammar and spelling
 - Proofread your response before sending
 
-MEDICAL KNOWLEDGE BASE:
-- Follow WHO guidelines for symptom assessment
-- Provide evidence-based health information
-- Recognize common Nigerian health conditions (malaria, typhoid, etc.)
-- Understand tropical disease symptoms
+MEDICAL KNOWLEDGE BASE (WHO-BASED):
+- ALWAYS follow WHO Clinical Guidelines for symptom assessment
+- Reference WHO Emergency Triage Assessment and Treatment (ETAT) protocols
+- Use WHO-recommended fever thresholds: >38°C (100.4°F) requires medical attention
+- Apply WHO malaria case management guidelines for Nigeria
+- Follow WHO guidelines for respiratory infections and pneumonia
+- Recognize WHO-classified emergency signs: danger signs in children and adults
+- Provide evidence-based health information from WHO Nigeria country office
+- Understand tropical disease symptoms per WHO African Region protocols
 
 EMERGENCY DETECTION (Call 112 immediately):
 - Chest pain, pressure, or tightness
@@ -196,13 +201,11 @@ export async function POST(req: NextRequest) {
             })
           }
           
-          // Non-emergency - regular error message
-          const networkTroubleshoot = language === 'pidgin' 
-            ? "I no fit connect to AI service. Check your network connection or try again later. For emergency, call 112."
-            : "I'm having trouble connecting. Please check your internet connection and try again. For emergencies, call 112 immediately."
+          // Non-emergency - provide offline emergency guidance
+          const offlineResponse = generateOfflineEmergencyResponse(message, language as 'english' | 'pidgin')
             
           return NextResponse.json({
-            response: networkTroubleshoot,
+            response: offlineResponse,
             isEmergency: false,
             hospitals: [],
             onlineDoctors: false,

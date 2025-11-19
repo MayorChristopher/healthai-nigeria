@@ -3,6 +3,7 @@ import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import { Message, FollowUpQuestion } from '@/types/chat'
+import { cacheEmergencyData, isOnline } from '@/lib/offline-emergency'
 
 type Hospital = {
   name: string
@@ -95,6 +96,11 @@ export default function ChatPage() {
   }
 
   useEffect(scrollToBottom, [messages])
+  
+  // Cache emergency data for offline use
+  useEffect(() => {
+    cacheEmergencyData()
+  }, [])
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -337,7 +343,7 @@ export default function ChatPage() {
                 </div>
               )}
               <div
-                className={`rounded-2xl px-5 py-4 max-w-[85%] md:max-w-[80%] ${
+                className={`rounded-2xl px-3 sm:px-5 py-3 sm:py-4 max-w-[90%] sm:max-w-[85%] md:max-w-[80%] break-words ${
                   msg.role === 'user'
                     ? 'bg-green-500/20 border border-green-500/30'
                     : msg.isEmergency

@@ -38,6 +38,22 @@ const HOSPITALS = [
   // Anambra State
   { name: "Nnamdi Azikiwe University Teaching Hospital", phone: "+234 46 460 674", address: "Nnewi, Anambra", coords: "6.0177,6.9178", lat: 6.0177, lon: 6.9178, specialties: ["emergency", "general"] },
   
+  // Abia State
+  { name: "Federal Medical Centre Umuahia", phone: "+234 88 220 134", address: "Umuahia, Abia", coords: "5.5250,7.4896", lat: 5.5250, lon: 7.4896, specialties: ["emergency", "general"] },
+  { name: "Abia State University Teaching Hospital", phone: "+234 82 441 234", address: "Aba, Abia", coords: "5.1066,7.3667", lat: 5.1066, lon: 7.3667, specialties: ["emergency", "general"] },
+  
+  // Delta State
+  { name: "Federal Medical Centre Asaba", phone: "+234 56 282 345", address: "Asaba, Delta", coords: "6.2084,6.7337", lat: 6.2084, lon: 6.7337, specialties: ["emergency", "general"] },
+  
+  // Akwa Ibom State
+  { name: "University of Uyo Teaching Hospital", phone: "+234 85 200 567", address: "Uyo, Akwa Ibom", coords: "5.0378,7.9085", lat: 5.0378, lon: 7.9085, specialties: ["emergency", "general"] },
+  
+  // Edo State
+  { name: "University of Benin Teaching Hospital", phone: "+234 52 600 234", address: "Benin City, Edo", coords: "6.3350,5.6037", lat: 6.3350, lon: 5.6037, specialties: ["emergency", "general"] },
+  
+  // Ogun State
+  { name: "Federal Medical Centre Abeokuta", phone: "+234 39 244 567", address: "Abeokuta, Ogun", coords: "7.1475,3.3619", lat: 7.1475, lon: 3.3619, specialties: ["emergency", "general"] }
+  
   // Plateau State
   { name: "Jos University Teaching Hospital", phone: "+234 73 610 379", address: "Jos, Plateau", coords: "9.8965,8.8583", lat: 9.8965, lon: 8.8583, specialties: ["emergency", "general"] },
   
