@@ -52,7 +52,7 @@ const HOSPITALS = [
   { name: "University of Benin Teaching Hospital", phone: "+234 52 600 234", address: "Benin City, Edo", coords: "6.3350,5.6037", lat: 6.3350, lon: 5.6037, specialties: ["emergency", "general"] },
   
   // Ogun State
-  { name: "Federal Medical Centre Abeokuta", phone: "+234 39 244 567", address: "Abeokuta, Ogun", coords: "7.1475,3.3619", lat: 7.1475, lon: 3.3619, specialties: ["emergency", "general"] }
+  { name: "Federal Medical Centre Abeokuta", phone: "+234 39 244 567", address: "Abeokuta, Ogun", coords: "7.1475,3.3619", lat: 7.1475, lon: 3.3619, specialties: ["emergency", "general"] },
   
   // Plateau State
   { name: "Jos University Teaching Hospital", phone: "+234 73 610 379", address: "Jos, Plateau", coords: "9.8965,8.8583", lat: 9.8965, lon: 8.8583, specialties: ["emergency", "general"] },
