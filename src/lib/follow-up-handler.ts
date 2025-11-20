@@ -72,6 +72,8 @@ export function processLocationResponse(locationText: string): { lat?: number, l
     'enugu': { lat: 6.4281, lon: 7.5243, city: 'Enugu', address: 'Enugu, Nigeria' },
     'owerri': { lat: 5.4840, lon: 7.0351, city: 'Owerri', address: 'Owerri, Imo State' },
     'calabar': { lat: 4.9517, lon: 8.3417, city: 'Calabar', address: 'Calabar, Cross River State' },
+    'umuahia': { lat: 5.5250, lon: 7.4896, city: 'Umuahia', address: 'Umuahia, Abia State' },
+    'aba': { lat: 5.1066, lon: 7.3667, city: 'Aba', address: 'Aba, Abia State' },
     
     // Lagos areas
     'ikeja': { lat: 6.6018, lon: 3.3515, city: 'Lagos', address: 'Ikeja, Lagos' },

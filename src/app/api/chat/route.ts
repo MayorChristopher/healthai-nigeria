@@ -240,11 +240,14 @@ export async function POST(req: NextRequest) {
        message.toLowerCase().includes('around') || message.toLowerCase().includes('location'))
     
     // Get hospital recommendations
-    const hospitals = isEmergency 
-      ? recommendHospitals(emergencyType, processedLocation?.lat, processedLocation?.lon)
-      : (isHospitalRequest || followUpContext === 'hospital_recommendation') && processedLocation
-      ? recommendHospitals('general', processedLocation?.lat, processedLocation?.lon)
-      : []
+    let hospitals = []
+    if (isEmergency) {
+      hospitals = recommendHospitals(emergencyType, processedLocation?.lat, processedLocation?.lon)
+    } else if (isHospitalRequest || (isFollowUpResponse && followUpContext === 'hospital_recommendation')) {
+      if (processedLocation?.lat && processedLocation?.lon) {
+        hospitals = recommendHospitals('general', processedLocation.lat, processedLocation.lon)
+      }
+    }
 
     // Check for follow-up questions
     const followUp = !isEmergency && !isFollowUpResponse && !processedLocation
