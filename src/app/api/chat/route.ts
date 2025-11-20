@@ -244,7 +244,7 @@ export async function POST(req: NextRequest) {
       message.toLowerCase().includes('am in')) && processedLocation?.lat && processedLocation?.lon
     
     // Get hospital recommendations
-    let hospitals = []
+    let hospitals: any[] = []
     if (isEmergency) {
       hospitals = recommendHospitals(emergencyType, processedLocation?.lat, processedLocation?.lon)
     } else if (isHospitalRequest || justStatedLocation || (isFollowUpResponse && followUpContext === 'hospital_recommendation')) {
