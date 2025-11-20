@@ -5,20 +5,20 @@ import { useEffect, useState, useRef } from 'react'
 // Hospital Card Component
 function HospitalCard({ hospital }: { hospital: any }) {
   return (
-    <div className="group bg-white/5 p-6 rounded-xl border border-white/10 hover:border-green-500/50 hover:bg-white/10 transition-all">
+    <div className="group bg-white/5 p-6 rounded-xl border border-white/10 hover:border-green-600/50 hover:bg-white/10 transition-all">
       <div className="flex justify-between items-start mb-3">
         <div>
           <h4 className="font-semibold mb-0.5">{hospital.name}</h4>
           <p className="text-xs text-gray-600">{hospital.address}, {hospital.state}</p>
         </div>
-        <div className="px-2 py-1 bg-green-500/10 border border-green-500/20 rounded text-green-500 text-xs whitespace-nowrap">
+        <div className="px-2 py-1 bg-green-600/10 border border-green-600/20 rounded text-green-600 text-xs whitespace-nowrap">
           24/7
         </div>
       </div>
       <div className="space-y-2 mt-4">
         <a 
           href={`tel:${hospital.phone.replace(/\s/g, '')}`}
-          className="flex items-center gap-2 text-sm text-green-500 hover:text-green-400 transition-colors"
+          className="flex items-center gap-2 text-sm text-green-600 hover:text-green-400 transition-colors"
         >
           <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
@@ -82,10 +82,10 @@ export default function Home() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 text-base sm:text-lg font-semibold hover:opacity-80 transition-opacity relative z-10">
-            <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
-            Health<span className="text-green-500">AI</span>
+            Health<span className="text-green-600">AI</span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
             <Link href="#problem" className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors">
@@ -110,8 +110,8 @@ export default function Home() {
           <div className="max-w-4xl">
             <div className="inline-flex items-center gap-2 mb-6 px-3 py-1 bg-white/5 border border-white/10 rounded-md text-xs">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-600 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-green-600"></span>
               </span>
               <span className="text-gray-400">Free • No Registration</span>
             </div>
@@ -149,7 +149,7 @@ export default function Home() {
 
       {/* Connecting Thread */}
       <div className="relative h-24 flex items-center justify-center">
-        <div className="w-1 md:w-0.5 h-full bg-gradient-to-b from-transparent via-green-500 to-transparent opacity-80 md:opacity-60"></div>
+        <div className="w-1 md:w-0.5 h-full bg-gradient-to-b from-transparent via-green-600 to-transparent opacity-80 md:opacity-60"></div>
       </div>
 
       {/* Problem Statement */}
@@ -184,7 +184,7 @@ export default function Home() {
                   <div className="text-sm text-gray-400">When most emergencies happen with no help available</div>
                 </div>
                 <div>
-                  <div className="text-4xl font-bold text-green-500 mb-2">Now</div>
+                  <div className="text-4xl font-bold text-green-600 mb-2">Now</div>
                   <div className="text-sm text-gray-400">HealthAI provides instant guidance, 24/7</div>
                 </div>
               </div>
@@ -208,11 +208,11 @@ export default function Home() {
             {/* Chat Demo */}
             <div>
               <div className="relative">
-                <div className="absolute -inset-4 bg-gradient-to-r from-green-500/20 to-blue-500/20 blur-3xl opacity-30"></div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-green-600/20 to-blue-500/20 blur-3xl opacity-30"></div>
                 <div className="relative bg-zinc-900 rounded-xl border border-white/10 overflow-hidden">
                   <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-600 to-green-600 flex items-center justify-center">
                         <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                         </svg>
@@ -220,7 +220,7 @@ export default function Home() {
                       <div>
                         <div className="text-sm font-medium">HealthAI Assistant</div>
                         <div className="flex items-center gap-1.5 text-xs text-gray-400">
-                          <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-600"></div>
                           Powered by Google Gemini
                         </div>
                       </div>
@@ -229,7 +229,7 @@ export default function Home() {
 
                   <div className="p-4 md:p-5 space-y-4 h-80 overflow-y-auto">
                     <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-600 to-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">
                         AI
                       </div>
                       <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[80%]">
@@ -238,14 +238,14 @@ export default function Home() {
                     </div>
 
                     <div className="flex gap-3 justify-end">
-                      <div className="bg-green-500/20 border border-green-500/30 rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%]">
+                      <div className="bg-green-600/20 border border-green-600/30 rounded-2xl rounded-tr-sm px-4 py-3 max-w-[80%]">
                         <p className="text-sm">I get headache and fever since yesterday</p>
                       </div>
                       <div className="w-8 h-8 rounded-full bg-white/10 flex-shrink-0"></div>
                     </div>
 
                     <div className="flex gap-3">
-                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">
+                      <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-600 to-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">
                         AI
                       </div>
                       <div className="bg-white/5 border border-white/10 rounded-2xl rounded-tl-sm px-4 py-3 max-w-[85%]">
@@ -268,7 +268,7 @@ export default function Home() {
                         className="flex-1 bg-transparent text-sm outline-none placeholder:text-gray-500"
                         disabled
                       />
-                      <button className="text-green-500">
+                      <button className="text-green-600">
                         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                         </svg>
@@ -282,25 +282,25 @@ export default function Home() {
             {/* Features List */}
             <div className="space-y-12">
               <div>
-                <div className="text-green-500 text-xs mb-3">Multilingual</div>
+                <div className="text-green-600 text-xs mb-3">Multilingual</div>
                 <h3 className="text-2xl font-bold mb-3">English and Pidgin support</h3>
                 <p className="text-gray-400">Communicate in the language you're most comfortable with. Our AI understands both English and Nigerian Pidgin.</p>
               </div>
 
               <div>
-                <div className="text-green-500 text-xs mb-3">Emergency Detection</div>
+                <div className="text-green-600 text-xs mb-3">Emergency Detection</div>
                 <h3 className="text-2xl font-bold mb-3">Automatic critical symptom identification</h3>
                 <p className="text-gray-400">The AI detects emergency symptoms like chest pain, severe bleeding, or difficulty breathing and immediately recommends calling 112 and nearby hospitals.</p>
               </div>
 
               <div>
-                <div className="text-green-500 text-xs mb-3">AI Safety Features</div>
+                <div className="text-green-600 text-xs mb-3">AI Safety Features</div>
                 <h3 className="text-2xl font-bold mb-3">Built-in response filtering & validation</h3>
                 <p className="text-gray-400">Advanced safety filters automatically add medical disclaimers, correct grammar, detect dangerous advice, and ensure emergency guidance includes 112 contact.</p>
               </div>
 
               <div>
-                <div className="text-green-500 text-xs mb-3">When to Seek Care</div>
+                <div className="text-green-600 text-xs mb-3">When to Seek Care</div>
                 <h3 className="text-2xl font-bold mb-3">Clear guidance on next steps</h3>
                 <p className="text-gray-400">Get advice on whether to self-care at home, visit a pharmacy, schedule a doctor visit, or go to emergency immediately.</p>
               </div>
@@ -341,7 +341,7 @@ export default function Home() {
               <div className="flex justify-center mt-4">
                 <button
                   onClick={() => setShowAllNational(true)}
-                  className="text-sm text-green-500 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
+                  className="text-sm text-green-600 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   Show 1 more hospital
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -376,7 +376,7 @@ export default function Home() {
               {!showAllTeaching ? (
                 <button
                   onClick={() => setShowAllTeaching(true)}
-                  className="text-sm text-green-500 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
+                  className="text-sm text-green-600 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   Show 5 more hospitals
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -400,7 +400,7 @@ export default function Home() {
           {/* Federal Medical Centers */}
           <div>
             <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+              <div className="w-2 h-2 bg-green-600 rounded-full"></div>
               Federal Medical Centers
             </h3>
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -416,7 +416,7 @@ export default function Home() {
               <div className="flex justify-center mt-4">
                 <button
                   onClick={() => setShowAllFederal(true)}
-                  className="text-sm text-green-500 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
+                  className="text-sm text-green-600 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
                 >
                   Show 1 more hospital
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -438,7 +438,7 @@ export default function Home() {
                 <span className="text-gray-400">Teaching (8)</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+                <div className="w-2 h-2 bg-green-600 rounded-full"></div>
                 <span className="text-gray-400">Federal (3)</span>
               </div>
             </div>
@@ -483,7 +483,7 @@ export default function Home() {
               <p className="text-sm text-gray-400">If AI fails during emergencies, system provides pre-written emergency guidance and hospital contacts in English or Pidgin.</p>
             </div>
             <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-              <div className="text-green-500 mb-3">
+              <div className="text-green-600 mb-3">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
@@ -505,7 +505,7 @@ export default function Home() {
             <h2 className="text-2xl sm:text-3xl font-bold mb-8 sm:mb-12 text-center">How our AI works</h2>
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-                <div className="text-green-500 mb-3">
+                <div className="text-green-600 mb-3">
                   <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                   </svg>
@@ -543,7 +543,7 @@ export default function Home() {
                   href="https://ai.google.dev/gemini-api/terms" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="text-green-500 hover:text-green-400 transition-colors"
+                  className="text-green-600 hover:text-green-400 transition-colors"
                 >
                   Google Gemini API
                 </a>
@@ -594,7 +594,7 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-3 gap-6 max-w-5xl mx-auto">
             <div className="bg-white/5 p-6 md:p-8 rounded-xl border border-white/10">
-              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-2xl font-bold mb-4 overflow-hidden">
+              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-green-600 to-green-600 flex items-center justify-center text-2xl font-bold mb-4 overflow-hidden">
                 <img 
                   src="/team/mayor.jpg"
                   alt="Mayor Ugochukwu"
@@ -611,7 +611,7 @@ export default function Home() {
                 <span className="avatar-letter absolute inset-0 hidden items-center justify-center">M</span>
               </div>
               <h3 className="text-xl font-bold mb-1">Mayor Ugochukwu</h3>
-              <p className="text-green-500 text-sm mb-4">Full Stack Developer</p>
+              <p className="text-green-600 text-sm mb-4">Full Stack Developer</p>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li>• Landing page & UI/UX</li>
                 <li>• Chat interface</li>
@@ -730,10 +730,10 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between gap-12 mb-12">
             <div className="max-w-sm">
               <div className="flex items-center gap-2 text-xl font-semibold mb-3">
-                <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
-                Health<span className="text-green-500">AI</span>
+                Health<span className="text-green-600">AI</span>
               </div>
               <p className="text-gray-500 text-sm leading-relaxed">
                 AI-powered medical assistant for Nigerian communities. Built for Nigeria National AI Hackathon 2025.
@@ -781,7 +781,7 @@ export default function Home() {
               <div>
                 <div className="text-xs text-gray-500 mb-3">Emergency</div>
                 <div className="space-y-2">
-                  <p className="text-sm text-gray-400">Call <span className="text-green-500">112</span></p>
+                  <p className="text-sm text-gray-400">Call <span className="text-green-600">112</span></p>
                   <p className="text-sm text-gray-400">Nigeria Emergency Line</p>
                 </div>
               </div>

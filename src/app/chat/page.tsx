@@ -246,7 +246,7 @@ export default function ChatPage() {
                 sessionStorage.setItem('healthai-terms-accepted', 'true')
                 setTermsAccepted(true)
               }}
-              className="flex-1 bg-green-500 text-white px-6 py-3 rounded-lg hover:bg-green-600 transition-colors font-medium min-h-[48px] flex items-center justify-center"
+              className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium min-h-[48px] flex items-center justify-center"
             >
               I Understand
             </button>
@@ -273,7 +273,7 @@ export default function ChatPage() {
         <div className="max-w-4xl mx-auto">
           <div className="flex justify-between items-center mb-3">
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
               </svg>
               <div>
@@ -293,7 +293,7 @@ export default function ChatPage() {
               }}
               className={`flex-1 px-4 py-3 text-sm transition-colors min-h-[44px] ${
                 language === 'auto' 
-                  ? 'bg-green-500 text-white' 
+                  ? 'bg-green-600 text-white' 
                   : 'bg-transparent text-gray-400 hover:text-white'
               }`}
             >
@@ -306,7 +306,7 @@ export default function ChatPage() {
               }}
               className={`flex-1 px-4 py-3 text-sm border-l border-white/10 transition-colors min-h-[44px] ${
                 language === 'english' 
-                  ? 'bg-green-500 text-white' 
+                  ? 'bg-green-600 text-white' 
                   : 'bg-transparent text-gray-400 hover:text-white'
               }`}
             >
@@ -319,7 +319,7 @@ export default function ChatPage() {
               }}
               className={`flex-1 px-4 py-3 text-sm border-l border-white/10 transition-colors min-h-[44px] ${
                 language === 'pidgin' 
-                  ? 'bg-green-500 text-white' 
+                  ? 'bg-green-600 text-white' 
                   : 'bg-transparent text-gray-400 hover:text-white'
               }`}
             >
@@ -338,14 +338,14 @@ export default function ChatPage() {
               className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}
             >
               {msg.role === 'ai' && (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex-shrink-0 flex items-center justify-center text-sm font-bold">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-600 to-green-700 flex-shrink-0 flex items-center justify-center text-sm font-bold">
                   AI
                 </div>
               )}
               <div
                 className={`rounded-2xl px-3 sm:px-5 py-3 sm:py-4 max-w-[90%] sm:max-w-[85%] md:max-w-[80%] break-words ${
                   msg.role === 'user'
-                    ? 'bg-green-500/20 border border-green-500/30'
+                    ? 'bg-green-600/20 border border-green-600/30'
                     : msg.isEmergency
                     ? 'bg-red-500/20 border border-red-500/30'
                     : 'bg-white/5 border border-white/10'
@@ -389,7 +389,7 @@ export default function ChatPage() {
                         <div className="flex flex-col gap-2 mt-3">
                           <a
                             href={`tel:${hospital.phone.replace(/\s/g, '')}`}
-                            className="w-full bg-green-500 text-white text-center py-3 px-4 rounded-lg hover:bg-green-600 transition-colors text-sm font-medium min-h-[44px] flex items-center justify-center"
+                            className="w-full bg-green-600 text-white text-center py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium min-h-[44px] flex items-center justify-center"
                           >
                             📞 Call {hospital.phone}
                           </a>
@@ -397,7 +397,7 @@ export default function ChatPage() {
                             href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hospital.name + ' ' + hospital.address)}`}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="w-full bg-green-500 text-white text-center py-3 px-4 rounded-lg hover:bg-green-600 transition-colors text-sm font-medium min-h-[44px] flex items-center justify-center"
+                            className="w-full bg-green-600 text-white text-center py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium min-h-[44px] flex items-center justify-center"
                           >
                             🗺️ Get Directions
                           </a>
@@ -421,7 +421,7 @@ export default function ChatPage() {
 
                 {/* Follow-up Question */}
                 {msg.followUp && (
-                  <div className="mt-4 pt-4 border-t border-white/10 bg-green-500/10 p-3 rounded-lg">
+                  <div className="mt-4 pt-4 border-t border-white/10 bg-green-600/10 p-3 rounded-lg">
                     <p className="text-sm text-green-400 mb-2">Follow-up question:</p>
                     <p className="text-sm mb-3">
                       {language === 'pidgin' ? msg.followUp.questionPidgin : msg.followUp.question}
@@ -446,7 +446,7 @@ export default function ChatPage() {
                           }
                           setPendingFollowUp(msg.followUp || null)
                         }}
-                        className="text-xs bg-green-500 text-white px-3 py-1 rounded hover:bg-green-600 transition-colors"
+                        className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-colors"
                       >
                         📍 Use GPS
                       </button>
@@ -475,7 +475,7 @@ export default function ChatPage() {
                         setMessages(updated)
                       }}
                       className={`p-1 rounded hover:bg-white/10 transition-colors ${
-                        msg.feedback === 'helpful' ? 'text-green-500' : 'text-gray-500'
+                        msg.feedback === 'helpful' ? 'text-green-600' : 'text-gray-500'
                       }`}
                       title="Helpful"
                     >
@@ -519,7 +519,7 @@ export default function ChatPage() {
                         title="Copy response"
                       >
                         {copied ? (
-                          <svg className="w-4 h-4 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                           </svg>
                         ) : (
@@ -562,15 +562,15 @@ export default function ChatPage() {
           {/* Loading indicator */}
           {loading && (
             <div className="flex gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-500 to-green-600 flex items-center justify-center text-sm font-bold">
+              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center text-sm font-bold">
                 AI
               </div>
               <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4">
                 <div className="flex items-center gap-3">
                   <div className="flex gap-2">
-                    <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-bounce" />
-                    <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0.15s'}} />
-                    <div className="w-2.5 h-2.5 bg-green-500 rounded-full animate-bounce" style={{animationDelay: '0.3s'}} />
+                    <div className="w-2.5 h-2.5 bg-green-600 rounded-full animate-bounce" />
+                    <div className="w-2.5 h-2.5 bg-green-600 rounded-full animate-bounce" style={{animationDelay: '0.15s'}} />
+                    <div className="w-2.5 h-2.5 bg-green-600 rounded-full animate-bounce" style={{animationDelay: '0.3s'}} />
                   </div>
                   <span className="text-base text-gray-400">Thinking...</span>
                 </div>
@@ -585,7 +585,7 @@ export default function ChatPage() {
         {showScrollTop && (
           <button
             onClick={scrollToBottom}
-            className="fixed bottom-20 md:bottom-24 right-4 md:right-6 bg-green-500 text-white p-2.5 md:p-3 rounded-full shadow-lg hover:bg-green-600 transition-all z-20"
+            className="fixed bottom-20 md:bottom-24 right-4 md:right-6 bg-green-600 text-white p-2.5 md:p-3 rounded-full shadow-lg hover:bg-green-700 transition-all z-20"
             aria-label="Scroll to bottom"
           >
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -600,7 +600,7 @@ export default function ChatPage() {
         <div className="max-w-4xl mx-auto">
           {/* Reply Context */}
           {replyingTo && (
-            <div className="mb-3 p-2 bg-white/5 rounded-lg border-l-2 border-green-500">
+            <div className="mb-3 p-2 bg-white/5 rounded-lg border-l-2 border-green-600">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-gray-400">Replying to message</span>
                 <button
@@ -617,7 +617,7 @@ export default function ChatPage() {
           
           {/* Follow-up Context */}
           {pendingFollowUp && (
-            <div className="mb-3 p-2 bg-green-500/10 rounded-lg border-l-2 border-green-500">
+            <div className="mb-3 p-2 bg-green-600/10 rounded-lg border-l-2 border-green-600">
               <div className="flex items-center justify-between">
                 <span className="text-xs text-green-400">
                   {language === 'pidgin' ? pendingFollowUp.questionPidgin : pendingFollowUp.question}
@@ -656,7 +656,7 @@ export default function ChatPage() {
                   ? 'Describe your symptoms in detail...'
                   : 'Tell me your symptoms (English or Pidgin)...'
               }
-              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3.5 text-base outline-none focus:border-green-500/50 transition-colors placeholder:text-gray-500 resize-none overflow-hidden"
+              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3.5 text-base outline-none focus:border-green-600/50 transition-colors placeholder:text-gray-500 resize-none overflow-hidden"
               disabled={loading}
               rows={1}
               style={{ minHeight: '56px', maxHeight: '120px' }}
@@ -664,14 +664,14 @@ export default function ChatPage() {
             <button
               onClick={() => sendMessage(!!pendingFollowUp, pendingFollowUp?.context)}
               disabled={loading || !input.trim()}
-              className="bg-green-500 text-white px-6 py-3.5 text-base rounded-lg hover:bg-green-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium self-end min-w-[80px]"
+              className="bg-green-600 text-white px-6 py-3.5 text-base rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium self-end min-w-[80px]"
             >
               {loading ? '...' : pendingFollowUp ? 'Answer' : replyingTo ? 'Reply' : 'Send'}
             </button>
           </div>
           <div className="flex justify-center mt-3">
             <p className="text-sm text-gray-500">
-              Emergency? Call <span className="text-green-500 font-bold">112</span>
+              Emergency? Call <span className="text-green-600 font-bold">112</span>
             </p>
           </div>
         </div>
