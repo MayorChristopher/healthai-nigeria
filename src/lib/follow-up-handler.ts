@@ -57,7 +57,7 @@ export function detectFollowUpNeeds(aiResponse: string, userMessage: string): Fo
 export function processLocationResponse(locationText: string): { lat?: number, lon?: number, city?: string, address?: string } {
   const text = locationText.toLowerCase()
   
-  // Nigerian cities and landmarks with coordinates
+  // Nigerian cities and landmarks with coordinates (ordered by specificity)
   const locations = {
     // Major cities
     'lagos': { lat: 6.5244, lon: 3.3792, city: 'Lagos', address: 'Lagos, Nigeria' },
