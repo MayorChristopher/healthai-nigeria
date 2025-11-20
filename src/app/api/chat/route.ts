@@ -234,16 +234,20 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Check if user is asking for hospital locations
+    // Check if user is asking for hospital locations or just stated their location
     const isHospitalRequest = message.toLowerCase().includes('hospital') && 
       (message.toLowerCase().includes(' in ') || message.toLowerCase().includes('near') || 
        message.toLowerCase().includes('around') || message.toLowerCase().includes('location'))
+    
+    const justStatedLocation = (message.toLowerCase().includes('i am in') || 
+      message.toLowerCase().includes('i\'m in') || 
+      message.toLowerCase().includes('am in')) && processedLocation?.lat && processedLocation?.lon
     
     // Get hospital recommendations
     let hospitals = []
     if (isEmergency) {
       hospitals = recommendHospitals(emergencyType, processedLocation?.lat, processedLocation?.lon)
-    } else if (isHospitalRequest || (isFollowUpResponse && followUpContext === 'hospital_recommendation')) {
+    } else if (isHospitalRequest || justStatedLocation || (isFollowUpResponse && followUpContext === 'hospital_recommendation')) {
       if (processedLocation?.lat && processedLocation?.lon) {
         hospitals = recommendHospitals('general', processedLocation.lat, processedLocation.lon)
       }
