@@ -127,10 +127,9 @@ export async function POST(req: NextRequest) {
     const emergencyType = detectEmergencyType(message)
     const isEmergency = emergencyType !== 'none'
 
-    // Get AI response - try latest models first
+    // Get AI response - use working models only
     let response: string = ''
     const models = [
-      'gemini-2.0-flash-exp',    // Latest experimental (free)
       'gemini-2.0-flash-lite',   // Fast and free
       'gemini-2.0-flash'         // Standard (free with limits)
     ]
@@ -234,22 +233,64 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Check if user is asking for hospital locations or just stated their location
-    const isHospitalRequest = message.toLowerCase().includes('hospital') && 
-      (message.toLowerCase().includes(' in ') || message.toLowerCase().includes('near') || 
-       message.toLowerCase().includes('around') || message.toLowerCase().includes('location'))
+    // Check if user is asking for hospitals
+    const msgLower = message.toLowerCase()
+    const isHospitalRequest = msgLower.includes('hospital') || 
+      (msgLower.includes('nearest') && (msgLower.includes('clinic') || msgLower.includes('medical'))) ||
+      msgLower.includes('find hospital') ||
+      msgLower.includes('show hospital') ||
+      msgLower.includes('give hospital')
     
-    const justStatedLocation = (message.toLowerCase().includes('i am in') || 
-      message.toLowerCase().includes('i\'m in') || 
-      message.toLowerCase().includes('am in')) && processedLocation?.lat && processedLocation?.lon
+    // Extract location from message
+    const extractLocation = (msg: string) => {
+      const lower = msg.toLowerCase()
+      const cities = ['lagos', 'abuja', 'ibadan', 'enugu', 'kano', 'port harcourt', 'zaria', 'owerri', 'umuahia', 'umudike', 'aba', 'calabar', 'jos', 'ilorin', 'abia', 'rivers', 'imo', 'anambra', 'kaduna', 'plateau', 'kwara', 'cross river', 'osun', 'elele', 'warri', 'benin', 'asaba', 'onitsha', 'awka', 'nnewi', 'arochukwu', 'bende', 'ikwuano', 'isiala ngwa', 'ohafia', 'osisioma', 'ugwunagbo', 'ukwa east', 'ukwa west', 'umuahia north', 'umuahia south', 'umu nneochi']
+      
+      // Map local areas to main cities
+      const locationMap: { [key: string]: string } = {
+        'umudike': 'umuahia',
+        'michael okpara': 'umuahia',
+        'mouau': 'umuahia',
+        'arochukwu': 'aba',
+        'bende': 'umuahia',
+        'ikwuano': 'umuahia',
+        'isiala ngwa': 'aba',
+        'ohafia': 'aba',
+        'osisioma': 'aba',
+        'ugwunagbo': 'aba',
+        'ukwa east': 'aba',
+        'ukwa west': 'aba',
+        'umuahia north': 'umuahia',
+        'umuahia south': 'umuahia',
+        'umu nneochi': 'umuahia'
+      }
+      for (const city of cities) {
+        if (lower.includes(city)) {
+          return locationMap[city] || city
+        }
+      }
+      return null
+    }
+    
+    const locationQuery = extractLocation(message) || extractLocation(history[history.length - 1]?.content || '')
     
     // Get hospital recommendations
     let hospitals: any[] = []
+    let needsLocation = false
+    
     if (isEmergency) {
-      hospitals = recommendHospitals(emergencyType, processedLocation?.lat, processedLocation?.lon)
-    } else if (isHospitalRequest || justStatedLocation || (isFollowUpResponse && followUpContext === 'hospital_recommendation')) {
-      if (processedLocation?.lat && processedLocation?.lon) {
-        hospitals = recommendHospitals('general', processedLocation.lat, processedLocation.lon)
+      hospitals = recommendHospitals(emergencyType, processedLocation?.lat, processedLocation?.lon, locationQuery || undefined)
+    } else if (isHospitalRequest) {
+      if (!locationQuery && !processedLocation) {
+        // User asked for hospitals but didn't provide location
+        needsLocation = true
+        const locationPrompt = language === 'pidgin' 
+          ? "I fit help you find hospital for your area. Which city or state you dey? Example: Lagos, Abuja, Kano, etc."
+          : "I can help you find hospitals in your area. Which city or state are you in? For example: Lagos, Abuja, Kano, etc."
+        
+        response = response + "\n\n" + locationPrompt
+      } else {
+        hospitals = recommendHospitals('general', processedLocation?.lat, processedLocation?.lon, locationQuery || undefined)
       }
     }
 

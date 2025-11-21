@@ -85,7 +85,7 @@ export default function Home() {
             <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
-            Health<span className="text-green-600">AI</span>
+            HealthAI Nigeria
           </Link>
           <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
             <Link href="#problem" className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors">
@@ -406,9 +406,11 @@ export default function Home() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {[
                 { name: "FMC Owerri", state: "Imo", phone: "+234 83 230 092", address: "Owerri", coords: "5.4840,7.0351" },
+                { name: "FMC Umuahia", state: "Abia", phone: "+234 88 220 134", address: "Umuahia", coords: "5.5250,7.4896" },
                 { name: "NAUTH Nnewi", state: "Anambra", phone: "+234 46 460 674", address: "Nnewi", coords: "6.0177,6.9178" },
+                { name: "ABSUTH Aba", state: "Abia", phone: "+234 82 220 456", address: "Aba", coords: "5.1066,7.3667" },
                 { name: "UCTH Calabar", state: "Cross River", phone: "+234 87 239 009", address: "Calabar", coords: "4.9517,8.3417" }
-              ].slice(0, showAllFederal ? 3 : 2).map((hospital, i) => (
+              ].slice(0, showAllFederal ? 5 : 2).map((hospital, i) => (
                 <HospitalCard key={i} hospital={hospital} />
               ))}
             </div>
@@ -418,7 +420,7 @@ export default function Home() {
                   onClick={() => setShowAllFederal(true)}
                   className="text-sm text-green-600 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
                 >
-                  Show 1 more hospital
+                  Show 3 more hospitals
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                   </svg>
@@ -442,7 +444,7 @@ export default function Home() {
                 <span className="text-gray-400">Federal (3)</span>
               </div>
             </div>
-            <p className="text-sm text-gray-500 mb-2">13 major hospitals across Nigeria's 6 geopolitical zones</p>
+            <p className="text-sm text-gray-500 mb-2">15 major hospitals across Nigeria's 6 geopolitical zones</p>
             <p className="text-xs text-gray-600">Hospital information verified • Updated regularly • Emergency services available 24/7</p>
           </div>
 
@@ -733,7 +735,7 @@ export default function Home() {
                 <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
-                Health<span className="text-green-600">AI</span>
+                HealthAI Nigeria
               </div>
               <p className="text-gray-500 text-sm leading-relaxed">
                 AI-powered medical assistant for Nigerian communities. Built for Nigeria National AI Hackathon 2025.

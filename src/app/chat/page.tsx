@@ -2,150 +2,123 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
-import { Message, FollowUpQuestion } from '@/types/chat'
-import { cacheEmergencyData, isOnline } from '@/lib/offline-emergency'
 
 type Hospital = {
   name: string
   phone: string
   address: string
   coords: string
-  distance?: string
 }
 
-// Updated with follow-up questions and reply threading - v2.0
+type Message = {
+  id: string
+  role: 'user' | 'ai'
+  content: string
+  isEmergency?: boolean
+  hospitals?: Hospital[]
+  onlineDoctors?: boolean
+  timestamp: Date
+  replyTo?: string
+}
+
 export default function ChatPage() {
-  const [termsAccepted, setTermsAccepted] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('healthai-terms-accepted') === 'true'
-    }
-    return false
-  })
-  const [language, setLanguage] = useState<'auto' | 'english' | 'pidgin'>(() => {
-    if (typeof window !== 'undefined') {
-      return (sessionStorage.getItem('healthai-language') as any) || 'auto'
-    }
-    return 'auto'
-  })
-  const [messages, setMessages] = useState<Message[]>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = sessionStorage.getItem('healthai-messages')
-      if (saved) return JSON.parse(saved).map((msg: any) => ({
-        ...msg,
-        id: msg.id || Math.random().toString(36),
-        timestamp: msg.timestamp ? new Date(msg.timestamp) : new Date()
-      }))
-    }
-    return [{ 
-      id: '1', 
-      role: 'ai', 
-      content: "Hello! I'm HealthAI Nigeria. Tell me your symptoms in English or Pidgin, and I'll help you understand what might be happening.",
-      timestamp: new Date()
-    }]
-  })
-  const [pendingFollowUp, setPendingFollowUp] = useState<FollowUpQuestion | null>(null)
-  const [replyingTo, setReplyingTo] = useState<string | null>(null)
-  const [userLocation, setUserLocation] = useState<{lat: number, lon: number, city?: string} | null>(null)
-
-  // Update initial message when language changes
-  const getInitialMessage = (lang: string) => {
-    switch(lang) {
-      case 'pidgin':
-        return "Hello! I be HealthAI Nigeria. Tell me wetin dey worry your body, I go help you understand wetin fit dey happen."
-      case 'english':
-        return "Hello! I'm HealthAI Nigeria, your medical assistant. Please describe your symptoms in detail, and I'll help you understand what might be happening."
-      default:
-        return "Hello! I'm HealthAI Nigeria. Tell me your symptoms in English or Pidgin, and I'll help you understand what might be happening."
-    }
-  }
-
-  // Update initial message when language changes
-  useEffect(() => {
-    if (messages.length === 1 && messages[0].role === 'ai') {
-      const newMessage = getInitialMessage(language)
-      if (messages[0].content !== newMessage) {
-        setMessages([{ 
-          id: '1', 
-          role: 'ai', 
-          content: newMessage, 
-          timestamp: new Date() 
-        }])
-      }
-    }
-  }, [language])
+  const [termsAccepted, setTermsAccepted] = useState(false)
+  const [language, setLanguage] = useState<'auto' | 'english' | 'pidgin'>('auto')
+  const [messages, setMessages] = useState<Message[]>([{ 
+    id: '1', 
+    role: 'ai', 
+    content: "Hello! I'm HealthAI Nigeria 🇳🇬\n\nI'm here to help you 24/7. You can:\n• Describe your symptoms in English or Pidgin\n• Ask health questions\n• Get emergency hospital information\n\nHow are you feeling today?",
+    timestamp: new Date()
+  }])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
-  const [sessionId] = useState(() => {
-    if (typeof window !== 'undefined') {
-      let id = sessionStorage.getItem('healthai-session')
-      if (!id) {
-        id = Math.random().toString(36)
-        sessionStorage.setItem('healthai-session', id)
-      }
-      return id
-    }
-    return Math.random().toString(36)
-  })
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null)
+  const [isOnline, setIsOnline] = useState(true)
+  const [connectionStatus, setConnectionStatus] = useState<'online' | 'typing' | 'offline' | 'emergency'>('online')
+  const [sessionId] = useState(Math.random().toString(36))
+  const [mounted, setMounted] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const [showScrollTop, setShowScrollTop] = useState(false)
-  const messagesContainerRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
-  useEffect(scrollToBottom, [messages])
-  
-  // Cache emergency data for offline use
   useEffect(() => {
-    cacheEmergencyData()
+    setMounted(true)
+    const savedTerms = sessionStorage.getItem('healthai-terms-accepted')
+    const savedLanguage = sessionStorage.getItem('healthai-language')
+    const savedMessages = sessionStorage.getItem('healthai-messages')
+    const savedSession = sessionStorage.getItem('healthai-session')
+    
+    if (savedTerms) setTermsAccepted(savedTerms === 'true')
+    if (savedLanguage) setLanguage(savedLanguage as any)
+    if (savedMessages) {
+      const parsed = JSON.parse(savedMessages).map((msg: any) => ({
+        ...msg,
+        timestamp: new Date(msg.timestamp)
+      }))
+      setMessages(parsed)
+    }
   }, [])
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
+    if (mounted && messages.length > 1) {
+      scrollToBottom()
+    }
+  }, [messages.length, mounted])
+
+  useEffect(() => {
+    const handleOnline = () => setIsOnline(true)
+    const handleOffline = () => setIsOnline(false)
+    
+    window.addEventListener('online', handleOnline)
+    window.addEventListener('offline', handleOffline)
+    
+    return () => {
+      window.removeEventListener('online', handleOnline)
+      window.removeEventListener('offline', handleOffline)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isOnline) {
+      setConnectionStatus('offline')
+    } else if (loading) {
+      setConnectionStatus('typing')
+    } else if (messages.some(m => m.isEmergency)) {
+      setConnectionStatus('emergency')
+    } else {
+      setConnectionStatus('online')
+    }
+  }, [isOnline, loading, messages])
+
+  useEffect(() => {
+    if (mounted) {
       sessionStorage.setItem('healthai-messages', JSON.stringify(messages))
     }
-  }, [messages])
+  }, [messages, mounted])
 
-  useEffect(() => {
-    const container = messagesContainerRef.current
-    if (!container) return
-
-    const handleScroll = () => {
-      const scrollTop = container.scrollTop
-      const scrollHeight = container.scrollHeight
-      const clientHeight = container.clientHeight
-      setShowScrollTop(scrollTop > 300 && scrollTop < scrollHeight - clientHeight - 100)
-    }
-
-    container.addEventListener('scroll', handleScroll)
-    return () => container.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  const sendMessage = async (isFollowUp = false, followUpContext?: string) => {
+  const sendMessage = async () => {
     if (!input.trim() || loading) return
 
     const userMessage = input.trim()
-    const messageId = Math.random().toString(36)
     setInput('')
     
     const newMessage: Message = {
-      id: messageId,
+      id: Math.random().toString(36),
       role: 'user', 
       content: userMessage, 
       timestamp: new Date(),
-      replyToId: replyingTo || undefined,
-      isFollowUpResponse: isFollowUp
+      replyTo: replyingTo?.id
     }
     
     setMessages(prev => [...prev, newMessage])
-    setLoading(true)
     setReplyingTo(null)
+    setLoading(true)
 
     try {
-      // Send last 6 messages for context
-      const recentMessages = messages.slice(-6).map(m => ({
+      const recentMessages = messages.slice(-8).map(m => ({
         role: m.role,
         content: m.content
       }))
@@ -157,10 +130,7 @@ export default function ChatPage() {
           message: userMessage, 
           sessionId, 
           language,
-          history: recentMessages,
-          userLocation,
-          isFollowUpResponse: isFollowUp,
-          followUpContext
+          history: recentMessages
         })
       })
 
@@ -175,24 +145,10 @@ export default function ChatPage() {
         isEmergency: data.isEmergency,
         hospitals: data.hospitals,
         onlineDoctors: data.onlineDoctors,
-        timestamp: new Date(),
-        followUp: data.followUp,
-        replyToId: replyingTo || undefined
+        timestamp: new Date()
       }
       
       setMessages(prev => [...prev, aiMessage])
-      
-      // Handle location data
-      if (data.processedLocation) {
-        setUserLocation(data.processedLocation)
-      }
-      
-      // Set pending follow-up
-      if (data.followUp) {
-        setPendingFollowUp(data.followUp)
-      } else {
-        setPendingFollowUp(null)
-      }
     } catch (error) {
       setMessages(prev => [...prev, {
         id: Math.random().toString(36),
@@ -205,12 +161,11 @@ export default function ChatPage() {
     }
   }
 
-  // Terms acceptance modal
   if (!termsAccepted) {
     return (
-      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4 sm:p-6">
+      <div className="min-h-screen bg-black text-white flex items-center justify-center p-4">
         <div className="max-w-2xl w-full">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-6 sm:mb-8 text-center">Before You Continue</h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-8 text-center">Before You Continue</h1>
           
           <div className="space-y-6 mb-8">
             <div className="border-l-4 border-red-500 pl-4">
@@ -234,10 +189,10 @@ export default function ChatPage() {
             </div>
           </div>
 
-          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
+          <div className="flex gap-4">
             <Link 
               href="/" 
-              className="flex-1 border border-white/20 text-white px-6 py-3 rounded-lg hover:bg-white/5 transition-colors text-center min-h-[48px] flex items-center justify-center"
+              className="flex-1 border border-white/20 text-white px-6 py-3 rounded-lg hover:bg-white/5 transition-colors text-center"
             >
               Go Back
             </Link>
@@ -246,7 +201,7 @@ export default function ChatPage() {
                 sessionStorage.setItem('healthai-terms-accepted', 'true')
                 setTermsAccepted(true)
               }}
-              className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium min-h-[48px] flex items-center justify-center"
+              className="flex-1 bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
             >
               I Understand
             </button>
@@ -269,245 +224,159 @@ export default function ChatPage() {
       </div>
       
       {/* Header */}
-      <div className="border-b border-white/10 p-4 bg-black/50 backdrop-blur-sm sticky top-0 z-10">
-        <div className="max-w-4xl mx-auto">
-          <div className="flex justify-between items-center mb-3">
+      <div className="border-b border-white/10 p-3 sm:p-4 bg-black/50 backdrop-blur-sm sticky top-0 z-10">
+        <div className="max-w-3xl mx-auto">
+          <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
-              <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
+              <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-green-600 flex items-center justify-center">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
               <div>
-                <h1 className="text-xl md:text-2xl font-bold">HealthAI Nigeria</h1>
-                <p className="text-xs text-gray-500">AI Medical Assistant</p>
+                <h1 className="text-base sm:text-lg font-bold">HealthAI Nigeria</h1>
+                <p className="text-xs flex items-center gap-1">
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    connectionStatus === 'online' ? 'bg-green-600' :
+                    connectionStatus === 'typing' ? 'bg-blue-500 animate-pulse' :
+                    connectionStatus === 'emergency' ? 'bg-red-500 animate-pulse' :
+                    'bg-gray-500'
+                  }`}></span>
+                  <span className={connectionStatus === 'emergency' ? 'text-red-500' : 'text-gray-500'}>
+                    {connectionStatus === 'online' ? 'Online now' :
+                     connectionStatus === 'typing' ? 'Typing...' :
+                     connectionStatus === 'emergency' ? 'Emergency mode' :
+                     'Connection lost'}
+                  </span>
+                </p>
               </div>
             </div>
-            <Link href="/" className="text-sm text-gray-400 hover:text-white transition-colors">
-              ← Home
+            <Link href="/" className="text-xs sm:text-sm text-gray-400 hover:text-white">
+              ← Back
             </Link>
-          </div>
-          <div className="flex border border-white/10 rounded-lg overflow-hidden w-full">
-            <button
-              onClick={() => {
-                setLanguage('auto')
-                sessionStorage.setItem('healthai-language', 'auto')
-              }}
-              className={`flex-1 px-4 py-3 text-sm transition-colors min-h-[44px] ${
-                language === 'auto' 
-                  ? 'bg-green-600 text-white' 
-                  : 'bg-transparent text-gray-400 hover:text-white'
-              }`}
-            >
-              Auto
-            </button>
-            <button
-              onClick={() => {
-                setLanguage('english')
-                sessionStorage.setItem('healthai-language', 'english')
-              }}
-              className={`flex-1 px-4 py-3 text-sm border-l border-white/10 transition-colors min-h-[44px] ${
-                language === 'english' 
-                  ? 'bg-green-600 text-white' 
-                  : 'bg-transparent text-gray-400 hover:text-white'
-              }`}
-            >
-              English
-            </button>
-            <button
-              onClick={() => {
-                setLanguage('pidgin')
-                sessionStorage.setItem('healthai-language', 'pidgin')
-              }}
-              className={`flex-1 px-4 py-3 text-sm border-l border-white/10 transition-colors min-h-[44px] ${
-                language === 'pidgin' 
-                  ? 'bg-green-600 text-white' 
-                  : 'bg-transparent text-gray-400 hover:text-white'
-              }`}
-            >
-              Pidgin
-            </button>
           </div>
         </div>
       </div>
 
       {/* Messages */}
-      <div ref={messagesContainerRef} className="flex-1 overflow-y-auto p-4 md:p-6">
-        <div className="max-w-4xl mx-auto space-y-6">
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4">
+        <div className="max-w-3xl mx-auto space-y-3 sm:space-y-4">
           {messages.map((msg, i) => (
             <div
               key={i}
-              className={`flex gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}
+              className={`flex gap-2 sm:gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}
             >
               {msg.role === 'ai' && (
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-600 to-green-700 flex-shrink-0 flex items-center justify-center text-sm font-bold">
-                  AI
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-600 flex-shrink-0 flex items-center justify-center self-end">
+                  <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
                 </div>
               )}
-              <div
-                className={`rounded-2xl px-3 sm:px-5 py-3 sm:py-4 max-w-[90%] sm:max-w-[85%] md:max-w-[80%] break-words ${
-                  msg.role === 'user'
-                    ? 'bg-green-600/20 border border-green-600/30'
-                    : msg.isEmergency
-                    ? 'bg-red-500/20 border border-red-500/30'
-                    : 'bg-white/5 border border-white/10'
-                }`}
-              >
-                {msg.isEmergency && (
-                  <div className="border-l-4 border-red-500 pl-3 mb-3">
-                    <p className="text-red-500 font-bold text-sm">⚠️ Emergency</p>
-                  </div>
-                )}
-                <div className="text-base md:text-lg leading-relaxed prose prose-invert prose-sm max-w-none">
-                  <ReactMarkdown
-                    components={{
-                      p: ({children}) => <p className="mb-2 last:mb-0">{children}</p>,
-                      strong: ({children}) => <strong className="font-bold text-white">{children}</strong>,
-                      em: ({children}) => <em className="italic">{children}</em>,
-                      ul: ({children}) => <ul className="list-disc list-inside space-y-1 my-2">{children}</ul>,
-                      ol: ({children}) => <ol className="list-decimal list-inside space-y-1 my-2">{children}</ol>,
-                      li: ({children}) => <li className="text-gray-300">{children}</li>,
-                    }}
-                  >
-                    {msg.content}
-                  </ReactMarkdown>
-                </div>
-                
-                {/* AI Response Disclaimer */}
-                {msg.role === 'ai' && !msg.isEmergency && (
-                  <p className="text-sm text-gray-600 mt-4 pt-4 border-t border-white/10">
-                    ⚠️ Not a diagnosis. See a doctor.
-                  </p>
-                )}
-                
-                {/* Hospital Recommendations */}
-                {msg.hospitals && msg.hospitals.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-white/10 space-y-4">
-                    <p className="text-base font-medium text-gray-300">Nearest Hospitals:</p>
-                    {msg.hospitals.map((hospital, idx) => (
-                      <div key={idx} className="space-y-2 bg-white/5 p-3 rounded-lg">
-                        <p className="text-base font-medium">{hospital.name}</p>
-                        <p className="text-sm text-gray-400">{hospital.address}</p>
-                        <div className="flex flex-col gap-2 mt-3">
-                          <a
-                            href={`tel:${hospital.phone.replace(/\s/g, '')}`}
-                            className="w-full bg-green-600 text-white text-center py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium min-h-[44px] flex items-center justify-center"
-                          >
-                            📞 Call {hospital.phone}
-                          </a>
-                          <a
-                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(hospital.name + ' ' + hospital.address)}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="w-full bg-green-600 text-white text-center py-3 px-4 rounded-lg hover:bg-green-700 transition-colors text-sm font-medium min-h-[44px] flex items-center justify-center"
-                          >
-                            🗺️ Get Directions
-                          </a>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Online Doctor Suggestion */}
-                {msg.onlineDoctors && (
-                  <div className="mt-4 pt-4 border-t border-white/10">
-                    <p className="text-xs text-gray-500 mb-2">Online consultation:</p>
-                    <div className="space-y-1">
-                      <a href="https://www.doctorcare.ng" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-500 hover:underline">DoctorCare Nigeria</a>
-                      <a href="https://www.heliumhealth.com" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-500 hover:underline">Helium Health</a>
-                      <a href="https://www.kangpe.com" target="_blank" rel="noopener noreferrer" className="block text-xs text-blue-500 hover:underline">Kangpe Telemedicine</a>
-                    </div>
-                  </div>
-                )}
-
-                {/* Follow-up Question */}
-                {msg.followUp && (
-                  <div className="mt-4 pt-4 border-t border-white/10 bg-green-600/10 p-3 rounded-lg">
-                    <p className="text-sm text-green-400 mb-2">Follow-up question:</p>
-                    <p className="text-sm mb-3">
-                      {language === 'pidgin' ? msg.followUp.questionPidgin : msg.followUp.question}
+              <div className="max-w-[80%] sm:max-w-[75%]">
+                {msg.replyTo && (
+                  <div className={`mb-1 p-2 rounded-lg border-l-2 ${
+                    msg.role === 'user' ? 'bg-green-900/30 border-green-600' : 'bg-white/5 border-white/30'
+                  }`}>
+                    <p className="text-xs text-gray-500">↩ {messages.find(m => m.id === msg.replyTo)?.role === 'ai' ? 'HealthAI' : 'You'}</p>
+                    <p className="text-xs text-gray-400 line-clamp-1">
+                      {messages.find(m => m.id === msg.replyTo)?.content.substring(0, 100)}
                     </p>
-                    <div className="flex gap-2">
-                      <button
-                        onClick={() => {
-                          if (msg.followUp?.type === 'location') {
-                            navigator.geolocation?.getCurrentPosition(
-                              (position) => {
-                                const location = {
-                                  lat: position.coords.latitude,
-                                  lon: position.coords.longitude
-                                }
-                                setUserLocation(location)
-                                setInput('I am at my current GPS location')
-                              },
-                              () => {
-                                setInput('I am in ')
-                              }
-                            )
-                          }
-                          setPendingFollowUp(msg.followUp || null)
-                        }}
-                        className="text-xs bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-colors"
-                      >
-                        📍 Use GPS
-                      </button>
-                      <button
-                        onClick={() => {
-                          setInput('I am in ')
-                          setPendingFollowUp(msg.followUp || null)
-                        }}
-                        className="text-xs bg-gray-600 text-white px-3 py-1 rounded hover:bg-gray-700 transition-colors"
-                      >
-                        Type Location
-                      </button>
-                    </div>
                   </div>
                 )}
-
-                {/* Feedback Buttons (AI messages only) */}
-                {msg.role === 'ai' && (
-                  <div className="flex items-center justify-between mt-3 pt-3 border-t border-white/10">
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-gray-500">Was this helpful?</span>
-                    <button
-                      onClick={() => {
-                        const updated = [...messages]
-                        updated[i].feedback = msg.feedback === 'helpful' ? null : 'helpful'
-                        setMessages(updated)
-                      }}
-                      className={`p-1 rounded hover:bg-white/10 transition-colors ${
-                        msg.feedback === 'helpful' ? 'text-green-600' : 'text-gray-500'
-                      }`}
-                      title="Helpful"
-                    >
-                      <svg className="w-4 h-4" fill={msg.feedback === 'helpful' ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
-                      </svg>
-                    </button>
-                    <button
-                      onClick={() => {
-                        const updated = [...messages]
-                        updated[i].feedback = msg.feedback === 'not-helpful' ? null : 'not-helpful'
-                        setMessages(updated)
-                      }}
-                      className={`p-1 rounded hover:bg-white/10 transition-colors ${
-                        msg.feedback === 'not-helpful' ? 'text-red-500' : 'text-gray-500'
-                      }`}
-                      title="Not helpful"
-                    >
-                      <svg className="w-4 h-4" fill={msg.feedback === 'not-helpful' ? 'currentColor' : 'none'} stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018a2 2 0 01.485.06l3.76.94m-7 10v5a2 2 0 002 2h.096c.5 0 .905-.405.905-.904 0-.715.211-1.413.608-2.008L17 13V4m-7 10h2m5-10h2a2 2 0 012 2v6a2 2 0 01-2 2h-2.5" />
-                      </svg>
-                    </button>
+                <div
+                  className={`px-3 py-2.5 sm:px-4 sm:py-3 ${
+                    msg.role === 'user'
+                      ? 'bg-green-800/60 rounded-2xl rounded-br-sm'
+                      : msg.isEmergency
+                      ? 'bg-red-500/20 border border-red-500/30 rounded-2xl rounded-bl-sm'
+                      : 'bg-white/5 border border-white/10 rounded-2xl rounded-bl-sm'
+                  }`}
+                >
+                  {msg.isEmergency && (
+                    <div className="border-l-4 border-red-500 pl-3 mb-3">
+                      <p className="text-red-500 font-bold text-base flex items-center gap-2">
+                        <span className="text-xl">🚨</span>
+                        <span>EMERGENCY - Seek immediate help!</span>
+                      </p>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <button
-                        onClick={() => setReplyingTo(msg.id)}
-                        className="p-1 rounded hover:bg-white/10 transition-colors text-gray-500 hover:text-white"
-                        title="Reply to this message"
-                      >
-                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                  )}
+                  <div className="text-sm sm:text-base leading-relaxed prose prose-invert prose-sm max-w-none">
+                    <ReactMarkdown
+                      components={{
+                        p: ({children}) => <p className="mb-2 last:mb-0">{children}</p>,
+                        strong: ({children}) => <strong className="font-bold text-white">{children}</strong>,
+                        em: ({children}) => <em className="italic">{children}</em>,
+                        ul: ({children}) => <ul className="list-disc list-inside space-y-1 my-2">{children}</ul>,
+                        ol: ({children}) => <ol className="list-decimal list-inside space-y-1 my-2">{children}</ol>,
+                        li: ({children}) => <li className="text-gray-300">{children}</li>,
+                      }}
+                    >
+                      {msg.content}
+                    </ReactMarkdown>
+                  </div>
+                  
+
+                  
+                  {msg.hospitals && msg.hospitals.length > 0 && (
+                    <div className="mt-4 pt-4 border-t border-white/10 space-y-4">
+                      <div className="flex items-center gap-2 mb-3">
+                        <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                         </svg>
+                        <p className="text-sm font-medium text-green-600">Nearest Hospitals</p>
+                      </div>
+                      {msg.hospitals.map((hospital, idx) => (
+                        <div key={idx} className="group bg-white/5 p-4 rounded-xl border border-white/10 hover:border-green-600/50 hover:bg-white/10 transition-all">
+                          <div className="flex justify-between items-start mb-3">
+                            <div>
+                              <h4 className="font-semibold text-white mb-1">{hospital.name}</h4>
+                              <p className="text-xs text-gray-400">{hospital.address}</p>
+                            </div>
+                            <div className="px-2 py-1 bg-green-600/10 border border-green-600/20 rounded text-green-600 text-xs whitespace-nowrap">
+                              24/7
+                            </div>
+                          </div>
+                          <div className="space-y-2 mt-4">
+                            <a
+                              href={`tel:${hospital.phone.replace(/\s/g, '')}`}
+                              className="flex items-center gap-2 text-sm text-green-600 hover:text-green-400 transition-colors cursor-pointer"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
+                              </svg>
+                              <span>{hospital.phone}</span>
+                            </a>
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${hospital.coords}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition-colors cursor-pointer"
+                            >
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                              </svg>
+                              <span>Get Directions</span>
+                            </a>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="flex items-center justify-between mt-1 px-1">
+                  <p className="text-xs text-gray-600">
+                    {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
+                  </p>
+                  {msg.role === 'ai' && (
+                    <div className="flex items-center gap-2">
+                      <button
+                        onClick={() => setReplyingTo(msg)}
+                        className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                      >
+                        Reply
                       </button>
                       <button
                         onClick={() => {
@@ -515,64 +384,32 @@ export default function ChatPage() {
                           setCopied(true)
                           setTimeout(() => setCopied(false), 2000)
                         }}
-                        className="p-1 rounded hover:bg-white/10 transition-colors text-gray-500 hover:text-white relative"
-                        title="Copy response"
+                        className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
                       >
-                        {copied ? (
-                          <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                          </svg>
-                        ) : (
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
-                          </svg>
-                        )}
+                        {copied ? '✓' : 'Copy'}
                       </button>
                     </div>
-                  </div>
-                )}
-
-                {/* Reply indicator */}
-                {msg.replyToId && (
-                  <div className="text-xs text-gray-500 mt-2 flex items-center gap-1">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M7.707 3.293a1 1 0 010 1.414L5.414 7H11a7 7 0 017 7v2a1 1 0 11-2 0v-2a5 5 0 00-5-5H5.414l2.293 2.293a1 1 0 11-1.414 1.414L2.586 8l3.707-3.707a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                    <span>Replying to previous message</span>
-                  </div>
-                )}
-
-                {/* Timestamp */}
-                {msg.timestamp && (
-                  <p className="text-xs text-gray-600 mt-2">
-                    {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
-                  </p>
-                )}
-              </div>
-              {msg.role === 'user' && (
-                <div className="w-10 h-10 rounded-full bg-white/10 flex-shrink-0 flex items-center justify-center">
-                  <svg className="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
-                  </svg>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           ))}
           
-          {/* Loading indicator */}
           {loading && (
-            <div className="flex gap-3">
-              <div className="w-10 h-10 rounded-full bg-gradient-to-br from-green-600 to-green-700 flex items-center justify-center text-sm font-bold">
-                AI
+            <div className="flex gap-2 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-600 flex items-center justify-center self-end">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
               </div>
-              <div className="bg-white/5 border border-white/10 rounded-2xl px-5 py-4">
-                <div className="flex items-center gap-3">
-                  <div className="flex gap-2">
-                    <div className="w-2.5 h-2.5 bg-green-600 rounded-full animate-bounce" />
-                    <div className="w-2.5 h-2.5 bg-green-600 rounded-full animate-bounce" style={{animationDelay: '0.15s'}} />
-                    <div className="w-2.5 h-2.5 bg-green-600 rounded-full animate-bounce" style={{animationDelay: '0.3s'}} />
+              <div className="bg-white/5 border border-white/10 rounded-2xl px-3 py-2.5 sm:px-4 sm:py-3">
+                <div className="flex items-center gap-2">
+                  <div className="flex gap-1">
+                    <div className="w-2 h-2 bg-green-600 rounded-full animate-bounce" />
+                    <div className="w-2 h-2 bg-green-600 rounded-full animate-bounce" style={{animationDelay: '0.15s'}} />
+                    <div className="w-2 h-2 bg-green-600 rounded-full animate-bounce" style={{animationDelay: '0.3s'}} />
                   </div>
-                  <span className="text-base text-gray-400">Thinking...</span>
+                  <span className="text-sm text-gray-400">Typing...</span>
                 </div>
               </div>
             </div>
@@ -580,100 +417,70 @@ export default function ChatPage() {
           
           <div ref={messagesEndRef} />
         </div>
-
-        {/* Scroll to Bottom Button */}
-        {showScrollTop && (
-          <button
-            onClick={scrollToBottom}
-            className="fixed bottom-20 md:bottom-24 right-4 md:right-6 bg-green-600 text-white p-2.5 md:p-3 rounded-full shadow-lg hover:bg-green-700 transition-all z-20"
-            aria-label="Scroll to bottom"
-          >
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-            </svg>
-          </button>
-        )}
       </div>
 
       {/* Input */}
-      <div className="border-t border-white/10 p-4 bg-black/50 backdrop-blur-sm sticky bottom-0 z-20">
-        <div className="max-w-4xl mx-auto">
-          {/* Reply Context */}
+      <div className="fixed bottom-0 left-0 right-0 border-t border-white/10 p-3 sm:p-4 bg-black/80 backdrop-blur-md z-20">
+        <div className="max-w-3xl mx-auto">
           {replyingTo && (
-            <div className="mb-3 p-2 bg-white/5 rounded-lg border-l-2 border-green-600">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-gray-400">Replying to message</span>
-                <button
-                  onClick={() => setReplyingTo(null)}
-                  className="text-gray-400 hover:text-white"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
+            <div className="mb-2 p-2 bg-white/5 border border-white/10 rounded-lg flex items-start justify-between gap-2">
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500">Replying to HealthAI:</p>
+                <p className="text-xs text-gray-400 mt-1 truncate">{replyingTo.content.substring(0, 80)}</p>
               </div>
+              <button
+                onClick={() => setReplyingTo(null)}
+                className="text-gray-500 hover:text-white flex-shrink-0"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
           )}
-          
-          {/* Follow-up Context */}
-          {pendingFollowUp && (
-            <div className="mb-3 p-2 bg-green-600/10 rounded-lg border-l-2 border-green-600">
-              <div className="flex items-center justify-between">
-                <span className="text-xs text-green-400">
-                  {language === 'pidgin' ? pendingFollowUp.questionPidgin : pendingFollowUp.question}
-                </span>
-                <button
-                  onClick={() => setPendingFollowUp(null)}
-                  className="text-green-400 hover:text-white"
-                >
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          )}
-          
-          <div className="flex gap-3">
-            <textarea
-              value={input}
-              onChange={(e) => {
-                setInput(e.target.value)
-                const target = e.target as HTMLTextAreaElement
-                target.style.height = '56px'
-                target.style.height = Math.min(target.scrollHeight, 120) + 'px'
-              }}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && !e.shiftKey && !loading) {
-                  e.preventDefault()
-                  sendMessage(!!pendingFollowUp, pendingFollowUp?.context)
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                if (language === 'auto') {
+                  setLanguage('english')
+                  sessionStorage.setItem('healthai-language', 'english')
+                } else if (language === 'english') {
+                  setLanguage('pidgin')
+                  sessionStorage.setItem('healthai-language', 'pidgin')
+                } else {
+                  setLanguage('auto')
+                  sessionStorage.setItem('healthai-language', 'auto')
                 }
               }}
-              placeholder={
-                language === 'pidgin' 
-                  ? 'Wetin dey worry you? Tell me how your body dey feel...'
-                  : language === 'english'
-                  ? 'Describe your symptoms in detail...'
-                  : 'Tell me your symptoms (English or Pidgin)...'
-              }
-              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-4 py-3.5 text-base outline-none focus:border-green-600/50 transition-colors placeholder:text-gray-500 resize-none overflow-hidden"
+              className="px-2.5 py-2 sm:px-3 sm:py-2.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0 text-xs sm:text-sm font-medium text-gray-400"
+            >
+              {language === 'auto' ? 'Auto' : language === 'english' ? 'EN' : 'PG'}
+            </button>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === 'Enter' && !loading) {
+                  e.preventDefault()
+                  sendMessage()
+                }
+              }}
+              placeholder='Type your message...'
+              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base outline-none focus:border-green-600/50 transition-colors placeholder:text-gray-500"
               disabled={loading}
-              rows={1}
-              style={{ minHeight: '56px', maxHeight: '120px' }}
             />
             <button
-              onClick={() => sendMessage(!!pendingFollowUp, pendingFollowUp?.context)}
+              onClick={sendMessage}
               disabled={loading || !input.trim()}
-              className="bg-green-600 text-white px-6 py-3.5 text-base rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium self-end min-w-[80px]"
+              className="px-4 sm:px-5 py-2.5 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm flex-shrink-0"
             >
-              {loading ? '...' : pendingFollowUp ? 'Answer' : replyingTo ? 'Reply' : 'Send'}
+              {loading ? '...' : 'Send'}
             </button>
           </div>
-          <div className="flex justify-center mt-3">
-            <p className="text-sm text-gray-500">
-              Emergency? Call <span className="text-green-600 font-bold">112</span>
-            </p>
-          </div>
+          <p className="text-xs text-center text-gray-600 mt-2">
+            Emergency? Call <span className="text-green-600 font-bold">112</span>
+          </p>
         </div>
       </div>
     </div>

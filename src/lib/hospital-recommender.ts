@@ -11,6 +11,9 @@ const HOSPITALS = [
   { name: "ABUTH Zaria", phone: "+234 69 550 477", address: "Zaria-Kaduna Rd, Zaria", coords: "11.0667,7.7000", lat: 11.0667, lon: 7.7000, specialties: ["emergency", "trauma", "general"] },
   { name: "FMC Owerri", phone: "+234 83 230 092", address: "Owerri, Imo", coords: "5.4840,7.0351", lat: 5.4840, lon: 7.0351, specialties: ["emergency", "general"] },
   { name: "Federal Medical Centre Umuahia", phone: "+234 88 220 134", address: "Umuahia, Abia", coords: "5.5250,7.4896", lat: 5.5250, lon: 7.4896, specialties: ["emergency", "general"] },
+  { name: "Abia State University Teaching Hospital", phone: "+234 82 220 456", address: "Aba, Abia", coords: "5.1066,7.3667", lat: 5.1066, lon: 7.3667, specialties: ["emergency", "general"] },
+  { name: "Trinity Hospital Aba", phone: "+234 82 225 789", address: "Faulks Road, Aba, Abia", coords: "5.1158,7.3496", lat: 5.1158, lon: 7.3496, specialties: ["emergency", "general"] },
+  { name: "Madonna University Teaching Hospital", phone: "+234 88 234 567", address: "Elele, Rivers", coords: "5.2833,6.8167", lat: 5.2833, lon: 6.8167, specialties: ["emergency", "general"] },
   { name: "University of Calabar Teaching Hospital", phone: "+234 87 239 009", address: "Calabar, Cross River", coords: "4.9517,8.3417", lat: 4.9517, lon: 8.3417, specialties: ["emergency", "general"] },
   { name: "Jos University Teaching Hospital", phone: "+234 73 610 379", address: "Jos, Plateau", coords: "9.8965,8.8583", lat: 9.8965, lon: 8.8583, specialties: ["emergency", "general"] },
   { name: "University of Ilorin Teaching Hospital", phone: "+234 31 229 670", address: "Ilorin, Kwara", coords: "8.4799,4.5418", lat: 8.4799, lon: 4.5418, specialties: ["emergency", "general"] }
@@ -63,13 +66,26 @@ export function detectEmergencyType(symptoms: string): EmergencyType {
 export function recommendHospitals(
   emergencyType: EmergencyType,
   userLat?: number,
-  userLon?: number
+  userLon?: number,
+  locationQuery?: string
 ) {
-  if (emergencyType === 'none') return []
+  let filtered = HOSPITALS
   
-  let filtered = HOSPITALS.filter(h => 
-    h.specialties.includes(emergencyType) || h.specialties.includes('general')
-  )
+  // Filter by emergency type if it's not 'none'
+  if (emergencyType !== 'none') {
+    filtered = HOSPITALS.filter(h => 
+      h.specialties.includes(emergencyType) || h.specialties.includes('general')
+    )
+  }
+  
+  // Filter by location query if provided
+  if (locationQuery) {
+    const query = locationQuery.toLowerCase()
+    filtered = filtered.filter(h => 
+      h.address.toLowerCase().includes(query) ||
+      h.name.toLowerCase().includes(query)
+    )
+  }
   
   // Calculate distances if user location provided
   if (userLat && userLon) {
@@ -79,7 +95,9 @@ export function recommendHospitals(
     })).sort((a, b) => a.distanceKm - b.distanceKm)
   }
   
-  return filtered.slice(0, 3).map(h => ({
+  const limit = locationQuery ? 3 : 3
+  
+  return filtered.slice(0, limit).map(h => ({
     name: h.name,
     phone: h.phone,
     address: h.address,
