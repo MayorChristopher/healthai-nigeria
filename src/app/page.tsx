@@ -47,6 +47,10 @@ export default function Home() {
   const [showAllNational, setShowAllNational] = useState(false)
   const [showAllTeaching, setShowAllTeaching] = useState(false)
   const [showAllFederal, setShowAllFederal] = useState(false)
+  const [filterType, setFilterType] = useState('all')
+  const [filterState, setFilterState] = useState('all')
+  const [typeDropdownOpen, setTypeDropdownOpen] = useState(false)
+  const [stateDropdownOpen, setStateDropdownOpen] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
@@ -82,10 +86,10 @@ export default function Home() {
       }`}>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2 text-base sm:text-lg font-semibold hover:opacity-80 transition-opacity relative z-10">
-            <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
             </svg>
-            HealthAI Nigeria
+            <span className="mt-0.5">HealthAI Nigeria</span>
           </Link>
           <div className="flex items-center gap-2 sm:gap-3 md:gap-6">
             <Link href="#problem" className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors">
@@ -96,7 +100,7 @@ export default function Home() {
             </Link>
             <Link 
               href="/chat" 
-              className="text-xs sm:text-sm bg-white text-black px-3 sm:px-4 py-1.5 rounded-md hover:bg-gray-200 transition-colors font-medium whitespace-nowrap"
+              className="text-xs sm:text-sm bg-green-600 text-white px-3 sm:px-4 py-1.5 rounded-full hover:bg-green-700 transition-colors font-medium whitespace-nowrap"
             >
               Chat
             </Link>
@@ -129,7 +133,7 @@ export default function Home() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Link 
                 href="/chat" 
-                className="inline-flex items-center justify-center gap-2 bg-white text-black px-6 sm:px-8 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-gray-200 transition-colors"
+                className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-6 sm:px-8 py-3 rounded-md text-sm sm:text-base font-medium hover:bg-green-700 transition-colors"
               >
                 Start Consultation
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -163,12 +167,12 @@ export default function Home() {
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Healthcare is out of reach for millions</h2>
               <div className="space-y-6 text-lg text-gray-400">
                 <p>
-                  In rural Nigeria, over 60% of people live more than 5km from the nearest hospital. 
-                  When medical emergencies happen at night, families don't know what to do.
+                  In rural Nigeria, many people live far from the nearest hospital. 
+                  When medical emergencies happen at night, families often don't know what to do.
                 </p>
                 <p>
                   Language barriers, lack of information, and distance to healthcare facilities 
-                  create life-threatening delays in getting proper medical attention.
+                  create delays in getting proper medical attention.
                 </p>
               </div>
             </div>
@@ -176,8 +180,8 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-8">The Reality</h3>
               <div className="space-y-6">
                 <div>
-                  <div className="text-4xl font-bold text-red-400 mb-2">5km+</div>
-                  <div className="text-sm text-gray-400">Average distance to nearest hospital in rural areas</div>
+                  <div className="text-4xl font-bold text-red-400 mb-2">Far</div>
+                  <div className="text-sm text-gray-400">Distance to nearest hospital in many rural areas</div>
                 </div>
                 <div>
                   <div className="text-4xl font-bold text-red-400 mb-2">Night</div>
@@ -227,7 +231,7 @@ export default function Home() {
                     </div>
                   </div>
 
-                  <div className="p-4 md:p-5 space-y-4 h-80 overflow-y-auto">
+                  <div className="p-4 md:p-5 space-y-4 h-80 overflow-y-auto scrollbar-thin">
                     <div className="flex gap-3">
                       <div className="w-8 h-8 rounded-full bg-gradient-to-br from-green-600 to-green-600 flex-shrink-0 flex items-center justify-center text-xs font-bold">
                         AI
@@ -320,131 +324,160 @@ export default function Home() {
               Hospital Network
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4">Find care near you</h2>
-            <p className="text-lg text-gray-400">Teaching hospitals and federal medical centers across Nigeria with emergency services</p>
-          </div>
-
-          {/* National & Specialist Hospitals */}
-          <div className="mb-12">
-            <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-              <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-              National & Specialist Hospitals
-            </h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { name: "National Hospital Abuja", state: "FCT", phone: "+234 9 461 2200", address: "Central Area", coords: "9.0579,7.4951" },
-                { name: "National Orthopaedic Hospital", state: "Lagos", phone: "+234 1 497 4221", address: "Igbobi", coords: "6.5244,3.3792" }
-              ].slice(0, showAllNational ? 2 : 1).map((hospital, i) => (
-                <HospitalCard key={i} hospital={hospital} />
-              ))}
-            </div>
-            {!showAllNational && (
-              <div className="flex justify-center mt-4">
+            <p className="text-lg text-gray-400 mb-6">Teaching hospitals and federal medical centers across Nigeria with emergency services</p>
+            
+            {/* Filters */}
+            <div className="flex flex-wrap gap-2">
+              {/* Type Filter */}
+              <div className="relative">
                 <button
-                  onClick={() => setShowAllNational(true)}
-                  className="text-sm text-green-600 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
+                  onClick={() => {
+                    setTypeDropdownOpen(!typeDropdownOpen)
+                    setStateDropdownOpen(false)
+                  }}
+                  className="flex items-center gap-2 pl-3 pr-2.5 py-2 bg-zinc-900/50 backdrop-blur-sm border border-white/5 rounded-full text-xs font-medium text-gray-300 outline-none hover:border-white/10 hover:bg-zinc-900/80 transition-all cursor-pointer"
                 >
-                  Show 1 more hospital
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <span>{filterType === 'all' ? 'All Types' : filterType.charAt(0).toUpperCase() + filterType.slice(1)}</span>
+                  <svg className={`w-3 h-3 text-gray-500 transition-transform ${typeDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
+                {typeDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setTypeDropdownOpen(false)} />
+                    <div className="absolute top-full mt-2 left-0 min-w-[140px] bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+                      {['all', 'national', 'teaching', 'federal', 'general'].map((type) => (
+                        <button
+                          key={type}
+                          onClick={() => {
+                            setFilterType(type)
+                            setTypeDropdownOpen(false)
+                          }}
+                          className={`w-full text-left px-4 py-2.5 text-xs font-medium transition-all ${
+                            filterType === type 
+                              ? 'bg-green-600/10 text-green-400 border-l-2 border-green-600' 
+                              : 'text-gray-400 hover:bg-white/5 hover:text-white hover:pl-5'
+                          }`}
+                        >
+                          {type === 'all' ? 'All Types' : type.charAt(0).toUpperCase() + type.slice(1)}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                )}
               </div>
-            )}
-          </div>
-
-          {/* Teaching Hospitals */}
-          <div className="mb-12">
-            <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-              <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-              University Teaching Hospitals
-            </h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { name: "LUTH Lagos", state: "Lagos", phone: "+234 1 263 2626", address: "Idi-Araba, Mushin", coords: "6.5244,3.3792" },
-                { name: "UCH Ibadan", state: "Oyo", phone: "+234 2 241 3545", address: "Queen Elizabeth Rd", coords: "7.3775,3.9470" },
-                { name: "UNTH Enugu", state: "Enugu", phone: "+234 42 252 3165", address: "Ituku-Ozalla", coords: "6.4281,7.5243" },
-                { name: "ABUTH Zaria", state: "Kaduna", phone: "+234 69 550 477", address: "Zaria-Kaduna Rd", coords: "11.0667,7.7000" },
-                { name: "AKTH Kano", state: "Kano", phone: "+234 64 664 430", address: "Kano", coords: "12.0022,8.5920" },
-                { name: "UPTH Port Harcourt", state: "Rivers", phone: "+234 84 462 638", address: "Port Harcourt", coords: "4.8156,7.0498" },
-                { name: "OAUTH Ile-Ife", state: "Osun", phone: "+234 36 230 210", address: "Ile-Ife", coords: "7.4905,4.5600" },
-                { name: "JUTH Jos", state: "Plateau", phone: "+234 73 610 379", address: "Jos", coords: "9.8965,8.8583" }
-              ].slice(0, showAllTeaching ? 8 : 3).map((hospital, i) => (
-                <HospitalCard key={i} hospital={hospital} />
-              ))}
-            </div>
-            <div className="flex justify-center mt-4">
-              {!showAllTeaching ? (
+              
+              {/* State Filter */}
+              <div className="relative">
                 <button
-                  onClick={() => setShowAllTeaching(true)}
-                  className="text-sm text-green-600 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
+                  onClick={() => {
+                    setStateDropdownOpen(!stateDropdownOpen)
+                    setTypeDropdownOpen(false)
+                  }}
+                  className="flex items-center gap-2 pl-3 pr-2.5 py-2 bg-zinc-900/50 backdrop-blur-sm border border-white/5 rounded-full text-xs font-medium text-gray-300 outline-none hover:border-white/10 hover:bg-zinc-900/80 transition-all cursor-pointer"
                 >
-                  Show 5 more hospitals
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  <span>{filterState === 'all' ? 'All States' : filterState}</span>
+                  <svg className={`w-3 h-3 text-gray-500 transition-transform ${stateDropdownOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M19 9l-7 7-7-7" />
                   </svg>
                 </button>
-              ) : (
-                <button
-                  onClick={() => setShowAllTeaching(false)}
-                  className="text-sm text-gray-500 hover:text-gray-400 transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  Show less
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                  </svg>
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Federal Medical Centers */}
-          <div>
-            <h3 className="text-xl font-semibold mb-6 flex items-center gap-2">
-              <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-              Federal Medical Centers
-            </h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                { name: "FMC Owerri", state: "Imo", phone: "+234 83 230 092", address: "Owerri", coords: "5.4840,7.0351" },
-                { name: "FMC Umuahia", state: "Abia", phone: "+234 88 220 134", address: "Umuahia", coords: "5.5250,7.4896" },
-                { name: "NAUTH Nnewi", state: "Anambra", phone: "+234 46 460 674", address: "Nnewi", coords: "6.0177,6.9178" },
-                { name: "ABSUTH Aba", state: "Abia", phone: "+234 82 220 456", address: "Aba", coords: "5.1066,7.3667" },
-                { name: "UCTH Calabar", state: "Cross River", phone: "+234 87 239 009", address: "Calabar", coords: "4.9517,8.3417" }
-              ].slice(0, showAllFederal ? 5 : 2).map((hospital, i) => (
-                <HospitalCard key={i} hospital={hospital} />
-              ))}
-            </div>
-            {!showAllFederal && (
-              <div className="flex justify-center mt-4">
-                <button
-                  onClick={() => setShowAllFederal(true)}
-                  className="text-sm text-green-600 hover:text-green-400 transition-colors flex items-center gap-1 cursor-pointer"
-                >
-                  Show 3 more hospitals
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                  </svg>
-                </button>
+                {stateDropdownOpen && (
+                  <>
+                    <div className="fixed inset-0 z-10" onClick={() => setStateDropdownOpen(false)} />
+                    <div className="absolute top-full mt-2 left-0 min-w-[160px] max-h-[320px] bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl shadow-2xl overflow-hidden z-20 animate-in fade-in slide-in-from-top-2 duration-200">
+                      <div className="overflow-y-auto max-h-[320px] scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent hover:scrollbar-thumb-white/20">
+                        {['all', 'FCT', 'Abia', 'Cross River', 'Enugu', 'Imo', 'Kaduna', 'Kano', 'Kwara', 'Lagos', 'Oyo', 'Plateau', 'Rivers'].map((state) => (
+                          <button
+                            key={state}
+                            onClick={() => {
+                              setFilterState(state)
+                              setStateDropdownOpen(false)
+                            }}
+                            className={`w-full text-left px-4 py-2.5 text-xs font-medium transition-all ${
+                              filterState === state 
+                                ? 'bg-green-600/10 text-green-400 border-l-2 border-green-600' 
+                                : 'text-gray-400 hover:bg-white/5 hover:text-white hover:pl-5'
+                            }`}
+                          >
+                            {state === 'all' ? 'All States' : state}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
-            )}
+            </div>
           </div>
+
+          {/* Filtered Hospitals */}
+          {(() => {
+            const filteredHospitals = [
+              // National
+              { name: "National Hospital Abuja", state: "FCT", type: "national", phone: "+234 9 461 2200", address: "Central Area", coords: "9.0579,7.4951" },
+              
+              // Teaching
+              { name: "LUTH Lagos", state: "Lagos", type: "teaching", phone: "+234 1 263 2626", address: "Idi-Araba, Mushin", coords: "6.5244,3.3792" },
+              { name: "UCH Ibadan", state: "Oyo", type: "teaching", phone: "+234 2 241 3545", address: "Queen Elizabeth Rd", coords: "7.3775,3.9470" },
+              { name: "UNTH Enugu", state: "Enugu", type: "teaching", phone: "+234 42 252 3165", address: "Ituku-Ozalla", coords: "6.4281,7.5243" },
+              { name: "ABUTH Zaria", state: "Kaduna", type: "teaching", phone: "+234 69 550 477", address: "Zaria-Kaduna Rd", coords: "11.0667,7.7000" },
+              { name: "AKTH Kano", state: "Kano", type: "teaching", phone: "+234 64 664 430", address: "Kano", coords: "12.0022,8.5920" },
+              { name: "UPTH Port Harcourt", state: "Rivers", type: "teaching", phone: "+234 84 462 638", address: "Port Harcourt", coords: "4.8156,7.0498" },
+              { name: "UCTH Calabar", state: "Cross River", type: "teaching", phone: "+234 87 239 009", address: "Calabar", coords: "4.9517,8.3417" },
+              { name: "JUTH Jos", state: "Plateau", type: "teaching", phone: "+234 73 610 379", address: "Jos", coords: "9.8965,8.8583" },
+              { name: "UITH Ilorin", state: "Kwara", type: "teaching", phone: "+234 31 229 670", address: "Ilorin", coords: "8.4799,4.5418" },
+              { name: "ABSUTH Aba", state: "Abia", type: "teaching", phone: "+234 82 220 456", address: "Aba", coords: "5.1066,7.3667" },
+              { name: "Madonna University Teaching Hospital", state: "Rivers", type: "teaching", phone: "+234 88 234 567", address: "Elele", coords: "5.2833,6.8167" },
+              
+              // Federal
+              { name: "FMC Owerri", state: "Imo", type: "federal", phone: "+234 83 230 092", address: "Owerri", coords: "5.4840,7.0351" },
+              { name: "FMC Umuahia", state: "Abia", type: "federal", phone: "+234 88 220 134", address: "Umuahia", coords: "5.5250,7.4896" },
+              
+              // General
+              { name: "Trinity Hospital Aba", state: "Abia", type: "general", phone: "+234 82 225 789", address: "Faulks Road, Aba", coords: "5.1158,7.3496" }
+            ]
+              .filter(h => filterType === 'all' || h.type === filterType)
+              .filter(h => filterState === 'all' || h.state === filterState)
+            
+            return filteredHospitals.length > 0 ? (
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {filteredHospitals.map((hospital, i) => (
+                  <HospitalCard key={i} hospital={hospital} />
+                ))}
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-16 px-4">
+                <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-4">
+                  <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                  </svg>
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No hospitals found</h3>
+                <p className="text-sm text-gray-400 text-center max-w-sm">We're expanding our network. More hospitals in this category will be added soon.</p>
+              </div>
+            )
+          })()}
 
           <div className="mt-16 text-center">
             <div className="flex flex-wrap justify-center gap-4 sm:gap-8 mb-4">
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-red-500 rounded-full"></div>
-                <span className="text-gray-400">National (2)</span>
+                <span className="text-gray-400">National (1)</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
-                <span className="text-gray-400">Teaching (8)</span>
+                <span className="text-gray-400">Teaching (10)</span>
               </div>
               <div className="flex items-center gap-2 text-sm">
                 <div className="w-2 h-2 bg-green-600 rounded-full"></div>
-                <span className="text-gray-400">Federal (3)</span>
+                <span className="text-gray-400">Federal (2)</span>
+              </div>
+              <div className="flex items-center gap-2 text-sm">
+                <div className="w-2 h-2 bg-gray-500 rounded-full"></div>
+                <span className="text-gray-400">General (1)</span>
               </div>
             </div>
-            <p className="text-sm text-gray-500 mb-2">15 major hospitals across Nigeria's 6 geopolitical zones</p>
+            <p className="text-sm text-gray-500 mb-2">14 major hospitals across Nigeria</p>
             <p className="text-xs text-gray-600">Hospital information verified • Updated regularly • Emergency services available 24/7</p>
           </div>
 
@@ -716,7 +749,7 @@ export default function Home() {
           </p>
           <Link 
             href="/chat" 
-            className="inline-flex items-center justify-center gap-2 bg-white text-black px-6 sm:px-8 py-3 rounded-md text-base sm:text-lg font-medium hover:bg-gray-200 transition-colors"
+            className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-6 sm:px-8 py-3 rounded-md text-base sm:text-lg font-medium hover:bg-green-700 transition-colors"
           >
             Launch Chat
             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -732,10 +765,10 @@ export default function Home() {
           <div className="flex flex-col md:flex-row justify-between gap-12 mb-12">
             <div className="max-w-sm">
               <div className="flex items-center gap-2 text-xl font-semibold mb-3">
-                <svg className="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
-                HealthAI Nigeria
+                <span className="mt-0.5">HealthAI Nigeria</span>
               </div>
               <p className="text-gray-500 text-sm leading-relaxed">
                 AI-powered medical assistant for Nigerian communities. Built for Nigeria National AI Hackathon 2025.

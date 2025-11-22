@@ -19,6 +19,8 @@ type Message = {
   onlineDoctors?: boolean
   timestamp: Date
   replyTo?: string
+  stopped?: boolean
+  retryMessage?: string
 }
 
 export default function ChatPage() {
@@ -38,6 +40,9 @@ export default function ChatPage() {
   const [connectionStatus, setConnectionStatus] = useState<'online' | 'typing' | 'offline' | 'emergency'>('online')
   const [sessionId] = useState(Math.random().toString(36))
   const [mounted, setMounted] = useState(false)
+  const [abortController, setAbortController] = useState<AbortController | null>(null)
+  const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
+  const [editedContent, setEditedContent] = useState('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -99,6 +104,24 @@ export default function ChatPage() {
     }
   }, [messages, mounted])
 
+  const stopResponse = () => {
+    if (abortController) {
+      abortController.abort()
+      setAbortController(null)
+      setLoading(false)
+      
+      // Add stopped message
+      setMessages(prev => [...prev, {
+        id: Math.random().toString(36),
+        role: 'ai',
+        content: 'Response stopped.',
+        timestamp: new Date(),
+        stopped: true,
+        retryMessage: messages[messages.length - 1]?.content || input
+      }])
+    }
+  }
+
   const sendMessage = async () => {
     if (!input.trim() || loading) return
 
@@ -117,6 +140,9 @@ export default function ChatPage() {
     setReplyingTo(null)
     setLoading(true)
 
+    const controller = new AbortController()
+    setAbortController(controller)
+
     try {
       const recentMessages = messages.slice(-8).map(m => ({
         role: m.role,
@@ -131,7 +157,8 @@ export default function ChatPage() {
           sessionId, 
           language,
           history: recentMessages
-        })
+        }),
+        signal: controller.signal
       })
 
       if (!res.ok) throw new Error('Network response was not ok')
@@ -149,16 +176,166 @@ export default function ChatPage() {
       }
       
       setMessages(prev => [...prev, aiMessage])
-    } catch (error) {
-      setMessages(prev => [...prev, {
-        id: Math.random().toString(36),
-        role: 'ai',
-        content: "Sorry, I couldn't process that. Please check your connection and try again.",
-        timestamp: new Date()
-      }])
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        setMessages(prev => [...prev, {
+          id: Math.random().toString(36),
+          role: 'ai',
+          content: "Sorry, I couldn't process that. Please check your connection and try again.",
+          timestamp: new Date()
+        }])
+      }
     } finally {
       setLoading(false)
+      setAbortController(null)
     }
+  }
+
+  const retryMessage = async (messageContent: string) => {
+    if (loading) return
+    
+    const newMessage: Message = {
+      id: Math.random().toString(36),
+      role: 'user', 
+      content: messageContent, 
+      timestamp: new Date()
+    }
+    
+    setMessages(prev => [...prev, newMessage])
+    setLoading(true)
+
+    const controller = new AbortController()
+    setAbortController(controller)
+
+    try {
+      const recentMessages = messages.slice(-8).map(m => ({
+        role: m.role,
+        content: m.content
+      }))
+
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: messageContent, 
+          sessionId, 
+          language,
+          history: recentMessages
+        }),
+        signal: controller.signal
+      })
+
+      if (!res.ok) throw new Error('Network response was not ok')
+
+      const data = await res.json()
+      
+      const aiMessage: Message = {
+        id: Math.random().toString(36),
+        role: 'ai',
+        content: data.response,
+        isEmergency: data.isEmergency,
+        hospitals: data.hospitals,
+        onlineDoctors: data.onlineDoctors,
+        timestamp: new Date()
+      }
+      
+      setMessages(prev => [...prev, aiMessage])
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        setMessages(prev => [...prev, {
+          id: Math.random().toString(36),
+          role: 'ai',
+          content: "Sorry, I couldn't process that. Please check your connection and try again.",
+          timestamp: new Date()
+        }])
+      }
+    } finally {
+      setLoading(false)
+      setAbortController(null)
+    }
+  }
+
+  const startEditMessage = (msg: Message) => {
+    setEditingMessageId(msg.id)
+    setEditedContent(msg.content)
+  }
+
+  const saveEditedMessage = async (msgId: string) => {
+    if (!editedContent.trim()) return
+    
+    // Find the message index
+    const msgIndex = messages.findIndex(m => m.id === msgId)
+    if (msgIndex === -1) return
+    
+    // Update the message content
+    const updatedMessages = [...messages]
+    updatedMessages[msgIndex] = {
+      ...updatedMessages[msgIndex],
+      content: editedContent.trim()
+    }
+    
+    // Remove all messages after this one
+    const newMessages = updatedMessages.slice(0, msgIndex + 1)
+    setMessages(newMessages)
+    setEditingMessageId(null)
+    setEditedContent('')
+    
+    // Send the edited message directly without adding it again
+    setLoading(true)
+    const controller = new AbortController()
+    setAbortController(controller)
+
+    try {
+      const recentMessages = newMessages.slice(-8).map(m => ({
+        role: m.role,
+        content: m.content
+      }))
+
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: editedContent.trim(), 
+          sessionId, 
+          language,
+          history: recentMessages
+        }),
+        signal: controller.signal
+      })
+
+      if (!res.ok) throw new Error('Network response was not ok')
+
+      const data = await res.json()
+      
+      const aiMessage: Message = {
+        id: Math.random().toString(36),
+        role: 'ai',
+        content: data.response,
+        isEmergency: data.isEmergency,
+        hospitals: data.hospitals,
+        onlineDoctors: data.onlineDoctors,
+        timestamp: new Date()
+      }
+      
+      setMessages(prev => [...prev, aiMessage])
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        setMessages(prev => [...prev, {
+          id: Math.random().toString(36),
+          role: 'ai',
+          content: "Sorry, I couldn't process that. Please check your connection and try again.",
+          timestamp: new Date()
+        }])
+      }
+    } finally {
+      setLoading(false)
+      setAbortController(null)
+    }
+  }
+
+  const cancelEdit = () => {
+    setEditingMessageId(null)
+    setEditedContent('')
   }
 
   if (!termsAccepted) {
@@ -260,20 +437,52 @@ export default function ChatPage() {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-3 sm:p-4">
-        <div className="max-w-3xl mx-auto space-y-3 sm:space-y-4">
+        <div className="max-w-3xl mx-auto space-y-2 sm:space-y-3 pb-32">
           {messages.map((msg, i) => (
             <div
               key={i}
               className={`flex gap-2 sm:gap-3 ${msg.role === 'user' ? 'justify-end' : ''}`}
             >
               {msg.role === 'ai' && (
-                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-600 flex-shrink-0 flex items-center justify-center self-end">
+                <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-600 flex-shrink-0 flex items-center justify-center self-start">
                   <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                   </svg>
                 </div>
               )}
               <div className="max-w-[80%] sm:max-w-[75%]">
+                {editingMessageId === msg.id ? (
+                  <div className="space-y-2">
+                    <textarea
+                      value={editedContent}
+                      onChange={(e) => setEditedContent(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-sm outline-none focus:border-green-600/50 resize-none"
+                      rows={3}
+                      autoFocus
+                    />
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => saveEditedMessage(msg.id)}
+                        className="p-2 bg-green-600 text-white rounded hover:bg-green-700 cursor-pointer"
+                        title="Send"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={cancelEdit}
+                        className="p-2 bg-white/5 border border-white/10 text-white rounded hover:bg-white/10 cursor-pointer"
+                        title="Cancel"
+                      >
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                <>
                 {msg.replyTo && (
                   <div className={`mb-1 p-2 rounded-lg border-l-2 ${
                     msg.role === 'user' ? 'bg-green-900/30 border-green-600' : 'bg-white/5 border-white/30'
@@ -366,28 +575,68 @@ export default function ChatPage() {
                     </div>
                   )}
                 </div>
+                </>
+                )}
                 <div className="flex items-center justify-between mt-1 px-1">
                   <p className="text-xs text-gray-600">
                     {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                   </p>
-                  {msg.role === 'ai' && (
+                  {msg.role === 'user' && editingMessageId !== msg.id && (
+                    <button
+                      onClick={() => startEditMessage(msg)}
+                      className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                      title="Edit message"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                      </svg>
+                    </button>
+                  )}
+                  {msg.role === 'ai' && editingMessageId !== msg.id && (
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => setReplyingTo(msg)}
-                        className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
-                      >
-                        Reply
-                      </button>
-                      <button
-                        onClick={() => {
-                          navigator.clipboard.writeText(msg.content)
-                          setCopied(true)
-                          setTimeout(() => setCopied(false), 2000)
-                        }}
-                        className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
-                      >
-                        {copied ? '✓' : 'Copy'}
-                      </button>
+                      {msg.stopped && msg.retryMessage && (
+                        <button
+                          onClick={() => retryMessage(msg.retryMessage!)}
+                          className="text-xs text-green-600 hover:text-green-400 transition-colors cursor-pointer flex items-center gap-1"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                          </svg>
+                          Retry
+                        </button>
+                      )}
+                      {!msg.stopped && (
+                        <>
+                          <button
+                            onClick={() => setReplyingTo(msg)}
+                            className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                            title="Reply"
+                          >
+                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
+                            </svg>
+                          </button>
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(msg.content)
+                              setCopied(true)
+                              setTimeout(() => setCopied(false), 2000)
+                            }}
+                            className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                            title="Copy"
+                          >
+                            {copied ? (
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                              </svg>
+                            ) : (
+                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                              </svg>
+                            )}
+                          </button>
+                        </>
+                      )}
                     </div>
                   )}
                 </div>
@@ -471,11 +720,17 @@ export default function ChatPage() {
               disabled={loading}
             />
             <button
-              onClick={sendMessage}
-              disabled={loading || !input.trim()}
-              className="px-4 sm:px-5 py-2.5 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm flex-shrink-0"
+              onClick={loading ? stopResponse : sendMessage}
+              disabled={!loading && !input.trim()}
+              className="px-4 sm:px-5 py-2.5 sm:py-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium text-sm flex-shrink-0 flex items-center justify-center cursor-pointer"
             >
-              {loading ? '...' : 'Send'}
+              {loading ? (
+                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <circle cx="10" cy="10" r="8" />
+                </svg>
+              ) : (
+                'Send'
+              )}
             </button>
           </div>
           <p className="text-xs text-center text-gray-600 mt-2">

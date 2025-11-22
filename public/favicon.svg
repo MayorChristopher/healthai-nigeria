@@ -2,11 +2,13 @@
   <!-- Background -->
   <rect width="32" height="32" rx="6" fill="#000000"/>
   
-  <!-- Medical Cross (Green) -->
-  <rect x="14" y="8" width="4" height="16" rx="1" fill="#22c55e"/>
-  <rect x="8" y="14" width="16" height="4" rx="1" fill="#22c55e"/>
+  <!-- Lightbulb (matching site icon) -->
+  <path d="M16 6C13.2386 6 11 8.23858 11 11C11 12.3807 11.5602 13.6307 12.4645 14.5355C12.7893 14.8603 13 15.3065 13 15.7735V18C13 18.5523 13.4477 19 14 19H18C18.5523 19 19 18.5523 19 18V15.7735C19 15.3065 19.2107 14.8603 19.5355 14.5355C20.4398 13.6307 21 12.3807 21 11C21 8.23858 18.7614 6 16 6Z" fill="#22c55e"/>
   
-  <!-- AI Pulse Effect (Lighter Green) -->
-  <circle cx="16" cy="16" r="2" fill="#4ade80" opacity="0.8"/>
-  <circle cx="16" cy="16" r="4" fill="none" stroke="#4ade80" stroke-width="0.5" opacity="0.4"/>
+  <!-- Bulb base -->
+  <rect x="14" y="19" width="4" height="2" rx="0.5" fill="#22c55e"/>
+  <rect x="14.5" y="21" width="3" height="2" rx="0.5" fill="#22c55e"/>
+  
+  <!-- AI glow effect -->
+  <circle cx="16" cy="11" r="1.5" fill="#4ade80" opacity="0.6"/>
 </svg>

@@ -34,16 +34,16 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || '')
 
 function getSystemPrompt(language: string) {
   const languageInstruction = 
-    language === 'english' ? 'ALWAYS respond in clear, simple English.' :
-    language === 'pidgin' ? 'ALWAYS respond in Nigerian Pidgin.' :
-    'Detect the user\'s language and respond in the SAME language they use.'
+    language === 'english' ? 'CRITICAL: You MUST respond ONLY in clear, simple English. DO NOT use Pidgin. Even if the user uses Pidgin or broken English, respond in proper English.' :
+    language === 'pidgin' ? 'CRITICAL: You MUST respond ONLY in Nigerian Pidgin. DO NOT use English.' :
+    'CRITICAL: Detect the user\'s language. If they use proper English words and grammar, respond in English. If they use Pidgin (e.g., "dey", "fit", "make", "wetin"), respond in Pidgin. Default to English for unclear cases.'
 
   return `You are HealthAI Nigeria, a WHO-informed medical assistant for Nigerian communities.
 
-LANGUAGE RULES:
+LANGUAGE RULES (STRICTLY ENFORCE):
 ${languageInstruction}
 - Use simple words that elderly people understand
-- Be consistent - don't mix languages
+- Be consistent - don't mix languages in one response
 - Always use proper grammar and spelling
 - Proofread your response before sending
 
