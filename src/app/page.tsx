@@ -519,7 +519,7 @@ export default function Home() {
           </div>
           <div className="grid md:grid-cols-3 gap-6">
             <div className="bg-white/5 p-6 rounded-xl border border-white/10">
-              <div className="text-blue-500 mb-3">
+              <div className="text-green-600 mb-3">
                 <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
@@ -674,7 +674,7 @@ export default function Home() {
               </ul>
             </div>
             <div className="bg-white/5 p-6 md:p-8 rounded-xl border border-white/10">
-              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-2xl font-bold mb-4 overflow-hidden">
+              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-green-600 to-green-600 flex items-center justify-center text-2xl font-bold mb-4 overflow-hidden">
                 <img 
                   src="/team/victor.png"
                   alt="Victor"
@@ -691,7 +691,7 @@ export default function Home() {
                 <span className="avatar-letter absolute inset-0 hidden items-center justify-center">V</span>
               </div>
               <h3 className="text-xl font-bold mb-1">Victor Chidoize</h3>
-              <p className="text-blue-500 text-sm mb-4">Backend Developer</p>
+              <p className="text-green-600 text-sm mb-4">Backend Developer</p>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li>• Backend API</li>
                 <li>• Adaptive AI logic</li>
@@ -700,7 +700,7 @@ export default function Home() {
               </ul>
             </div>
             <div className="bg-white/5 p-6 md:p-8 rounded-xl border border-white/10">
-              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center text-2xl font-bold mb-4 overflow-hidden">
+              <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-green-600 to-green-600 flex items-center justify-center text-2xl font-bold mb-4 overflow-hidden">
                 <img 
                   src="/team/comfort.jpg"
                   alt="Comfort"
@@ -717,7 +717,7 @@ export default function Home() {
                 <span className="avatar-letter absolute inset-0 hidden items-center justify-center">C</span>
               </div>
               <h3 className="text-xl font-bold mb-1">Asiribo Comfort</h3>
-              <p className="text-purple-500 text-sm mb-4">Documentation & Frontend</p>
+              <p className="text-green-600 text-sm mb-4">Documentation & Frontend</p>
               <ul className="text-sm text-gray-400 space-y-2">
                 <li>• Project documentation</li>
                 <li>• Chat UI components</li>
