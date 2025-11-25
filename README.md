@@ -1,14 +1,13 @@
 # HealthAI Nigeria 🏥
 
-⚠️ **PROTOTYPE STATUS**: This is a hackathon demo, NOT production-ready medical software.
+⚠️ **PROTOTYPE STATUS**: Hackathon demo - NOT production-ready medical software.
 
-AI-powered medical assistant providing symptom analysis and hospital finder for Nigerian communities. Built for **Nigeria National AI Hackathon 2025**.
+AI-powered medical assistant for Nigerian communities with symptom analysis, emergency detection, and hospital finder. Built for **Nigeria National AI Hackathon 2025**.
 
 ![Next.js](https://img.shields.io/badge/Next.js-16-black?logo=next.js)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind-4-38bdf8?logo=tailwindcss)
-
-**[Read REALITY.md](REALITY.md) for honest assessment of what works and what doesn't.**
+![Google Gemini](https://img.shields.io/badge/Gemini-AI-4285F4?logo=google)
 
 ## 🎯 Problem Statement
 
@@ -62,26 +61,30 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 
 ## 📚 Documentation
 
-See [docs/GUIDE.md](docs/GUIDE.md) for complete setup and build instructions.
+- **[ARCHITECTURE.md](ARCHITECTURE.md)** - Complete system architecture & flow diagrams
+- **[docs/COMPLETE_GUIDE.md](docs/COMPLETE_GUIDE.md)** - Full guide for hackathon demo
+- **[docs/TECHNICAL_DETAILS.md](docs/TECHNICAL_DETAILS.md)** - Technical specifications
+- **[docs/QUICK_START.md](docs/QUICK_START.md)** - Quick setup guide
 
 ## 📂 Project Structure
 
 ```
 healthai-nigeria/
 ├── src/
-│   ├── app/
-│   │   ├── page.tsx          # Landing page
-│   │   ├── chat/page.tsx     # Chat interface
-│   │   ├── layout.tsx        # Root layout
-│   │   └── globals.css       # Global styles
-│   └── lib/
-│       ├── hospital-recommender.ts
-│       └── google-maps-integration.ts
-├── public/
-│   └── team/                 # Team photos
-├── docs/
-│   └── GUIDE.md              # Complete guide
-└── README.md
+│   ├── app/              # Next.js pages & API routes
+│   │   ├── api/chat/     # AI chat endpoint
+│   │   ├── chat/         # Chat interface
+│   │   └── page.tsx      # Landing page
+│   ├── components/       # Reusable UI components
+│   │   └── LocationRequest.tsx
+│   ├── lib/              # Core business logic
+│   │   ├── hospital-recommender.ts
+│   │   ├── response-filter.ts
+│   │   └── offline-emergency.ts
+│   └── types/            # TypeScript definitions
+├── docs/                 # Documentation
+├── public/               # Static assets
+└── ARCHITECTURE.md       # System architecture
 ```
 
 ## 🏆 Hackathon Details

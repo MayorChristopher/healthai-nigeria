@@ -1,26 +1,25 @@
 import type { Metadata } from "next";
-import { Analytics } from '@vercel/analytics/react';
+import { Inter } from "next/font/google";
 import "./globals.css";
 
+const inter = Inter({ subsets: ["latin"] });
+
 export const metadata: Metadata = {
-  title: "HealthAI Nigeria - Free Medical Advice 24/7",
-  description: "AI-powered medical assistant for Nigerian communities. Get instant symptom analysis in English and Pidgin. Find nearby hospitals. Available 24/7.",
-  keywords: ["Nigeria", "healthcare", "AI", "medical advice", "Pidgin", "emergency", "hospital finder"],
-  authors: [{ name: "Mayor Christopher", url: "https://github.com/MayorChristopher" }],
-  icons: {
-    icon: '/favicon.svg',
+  title: "HealthAI Nigeria - AI Medical Assistant",
+  description: "AI-powered medical assistant for Nigerian communities. Emergency detection, symptom analysis in English and Pidgin, hospital finder. Available 24/7.",
+  manifest: "/manifest.json",
+  themeColor: "#16a34a",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "HealthAI Nigeria"
   },
-  openGraph: {
-    title: "HealthAI Nigeria - Free Medical Advice 24/7",
-    description: "AI-powered medical assistant for Nigerian communities. Available in English and Pidgin.",
-    type: "website",
-    locale: "en_NG",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "HealthAI Nigeria - Free Medical Advice 24/7",
-    description: "AI-powered medical assistant for Nigerian communities. Available in English and Pidgin.",
-  },
+  viewport: {
+    width: "device-width",
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false
+  }
 };
 
 export default function RootLayout({
@@ -30,9 +29,27 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="apple-touch-icon" href="/icon-192.png" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="HealthAI" />
+      </head>
+      <body className={inter.className}>
         {children}
-        <Analytics />
+        <script dangerouslySetInnerHTML={{
+          __html: `
+            if ('serviceWorker' in navigator) {
+              window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(
+                  (registration) => console.log('SW registered:', registration),
+                  (error) => console.log('SW registration failed:', error)
+                );
+              });
+            }
+          `
+        }} />
       </body>
     </html>
   );

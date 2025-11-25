@@ -117,6 +117,11 @@ export function recommendHospitals(
   
   const limit = locationQuery ? 5 : 3
   
+  // If no hospitals found after filtering, return top 3 major hospitals as fallback
+  if (filtered.length === 0) {
+    filtered = HOSPITALS.filter(h => h.type === 'national' || h.type === 'teaching').slice(0, 3)
+  }
+  
   return filtered.slice(0, limit).map(h => ({
     name: h.name,
     phone: h.phone,

@@ -1,0 +1,15 @@
+<svg width="512" height="512" viewBox="0 0 512 512" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="512" height="512" rx="128" fill="#16a34a"/>
+  
+  <!-- Medical Cross / Lightbulb Icon -->
+  <path d="M256 96C256 96 256 96 256 96C229.49 96 208 117.49 208 144C208 161.67 216.5 177.33 229.5 186.67V288C229.5 299.05 238.45 308 249.5 308H262.5C273.55 308 282.5 299.05 282.5 288V186.67C295.5 177.33 304 161.67 304 144C304 117.49 282.51 96 256 96Z" fill="white"/>
+  
+  <!-- Base of lightbulb -->
+  <rect x="232" y="320" width="48" height="32" rx="8" fill="white"/>
+  <rect x="240" y="360" width="32" height="24" rx="4" fill="white"/>
+  
+  <!-- Plus sign overlay -->
+  <rect x="240" y="140" width="32" height="8" rx="4" fill="#16a34a"/>
+  <rect x="252" y="128" width="8" height="32" rx="4" fill="#16a34a"/>
+</svg>

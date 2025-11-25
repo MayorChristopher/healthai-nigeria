@@ -2,6 +2,10 @@
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
+import LocationRequest from '@/components/LocationRequest'
+import InstallPrompt from '@/components/InstallPrompt'
+import { getRandomHealthTip } from '@/lib/health-tips'
+import { detectUrgencyLevel, type UrgencyInfo } from '@/lib/urgency-detector'
 
 type Hospital = {
   name: string
@@ -12,7 +16,7 @@ type Hospital = {
 
 type Message = {
   id: string
-  role: 'user' | 'ai'
+  role: 'user' | 'ai' | 'location'
   content: string
   isEmergency?: boolean
   hospitals?: Hospital[]
@@ -21,6 +25,8 @@ type Message = {
   replyTo?: string
   stopped?: boolean
   retryMessage?: string
+  needsLocation?: boolean
+  urgency?: UrgencyInfo
 }
 
 export default function ChatPage() {
@@ -43,6 +49,9 @@ export default function ChatPage() {
   const [abortController, setAbortController] = useState<AbortController | null>(null)
   const [editingMessageId, setEditingMessageId] = useState<string | null>(null)
   const [editedContent, setEditedContent] = useState('')
+  const [showLocationRequest, setShowLocationRequest] = useState(false)
+  const [pendingLocationMessage, setPendingLocationMessage] = useState('')
+  const [currentTip, setCurrentTip] = useState(getRandomHealthTip())
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -73,6 +82,16 @@ export default function ChatPage() {
     }
   }, [messages.length, mounted])
 
+  // Rotate health tips while loading
+  useEffect(() => {
+    if (loading) {
+      const interval = setInterval(() => {
+        setCurrentTip(getRandomHealthTip())
+      }, 3000)
+      return () => clearInterval(interval)
+    }
+  }, [loading])
+
   useEffect(() => {
     const handleOnline = () => setIsOnline(true)
     const handleOffline = () => setIsOnline(false)
@@ -91,7 +110,8 @@ export default function ChatPage() {
       setConnectionStatus('offline')
     } else if (loading) {
       setConnectionStatus('typing')
-    } else if (messages.some(m => m.isEmergency)) {
+    } else if (messages.slice(-3).some(m => m.isEmergency)) {
+      // Only show emergency mode if one of last 3 messages is emergency
       setConnectionStatus('emergency')
     } else {
       setConnectionStatus('online')
@@ -119,6 +139,64 @@ export default function ChatPage() {
         stopped: true,
         retryMessage: messages[messages.length - 1]?.content || input
       }])
+    }
+  }
+
+  const handleLocationSelect = async (location: { lat: number; lon: number; method: 'gps' | 'manual'; address?: string }) => {
+    setShowLocationRequest(false)
+    
+    const locationMsg: Message = {
+      id: Math.random().toString(36),
+      role: 'location',
+      content: location.method === 'gps' ? '📍 GPS location shared' : `📍 Location: ${location.address}`,
+      timestamp: new Date()
+    }
+    
+    setMessages(prev => [...prev, locationMsg])
+    setLoading(true)
+
+    const controller = new AbortController()
+    setAbortController(controller)
+
+    try {
+      const res = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          message: pendingLocationMessage,
+          sessionId, 
+          language,
+          history: messages.slice(-8).map(m => ({ role: m.role, content: m.content })),
+          userLocation: location.method === 'gps' ? { lat: location.lat, lon: location.lon } : undefined,
+          locationQuery: location.address
+        }),
+        signal: controller.signal
+      })
+
+      if (!res.ok) throw new Error('Network response was not ok')
+      const data = await res.json()
+      
+      setMessages(prev => [...prev, {
+        id: Math.random().toString(36),
+        role: 'ai',
+        content: data.response,
+        isEmergency: data.isEmergency,
+        hospitals: data.hospitals,
+        timestamp: new Date()
+      }])
+    } catch (error: any) {
+      if (error.name !== 'AbortError') {
+        setMessages(prev => [...prev, {
+          id: Math.random().toString(36),
+          role: 'ai',
+          content: "Sorry, couldn't process that. Please try again.",
+          timestamp: new Date()
+        }])
+      }
+    } finally {
+      setLoading(false)
+      setAbortController(null)
+      setPendingLocationMessage('')
     }
   }
 
@@ -165,6 +243,8 @@ export default function ChatPage() {
 
       const data = await res.json()
       
+      const urgency = detectUrgencyLevel(userMessage, data.isEmergency)
+      
       const aiMessage: Message = {
         id: Math.random().toString(36),
         role: 'ai',
@@ -172,16 +252,32 @@ export default function ChatPage() {
         isEmergency: data.isEmergency,
         hospitals: data.hospitals,
         onlineDoctors: data.onlineDoctors,
-        timestamp: new Date()
+        timestamp: new Date(),
+        needsLocation: data.needsLocation,
+        urgency
       }
       
       setMessages(prev => [...prev, aiMessage])
+      
+      if (data.needsLocation) {
+        setPendingLocationMessage(userMessage)
+        setShowLocationRequest(true)
+      }
     } catch (error: any) {
       if (error.name !== 'AbortError') {
+        // Network error - provide offline emergency guidance
+        const isEmergencyMsg = userMessage.toLowerCase().includes('bleeding') || 
+                               userMessage.toLowerCase().includes('chest pain') ||
+                               userMessage.toLowerCase().includes('unconscious') ||
+                               userMessage.toLowerCase().includes('breathe')
+        
         setMessages(prev => [...prev, {
           id: Math.random().toString(36),
           role: 'ai',
-          content: "Sorry, I couldn't process that. Please check your connection and try again.",
+          content: isEmergencyMsg 
+            ? "🚨 EMERGENCY - No internet connection!\n\nCall 112 immediately or go to nearest hospital.\n\nMajor hospitals:\n• National Hospital Abuja: +234 9 461 2200\n• LUTH Lagos: +234 1 263 2626\n• UCH Ibadan: +234 2 241 3545\n\nIf severe bleeding: Apply direct pressure with clean cloth.\nIf unconscious: Check breathing, place in recovery position.\nIf chest pain: Keep person calm, call 112."
+            : "I'm currently offline. For emergencies, call 112.\n\nMajor hospitals:\n• National Hospital Abuja: +234 9 461 2200\n• LUTH Lagos: +234 1 263 2626\n• UCH Ibadan: +234 2 241 3545\n\nPlease see a doctor for proper diagnosis.",
+          isEmergency: isEmergencyMsg,
           timestamp: new Date(),
           stopped: true,
           retryMessage: userMessage
@@ -416,6 +512,7 @@ export default function ChatPage() {
 
   return (
     <div className="min-h-screen bg-black text-white flex flex-col">
+      <InstallPrompt />
       {/* Medical Disclaimer Banner */}
       <div className="bg-yellow-500/10 border-b border-yellow-500/20 p-3">
         <div className="max-w-4xl mx-auto flex items-center gap-2 text-sm text-yellow-500">
@@ -528,12 +625,15 @@ export default function ChatPage() {
                       : 'bg-zinc-900 border border-white/5 rounded-2xl rounded-bl-md'
                   }`}
                 >
-                  {msg.isEmergency && (
-                    <div className="border-l-4 border-red-500 pl-3 mb-3">
-                      <p className="text-red-500 font-bold text-base flex items-center gap-2">
-                        <span className="text-xl">🚨</span>
-                        <span>EMERGENCY - Seek immediate help!</span>
-                      </p>
+                  {msg.urgency && (
+                    <div className={`${msg.urgency.bgColor} ${msg.urgency.borderColor} border rounded-lg p-3 mb-3 flex items-center justify-between`}>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xl">{msg.urgency.icon}</span>
+                        <div>
+                          <p className={`${msg.urgency.color} font-bold text-sm`}>{msg.urgency.label}</p>
+                          <p className="text-xs text-gray-400 mt-0.5">{msg.urgency.action}</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                   <div className="text-sm sm:text-base leading-relaxed prose prose-invert prose-sm max-w-none">
@@ -564,7 +664,7 @@ export default function ChatPage() {
                           <p className="text-sm font-medium text-green-600">Nearest Hospitals</p>
                         </div>
                         <Link
-                          href="/"
+                          href="/#hospitals"
                           className="text-xs text-gray-400 hover:text-green-600 transition-colors cursor-pointer flex items-center gap-1"
                         >
                           <span>View all</span>
@@ -611,7 +711,7 @@ export default function ChatPage() {
                       ))}
                       <div className="mt-3 p-3 bg-white/5 border border-white/10 rounded-lg">
                         <p className="text-xs text-gray-400">
-                          These may not be closest to you. <Link href="/" className="text-green-600 hover:text-green-400 cursor-pointer">Browse all hospitals</Link> to find ones near your location.
+                          These may not be closest to you. <Link href="/#hospitals" className="text-green-600 hover:text-green-400 cursor-pointer">Browse all hospitals</Link> to find ones near your location.
                         </p>
                       </div>
                     </div>
@@ -686,21 +786,39 @@ export default function ChatPage() {
             </div>
           ))}
           
-          {loading && (
+          {showLocationRequest && (
+            <div className="flex gap-2 sm:gap-3">
+              <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-600 flex items-center justify-center self-start flex-shrink-0">
+                <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <div className="flex-1 max-w-[80%] sm:max-w-[75%]">
+                <LocationRequest 
+                  onLocationSelect={handleLocationSelect}
+                  onCancel={() => setShowLocationRequest(false)}
+                />
+              </div>
+            </div>
+          )}
+          
+          {loading && !showLocationRequest && (
             <div className="flex gap-2 sm:gap-3">
               <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-green-600 flex items-center justify-center">
                 <svg className="w-4 h-4 sm:w-5 sm:h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                 </svg>
               </div>
-              <div className="bg-zinc-900 border border-white/5 rounded-2xl rounded-bl-md px-4 py-3">
-                <div className="flex items-center gap-2">
+              <div className="bg-zinc-900 border border-white/5 rounded-2xl rounded-bl-md px-4 py-3 max-w-[80%]">
+                <div className="flex items-center gap-3 mb-2">
                   <div className="flex gap-1">
                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" />
                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.15s'}} />
                     <div className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.3s'}} />
                   </div>
+                  <span className="text-xs text-gray-500">Analyzing...</span>
                 </div>
+                <p className="text-xs text-gray-400 animate-pulse">{currentTip}</p>
               </div>
             </div>
           )}
@@ -782,9 +900,11 @@ export default function ChatPage() {
               )}
             </button>
           </div>
-          <p className="text-xs text-center text-gray-600 mt-2">
-            Emergency? Call <span className="text-green-600 font-bold">112</span>
-          </p>
+          <div className="flex items-center justify-center gap-4 text-xs text-gray-600 mt-2">
+            <span>Emergency? Call <span className="text-green-600 font-bold">112</span></span>
+            <span className="text-gray-700">•</span>
+            <span className="text-green-600">📱 Installable App</span>
+          </div>
         </div>
       </div>
     </div>

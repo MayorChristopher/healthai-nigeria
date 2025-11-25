@@ -200,13 +200,14 @@ export async function POST(req: NextRequest) {
             })
           }
           
-          // Non-emergency - provide offline emergency guidance
+          // Non-emergency - provide offline emergency guidance with hospitals
           const offlineResponse = generateOfflineEmergencyResponse(message, language as 'english' | 'pidgin')
+          const fallbackHospitals = recommendHospitals('general') // Always provide major hospitals
             
           return NextResponse.json({
             response: offlineResponse,
             isEmergency: false,
-            hospitals: [],
+            hospitals: fallbackHospitals,
             onlineDoctors: false,
             sessionId
           })
@@ -279,16 +280,18 @@ export async function POST(req: NextRequest) {
     let needsLocation = false
     
     if (isEmergency) {
-      hospitals = recommendHospitals(emergencyType, processedLocation?.lat, processedLocation?.lon, locationQuery || undefined)
+      if (!locationQuery && !processedLocation) {
+        needsLocation = true
+        // Override AI response to ask for location
+        response = response + "\n\nTo find the nearest hospitals for you, I need to know your location. Please share your location using the options below."
+      } else {
+        hospitals = recommendHospitals(emergencyType, processedLocation?.lat, processedLocation?.lon, locationQuery || undefined)
+      }
     } else if (isHospitalRequest) {
       if (!locationQuery && !processedLocation) {
-        // User asked for hospitals but didn't provide location
         needsLocation = true
-        const locationPrompt = language === 'pidgin' 
-          ? "I fit help you find hospital for your area. Which city or state you dey? Example: Lagos, Abuja, Kano, etc."
-          : "I can help you find hospitals in your area. Which city or state are you in? For example: Lagos, Abuja, Kano, etc."
-        
-        response = response + "\n\n" + locationPrompt
+        // Override AI response to ask for location
+        response = response + "\n\nTo find the nearest hospitals for you, I need to know your location. Please share your location using the options below."
       } else {
         hospitals = recommendHospitals('general', processedLocation?.lat, processedLocation?.lon, locationQuery || undefined)
       }
@@ -309,7 +312,8 @@ export async function POST(req: NextRequest) {
       onlineDoctors,
       followUp,
       processedLocation,
-      sessionId
+      sessionId,
+      needsLocation
     })
 
   } catch (error: any) {

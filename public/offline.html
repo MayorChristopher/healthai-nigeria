@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HealthAI - Offline</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #000;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .container {
+      max-width: 500px;
+      text-align: center;
+    }
+    .icon {
+      width: 80px;
+      height: 80px;
+      background: #16a34a;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 40px;
+    }
+    h1 { font-size: 32px; margin-bottom: 16px; }
+    p { color: #9ca3af; margin-bottom: 12px; line-height: 1.6; }
+    .emergency {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      border-radius: 12px;
+      padding: 20px;
+      margin: 24px 0;
+    }
+    .emergency h2 {
+      color: #ef4444;
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    .hospital {
+      text-align: left;
+      font-size: 14px;
+      color: #d1d5db;
+      margin-top: 12px;
+    }
+    .hospital div { margin-bottom: 8px; }
+    button {
+      background: #16a34a;
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+    button:hover { background: #15803d; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="icon">💡</div>
+    <h1>You're Offline</h1>
+    <p>HealthAI needs internet to provide AI-powered medical guidance.</p>
+    
+    <div class="emergency">
+      <h2>🚨 For Emergencies</h2>
+      <p style="color: #fca5a5; margin-bottom: 16px;">Call 112 immediately or go to nearest hospital</p>
+      
+      <div class="hospital">
+        <div><strong>Major Hospitals:</strong></div>
+        <div>• National Hospital Abuja: +234 9 461 2200</div>
+        <div>• LUTH Lagos: +234 1 263 2626</div>
+        <div>• UCH Ibadan: +234 2 241 3545</div>
+      </div>
+    </div>
+    
+    <p style="font-size: 14px;">Check your internet connection and try again</p>
+    <button onclick="window.location.reload()">Retry Connection</button>
+  </div>
+</body>
+</html>

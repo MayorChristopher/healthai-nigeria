@@ -51,11 +51,25 @@ export default function Home() {
   const [filterState, setFilterState] = useState('all')
   const [typeDropdownOpen, setTypeDropdownOpen] = useState(false)
   const [stateDropdownOpen, setStateDropdownOpen] = useState(false)
+  const [heroText, setHeroText] = useState(0)
+
+  const heroTexts = [
+    { english: 'Medical advice', pidgin: 'Health advice' },
+    { english: 'when hospitals', pidgin: 'when hospital' },
+    { english: 'are far away', pidgin: 'far from you' }
+  ]
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20)
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
+  }, [])
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setHeroText(prev => (prev + 1) % 2)
+    }, 3000)
+    return () => clearInterval(interval)
   }, [])
 
   // Scroll animation
@@ -120,11 +134,17 @@ export default function Home() {
               <span className="text-gray-400">Free • No Registration</span>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 sm:mb-8 tracking-tight">
-              Medical advice
+              <span className="inline-block transition-opacity duration-500">
+                {heroText === 0 ? 'Medical advice' : 'Health advice'}
+              </span>
               <br />
-              when hospitals
+              <span className="inline-block transition-opacity duration-500">
+                {heroText === 0 ? 'when hospitals' : 'when hospital'}
+              </span>
               <br />
-              are far away
+              <span className="inline-block transition-opacity duration-500">
+                {heroText === 0 ? 'are far away' : 'far from you'}
+              </span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 sm:mb-10 leading-relaxed max-w-2xl">
               AI-powered symptom analysis in English and Pidgin. Emergency detection. 
@@ -657,7 +677,7 @@ export default function Home() {
             <div className="bg-white/5 p-6 md:p-8 rounded-xl border border-white/10">
               <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center text-2xl font-bold mb-4 overflow-hidden">
                 <img 
-                  src="/team/victor.jpg"
+                  src="/team/victor.png"
                   alt="Victor"
                   className="absolute inset-0 w-full h-full object-cover z-20"
                   onError={(e) => { 
