@@ -51,12 +51,12 @@ export default function Home() {
   const [filterState, setFilterState] = useState('all')
   const [typeDropdownOpen, setTypeDropdownOpen] = useState(false)
   const [stateDropdownOpen, setStateDropdownOpen] = useState(false)
-  const [heroText, setHeroText] = useState(0)
+  const [textIndex, setTextIndex] = useState(0)
+  const [fade, setFade] = useState(true)
 
-  const heroTexts = [
-    { english: 'Medical advice', pidgin: 'Health advice' },
-    { english: 'when hospitals', pidgin: 'when hospital' },
-    { english: 'are far away', pidgin: 'far from you' }
+  const texts = [
+    'Your Medical Advice when hospitals are far away',
+    'Na your Medical Advice when hospital dey far from you'
   ]
 
   useEffect(() => {
@@ -67,8 +67,12 @@ export default function Home() {
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setHeroText(prev => (prev + 1) % 2)
-    }, 3000)
+      setFade(false)
+      setTimeout(() => {
+        setTextIndex((prev) => (prev + 1) % texts.length)
+        setFade(true)
+      }, 500)
+    }, 4000)
     return () => clearInterval(interval)
   }, [])
 
@@ -134,16 +138,8 @@ export default function Home() {
               <span className="text-gray-400">Free • No Registration</span>
             </div>
             <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.1] mb-6 sm:mb-8 tracking-tight">
-              <span className="inline-block transition-opacity duration-500">
-                {heroText === 0 ? 'Medical advice' : 'Health advice'}
-              </span>
-              <br />
-              <span className="inline-block transition-opacity duration-500">
-                {heroText === 0 ? 'when hospitals' : 'when hospital'}
-              </span>
-              <br />
-              <span className="inline-block transition-opacity duration-500">
-                {heroText === 0 ? 'are far away' : 'far from you'}
+              <span className={`inline-block transition-opacity duration-500 ${fade ? 'opacity-100' : 'opacity-0'}`}>
+                {texts[textIndex]}
               </span>
             </h1>
             <p className="text-base sm:text-lg md:text-xl text-gray-400 mb-8 sm:mb-10 leading-relaxed max-w-2xl">

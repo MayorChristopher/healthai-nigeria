@@ -171,7 +171,11 @@ export async function POST(req: NextRequest) {
         if (!isScopeValid) {
           response = "I'm a health assistant. I can only help with health concerns. Do you have any symptoms or health questions?"
         } else {
-          response = filterResult.filteredResponse
+          // Add source reference to response
+          const sourceReference = language === 'pidgin' 
+            ? '\n\n---\n*Source: WHO Clinical Guidelines & Google Gemini AI*'
+            : '\n\n---\n*Source: WHO Clinical Guidelines & Google Gemini AI*'
+          response = filterResult.filteredResponse + sourceReference
         }
         
         console.log(`✅ Successfully used model: ${modelName}`)
@@ -190,9 +194,12 @@ export async function POST(req: NextRequest) {
             // Emergency situation - provide immediate guidance
             const emergencyResponse = getEmergencyFallback(emergencyType, language)
             const hospitals = recommendHospitals(emergencyType)
+            const sourceRef = language === 'pidgin' 
+              ? '\n\n---\n*Source: WHO Emergency Guidelines*'
+              : '\n\n---\n*Source: WHO Emergency Guidelines*'
             
             return NextResponse.json({
-              response: emergencyResponse,
+              response: emergencyResponse + sourceRef,
               isEmergency: true,
               hospitals,
               onlineDoctors: false,
@@ -203,9 +210,12 @@ export async function POST(req: NextRequest) {
           // Non-emergency - provide offline emergency guidance with hospitals
           const offlineResponse = generateOfflineEmergencyResponse(message, language as 'english' | 'pidgin')
           const fallbackHospitals = recommendHospitals('general') // Always provide major hospitals
+          const sourceRef = language === 'pidgin' 
+            ? '\n\n---\n*Source: Offline Emergency Guidelines*'
+            : '\n\n---\n*Source: Offline Emergency Guidelines*'
             
           return NextResponse.json({
-            response: offlineResponse,
+            response: offlineResponse + sourceRef,
             isEmergency: false,
             hospitals: fallbackHospitals,
             onlineDoctors: false,

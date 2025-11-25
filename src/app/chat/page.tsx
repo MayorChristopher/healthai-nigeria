@@ -4,6 +4,8 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import LocationRequest from '@/components/LocationRequest'
 import InstallPrompt from '@/components/InstallPrompt'
+import VoiceInput from '@/components/VoiceInput'
+import ShareButton from '@/components/ShareButton'
 import { getRandomHealthTip } from '@/lib/health-tips'
 import { detectUrgencyLevel, type UrgencyInfo } from '@/lib/urgency-detector'
 
@@ -32,12 +34,7 @@ type Message = {
 export default function ChatPage() {
   const [termsAccepted, setTermsAccepted] = useState(false)
   const [language, setLanguage] = useState<'auto' | 'english' | 'pidgin'>('auto')
-  const [messages, setMessages] = useState<Message[]>([{ 
-    id: '1', 
-    role: 'ai', 
-    content: "Hi! I'm HealthAI.\n\nI can help with symptoms, health questions, and finding hospitals. Available 24/7 in English or Pidgin.\n\nDo you have any symptoms or health questions?",
-    timestamp: new Date()
-  }])
+  const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -63,7 +60,6 @@ export default function ChatPage() {
     const savedTerms = sessionStorage.getItem('healthai-terms-accepted')
     const savedLanguage = sessionStorage.getItem('healthai-language')
     const savedMessages = sessionStorage.getItem('healthai-messages')
-    const savedSession = sessionStorage.getItem('healthai-session')
     
     if (savedTerms) setTermsAccepted(savedTerms === 'true')
     if (savedLanguage) setLanguage(savedLanguage as any)
@@ -73,8 +69,24 @@ export default function ChatPage() {
         timestamp: new Date(msg.timestamp)
       }))
       setMessages(parsed)
+    } else {
+      // Set initial greeting based on language
+      const greeting = getGreeting(savedLanguage as any || 'auto')
+      setMessages([{ 
+        id: '1', 
+        role: 'ai', 
+        content: greeting,
+        timestamp: new Date()
+      }])
     }
   }, [])
+
+  const getGreeting = (lang: 'auto' | 'english' | 'pidgin') => {
+    if (lang === 'pidgin') {
+      return "Hello! I be HealthAI.\n\nI fit help you with symptoms, health questions, and find hospitals. I dey available 24/7 for English or Pidgin.\n\nYou get any symptoms or health questions?"
+    }
+    return "Hi! I'm HealthAI.\n\nI can help with symptoms, health questions, and finding hospitals. Available 24/7 in English or Pidgin.\n\nDo you have any symptoms or health questions?"
+  }
 
   useEffect(() => {
     if (mounted && messages.length > 1) {
@@ -777,6 +789,7 @@ export default function ChatPage() {
                               </svg>
                             )}
                           </button>
+                          <ShareButton content={msg.content} isEmergency={msg.isEmergency} />
                         </>
                       )}
                     </div>
@@ -850,16 +863,28 @@ export default function ChatPage() {
             <div className="relative group">
               <button
                 onClick={() => {
+                  let newLang: 'auto' | 'english' | 'pidgin'
                   if (language === 'auto') {
-                    setLanguage('english')
-                    sessionStorage.setItem('healthai-language', 'english')
+                    newLang = 'english'
                   } else if (language === 'english') {
-                    setLanguage('pidgin')
-                    sessionStorage.setItem('healthai-language', 'pidgin')
+                    newLang = 'pidgin'
                   } else {
-                    setLanguage('auto')
-                    sessionStorage.setItem('healthai-language', 'auto')
+                    newLang = 'auto'
                   }
+                  setLanguage(newLang)
+                  sessionStorage.setItem('healthai-language', newLang)
+                  
+                  // Update greeting message when language changes
+                  const greeting = getGreeting(newLang)
+                  setMessages(prev => {
+                    const filtered = prev.filter(m => m.id !== '1')
+                    return [{ 
+                      id: '1', 
+                      role: 'ai', 
+                      content: greeting,
+                      timestamp: new Date()
+                    }, ...filtered]
+                  })
                 }}
                 className="px-2.5 py-2 sm:px-3 sm:py-2.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0 text-xs sm:text-sm font-medium text-gray-400 cursor-pointer"
               >
@@ -870,6 +895,12 @@ export default function ChatPage() {
                 <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-900"></div>
               </div>
             </div>
+            <VoiceInput 
+              onTranscript={(text) => {
+                setInput(text)
+              }}
+              language={language}
+            />
             <input
               type="text"
               value={input}
@@ -900,10 +931,10 @@ export default function ChatPage() {
               )}
             </button>
           </div>
-          <div className="flex items-center justify-center gap-4 text-xs text-gray-600 mt-2">
+          <div className="flex items-center justify-center gap-2 text-xs text-gray-600 mt-2 flex-wrap">
             <span>Emergency? Call <span className="text-green-600 font-bold">112</span></span>
             <span className="text-gray-700">•</span>
-            <span className="text-green-600">📱 Installable App</span>
+            <span className="text-gray-500">AI can make mistakes. Verify important info.</span>
           </div>
         </div>
       </div>
