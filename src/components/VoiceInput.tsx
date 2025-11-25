@@ -10,36 +10,14 @@ type VoiceInputProps = {
 export default function VoiceInput({ onTranscript, language, onRecordingChange }: VoiceInputProps) {
   const [isRecording, setIsRecording] = useState(false)
   const [isSupported, setIsSupported] = useState(false)
-  const [recordingTime, setRecordingTime] = useState(0)
   const [transcript, setTranscript] = useState('')
   const recognitionRef = useRef<any>(null)
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
-  const startXRef = useRef(0)
-  const startYRef = useRef(0)
-  const [isCancelled, setIsCancelled] = useState(false)
 
   useEffect(() => {
     setIsSupported('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)
   }, [])
 
-  useEffect(() => {
-    if (isRecording) {
-      timerRef.current = setInterval(() => {
-        setRecordingTime(prev => prev + 1)
-      }, 1000)
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current)
-      setRecordingTime(0)
-    }
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
-  }, [isRecording])
-
-  const startRecording = (e: React.MouseEvent | React.TouchEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    
+  const startRecording = () => {
     if (!isSupported || isRecording) return
 
     const SpeechRecognition = (window as any).webkitSpeechRecognition || (window as any).SpeechRecognition
@@ -48,11 +26,9 @@ export default function VoiceInput({ onTranscript, language, onRecordingChange }
     recognition.lang = 'en-NG'
     recognition.continuous = true
     recognition.interimResults = true
-    recognition.maxAlternatives = 3
 
     recognition.onstart = () => {
       setIsRecording(true)
-      setIsCancelled(false)
       setTranscript('')
       onRecordingChange?.(true)
     }
@@ -64,22 +40,19 @@ export default function VoiceInput({ onTranscript, language, onRecordingChange }
 
     recognition.onresult = (event: any) => {
       let finalTranscript = ''
-      let interimTranscript = ''
 
-      for (let i = event.resultIndex; i < event.results.length; i++) {
-        const transcriptPiece = event.results[i][0].transcript
+      for (let i = 0; i < event.results.length; i++) {
         if (event.results[i].isFinal) {
-          finalTranscript += transcriptPiece
-        } else {
-          interimTranscript += transcriptPiece
+          finalTranscript += event.results[i][0].transcript + ' '
         }
       }
 
-      setTranscript(finalTranscript || interimTranscript)
+      if (finalTranscript) {
+        setTranscript(prev => prev + finalTranscript)
+      }
     }
 
-    recognition.onerror = (event: any) => {
-      console.error('Speech recognition error:', event.error)
+    recognition.onerror = () => {
       stopRecording()
     }
 
@@ -93,7 +66,7 @@ export default function VoiceInput({ onTranscript, language, onRecordingChange }
       recognitionRef.current = null
     }
     
-    if (!isCancelled && transcript.trim()) {
+    if (transcript.trim()) {
       onTranscript(transcript.trim())
     }
     
@@ -103,7 +76,6 @@ export default function VoiceInput({ onTranscript, language, onRecordingChange }
   }
 
   const cancelRecording = () => {
-    setIsCancelled(true)
     if (recognitionRef.current) {
       recognitionRef.current.stop()
       recognitionRef.current = null
@@ -113,145 +85,93 @@ export default function VoiceInput({ onTranscript, language, onRecordingChange }
     onRecordingChange?.(false)
   }
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    startXRef.current = e.touches[0].clientX
-    startYRef.current = e.touches[0].clientY
-    startRecording(e)
-  }
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isRecording) return
-    e.preventDefault()
-    e.stopPropagation()
-    
-    const currentX = e.touches[0].clientX
-    const currentY = e.touches[0].clientY
-    const diffX = startXRef.current - currentX
-    const diffY = Math.abs(startYRef.current - currentY)
-    
-    if (diffX > 120 && diffY < 60) {
-      cancelRecording()
-    }
-  }
-
-  const handleTouchEnd = (e: React.TouchEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (isRecording && !isCancelled) {
-      stopRecording()
-    }
-  }
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    startRecording(e)
-  }
-
-  const handleMouseUp = (e: React.MouseEvent) => {
-    e.preventDefault()
-    e.stopPropagation()
-    if (isRecording && !isCancelled) {
-      stopRecording()
-    }
-  }
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60)
-    const secs = seconds % 60
-    return `${mins}:${secs.toString().padStart(2, '0')}`
-  }
-
   if (!isSupported) return null
 
   if (isRecording) {
     return (
       <>
-        {/* Full screen overlay */}
-        <div className="fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-6">
-          <div className="text-center mb-8">
-            <div className="w-24 h-24 mx-auto mb-6 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
-              <svg className="w-12 h-12 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-              </svg>
-            </div>
-            <p className="text-2xl font-bold text-white mb-2">{formatTime(recordingTime)}</p>
-            <p className="text-gray-400 text-sm mb-6">Recording...</p>
+        {/* Backdrop */}
+        <div className="fixed inset-0 bg-black/60 z-40" onClick={cancelRecording} />
+        
+        {/* Bottom Sheet */}
+        <div className="fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-3xl z-50 p-6 animate-slide-up">
+          <div className="max-w-2xl mx-auto">
+            {/* Handle */}
+            <div className="w-12 h-1 bg-gray-600 rounded-full mx-auto mb-6" />
             
+            {/* Microphone Animation */}
+            <div className="flex justify-center mb-6">
+              <div className="relative">
+                <div className="w-24 h-24 bg-red-500 rounded-full flex items-center justify-center animate-pulse">
+                  <svg className="w-12 h-12 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />
+                  </svg>
+                </div>
+                {/* Pulse rings */}
+                <div className="absolute inset-0 w-24 h-24 bg-red-500/30 rounded-full animate-ping" />
+              </div>
+            </div>
+
+            {/* Transcript */}
             {transcript ? (
-              <div className="bg-white/10 rounded-xl p-4 mb-6 max-w-md">
+              <div className="bg-white/5 rounded-2xl p-4 mb-6 min-h-[80px] max-h-[200px] overflow-y-auto">
                 <p className="text-white text-base">{transcript}</p>
               </div>
             ) : (
-              <div className="flex items-center justify-center gap-1 h-12 mb-6">
-                {[...Array(30)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="w-1 bg-green-600 rounded-full"
-                    style={{
-                      height: `${Math.random() * 40 + 10}px`,
-                      animation: 'pulse 1s ease-in-out infinite',
-                      animationDelay: `${i * 0.05}s`
-                    }}
-                  />
-                ))}
+              <div className="text-center mb-6">
+                <p className="text-gray-400 text-lg">Listening...</p>
+                <p className="text-gray-600 text-sm mt-2">Start speaking</p>
               </div>
             )}
-          </div>
 
-          <div className="flex flex-col items-center gap-4">
-            <button
-              onTouchEnd={handleTouchEnd}
-              onMouseUp={handleMouseUp}
-              className="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center hover:bg-green-700 transition-colors shadow-lg"
-            >
-              <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 12h14m0 0l-7-7m7 7l-7 7" />
-              </svg>
-            </button>
-            <p className="text-gray-400 text-sm">Release to send</p>
-          </div>
-
-          <button
-            onClick={cancelRecording}
-            className="absolute top-6 right-6 text-gray-400 hover:text-white transition-colors"
-          >
-            <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-
-          <div className="absolute bottom-6 left-0 right-0 text-center">
-            <p className="text-gray-500 text-xs">← Slide left to cancel</p>
+            {/* Action Buttons */}
+            <div className="flex gap-4">
+              <button
+                onClick={cancelRecording}
+                className="flex-1 bg-white/10 text-white py-4 rounded-xl font-medium hover:bg-white/20 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={stopRecording}
+                className="flex-1 bg-green-600 text-white py-4 rounded-xl font-medium hover:bg-green-700 transition-colors flex items-center justify-center gap-2"
+              >
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
+                </svg>
+                Send
+              </button>
+            </div>
           </div>
         </div>
+
+        <style jsx>{`
+          @keyframes slide-up {
+            from {
+              transform: translateY(100%);
+            }
+            to {
+              transform: translateY(0);
+            }
+          }
+          .animate-slide-up {
+            animation: slide-up 0.3s ease-out;
+          }
+        `}</style>
       </>
     )
   }
 
   return (
-    <div className="relative group">
-      <button
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onContextMenu={(e) => e.preventDefault()}
-        className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 active:scale-95 transition-all flex-shrink-0 touch-none select-none cursor-pointer"
-        style={{ WebkitTouchCallout: 'none', WebkitUserSelect: 'none' }}
-        type="button"
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
-        </svg>
-      </button>
-      <div className="absolute bottom-full right-0 mb-2 px-3 py-2 bg-zinc-900 border border-white/10 rounded-lg text-xs text-gray-300 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-        Hold to record
-        <div className="absolute top-full right-4 -mt-1 border-4 border-transparent border-t-zinc-900"></div>
-      </div>
-    </div>
+    <button
+      onClick={startRecording}
+      className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 active:scale-95 transition-all flex-shrink-0"
+      type="button"
+      title="Voice message"
+    >
+      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+        <path fillRule="evenodd" d="M7 4a3 3 0 016 0v4a3 3 0 11-6 0V4zm4 10.93A7.001 7.001 0 0017 8a1 1 0 10-2 0A5 5 0 015 8a1 1 0 00-2 0 7.001 7.001 0 006 6.93V17H6a1 1 0 100 2h8a1 1 0 100-2h-3v-2.07z" clipRule="evenodd" />
+      </svg>
+    </button>
   )
 }

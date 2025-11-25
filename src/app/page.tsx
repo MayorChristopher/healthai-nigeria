@@ -71,8 +71,8 @@ export default function Home() {
       setTimeout(() => {
         setTextIndex((prev) => (prev + 1) % texts.length)
         setFade(true)
-      }, 600)
-    }, 5000)
+      }, 700)
+    }, 6500)
     return () => clearInterval(interval)
   }, [])
 
@@ -115,6 +115,9 @@ export default function Home() {
             </Link>
             <Link href="#hospitals" className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">
               Hospitals
+            </Link>
+            <Link href="/partnerships" className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">
+              Partners
             </Link>
             <Link 
               href="/chat" 
@@ -797,15 +800,15 @@ export default function Home() {
                   <span>Expand your practice reach</span>
                 </li>
               </ul>
-              <a 
-                href="mailto:partnerships@healthai.ng?subject=Doctor Partnership Inquiry"
+              <Link 
+                href="/partnerships/doctors"
                 className="inline-flex items-center justify-center gap-2 w-full bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
               >
                 Become a Partner Doctor
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-              </a>
+              </Link>
             </div>
 
             {/* Hospital Partnership */}
@@ -839,15 +842,15 @@ export default function Home() {
                   <span>Real-time availability updates</span>
                 </li>
               </ul>
-              <a 
-                href="mailto:partnerships@healthai.ng?subject=Hospital Partnership Inquiry"
+              <Link 
+                href="/partnerships/hospitals"
                 className="inline-flex items-center justify-center gap-2 w-full bg-green-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-green-700 transition-colors"
               >
                 Register Your Hospital
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
-              </a>
+              </Link>
             </div>
           </div>
 

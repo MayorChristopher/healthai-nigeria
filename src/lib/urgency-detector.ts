@@ -1,5 +1,5 @@
 // Urgency level detection for medical triage
-export type UrgencyLevel = 'emergency' | 'high' | 'medium' | 'low'
+export type UrgencyLevel = 'emergency' | 'high' | 'medium'
 
 export interface UrgencyInfo {
   level: UrgencyLevel
@@ -11,8 +11,20 @@ export interface UrgencyInfo {
   action: string
 }
 
-export function detectUrgencyLevel(message: string, isEmergency: boolean): UrgencyInfo {
+export function detectUrgencyLevel(message: string, isEmergency: boolean): UrgencyInfo | null {
   const lower = message.toLowerCase()
+  
+  // Check if it's a general health question (not symptoms)
+  const generalQuestions = [
+    'what is', 'what are', 'how to', 'how can', 'tell me about',
+    'explain', 'define', 'meaning of', 'information about',
+    'hospital', 'find hospital', 'nearest hospital', 'doctor near'
+  ]
+  
+  const isGeneralQuestion = generalQuestions.some(q => lower.includes(q))
+  if (isGeneralQuestion && !isEmergency) {
+    return null // Don't show urgency for general questions
+  }
   
   // EMERGENCY - Life threatening
   if (isEmergency || 
@@ -58,7 +70,10 @@ export function detectUrgencyLevel(message: string, isEmergency: boolean): Urgen
       lower.includes('cough') ||
       lower.includes('diarrhea') ||
       lower.includes('rash') ||
-      lower.includes('headache')) {
+      lower.includes('headache') ||
+      lower.includes('feel') ||
+      lower.includes('sick') ||
+      lower.includes('hurt')) {
     return {
       level: 'medium',
       label: 'MEDIUM',
@@ -70,14 +85,6 @@ export function detectUrgencyLevel(message: string, isEmergency: boolean): Urgen
     }
   }
   
-  // LOW - Self-care possible
-  return {
-    level: 'low',
-    label: 'LOW',
-    color: 'text-green-500',
-    bgColor: 'bg-green-500/10',
-    borderColor: 'border-green-500/30',
-    icon: '🟢',
-    action: 'Self-care at home, monitor symptoms'
-  }
+  // No urgency indicator for non-symptom questions
+  return null
 }
