@@ -49,6 +49,7 @@ export default function ChatPage() {
   const [showLocationRequest, setShowLocationRequest] = useState(false)
   const [pendingLocationMessage, setPendingLocationMessage] = useState('')
   const [currentTip, setCurrentTip] = useState(getRandomHealthTip())
+  const [isRecording, setIsRecording] = useState(false)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -731,42 +732,42 @@ export default function ChatPage() {
                 </div>
                 </>
                 )}
-                <div className="flex items-center justify-between mt-1 px-1">
+                <div className="flex items-center justify-between mt-2 px-1">
                   <p className="text-xs text-gray-600">
                     {new Date(msg.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
                   </p>
                   {msg.role === 'user' && editingMessageId !== msg.id && (
                     <button
                       onClick={() => startEditMessage(msg)}
-                      className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                      className="text-sm text-gray-500 hover:text-gray-300 transition-colors cursor-pointer p-1"
                       title="Edit message"
                     >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
                       </svg>
                     </button>
                   )}
                   {msg.role === 'ai' && editingMessageId !== msg.id && (
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-3">
                       {msg.stopped && msg.retryMessage && (
                         <button
                           onClick={() => retryMessage(msg.retryMessage!, msg.id)}
-                          className="text-xs text-green-600 hover:text-green-400 transition-colors cursor-pointer flex items-center gap-1"
+                          className="text-sm text-green-600 hover:text-green-400 transition-colors cursor-pointer flex items-center gap-1.5 p-1"
                         >
-                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
                           </svg>
-                          Retry
+                          <span>Retry</span>
                         </button>
                       )}
                       {!msg.stopped && (
                         <>
                           <button
                             onClick={() => setReplyingTo(msg)}
-                            className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                            className="text-sm text-gray-500 hover:text-gray-300 transition-colors cursor-pointer p-1"
                             title="Reply"
                           >
-                            <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6" />
                             </svg>
                           </button>
@@ -776,15 +777,15 @@ export default function ChatPage() {
                               setCopied(true)
                               setTimeout(() => setCopied(false), 2000)
                             }}
-                            className="text-xs text-gray-500 hover:text-gray-300 transition-colors cursor-pointer"
+                            className="text-sm text-gray-500 hover:text-gray-300 transition-colors cursor-pointer p-1"
                             title="Copy"
                           >
                             {copied ? (
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                               </svg>
                             ) : (
-                              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
                               </svg>
                             )}
@@ -860,76 +861,97 @@ export default function ChatPage() {
             </div>
           )}
           <div className="flex items-center gap-2">
-            <div className="relative group">
-              <button
-                onClick={() => {
-                  let newLang: 'auto' | 'english' | 'pidgin'
-                  if (language === 'auto') {
-                    newLang = 'english'
-                  } else if (language === 'english') {
-                    newLang = 'pidgin'
-                  } else {
-                    newLang = 'auto'
-                  }
-                  setLanguage(newLang)
-                  sessionStorage.setItem('healthai-language', newLang)
-                  
-                  // Update greeting message when language changes
-                  const greeting = getGreeting(newLang)
-                  setMessages(prev => {
-                    const filtered = prev.filter(m => m.id !== '1')
-                    return [{ 
-                      id: '1', 
-                      role: 'ai', 
-                      content: greeting,
-                      timestamp: new Date()
-                    }, ...filtered]
-                  })
-                }}
-                className="px-2.5 py-2 sm:px-3 sm:py-2.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0 text-xs sm:text-sm font-medium text-gray-400 cursor-pointer"
-              >
-                {language === 'auto' ? 'Auto' : language === 'english' ? 'EN' : 'PG'}
-              </button>
-              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-zinc-900 border border-white/10 rounded-lg text-xs text-gray-300 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                {language === 'auto' ? 'Auto-detect language' : language === 'english' ? 'English only' : 'Pidgin only'}
-                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-900"></div>
+            {!isRecording && (
+              <div className="relative group">
+                <button
+                  onClick={() => {
+                    let newLang: 'auto' | 'english' | 'pidgin'
+                    if (language === 'auto') {
+                      newLang = 'english'
+                    } else if (language === 'english') {
+                      newLang = 'pidgin'
+                    } else {
+                      newLang = 'auto'
+                    }
+                    setLanguage(newLang)
+                    sessionStorage.setItem('healthai-language', newLang)
+                    
+                    // Update greeting message when language changes
+                    const greeting = getGreeting(newLang)
+                    setMessages(prev => {
+                      const filtered = prev.filter(m => m.id !== '1')
+                      return [{ 
+                        id: '1', 
+                        role: 'ai', 
+                        content: greeting,
+                        timestamp: new Date()
+                      }, ...filtered]
+                    })
+                  }}
+                  className="px-2.5 py-2 sm:px-3 sm:py-2.5 bg-white/5 border border-white/10 rounded-lg hover:bg-white/10 transition-colors flex-shrink-0 text-xs sm:text-sm font-medium text-gray-400 cursor-pointer"
+                >
+                  {language === 'auto' ? 'Auto' : language === 'english' ? 'EN' : 'PG'}
+                </button>
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-2 bg-zinc-900 border border-white/10 rounded-lg text-xs text-gray-300 whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+                  {language === 'auto' ? 'Auto-detect language' : language === 'english' ? 'English only' : 'Pidgin only'}
+                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-1 border-4 border-transparent border-t-zinc-900"></div>
+                </div>
               </div>
-            </div>
-            <VoiceInput 
-              onTranscript={(text) => {
-                setInput(text)
-              }}
-              language={language}
-            />
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter' && !loading) {
-                  e.preventDefault()
-                  sendMessage()
-                }
-              }}
-              placeholder='Type your message...'
-              className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base outline-none focus:border-green-600/50 transition-colors placeholder:text-gray-500"
-              disabled={loading}
-            />
-            <button
-              onClick={loading ? stopResponse : sendMessage}
-              disabled={!loading && !input.trim()}
-              className="p-3 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0 flex items-center justify-center cursor-pointer"
-            >
-              {loading ? (
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <circle cx="10" cy="10" r="8" />
-                </svg>
-              ) : (
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 12h14m0 0l-7-7m7 7l-7 7" />
-                </svg>
-              )}
-            </button>
+            )}
+            
+            {isRecording ? (
+              <VoiceInput 
+                onTranscript={(text) => {
+                  setInput(text)
+                  setTimeout(() => sendMessage(), 100)
+                }}
+                language={language}
+                onRecordingChange={setIsRecording}
+              />
+            ) : (
+              <>
+                <input
+                  type="text"
+                  value={input}
+                  onChange={(e) => setInput(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && !loading) {
+                      e.preventDefault()
+                      sendMessage()
+                    }
+                  }}
+                  placeholder='Type your message...'
+                  className="flex-1 bg-white/5 border border-white/10 rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 text-sm sm:text-base outline-none focus:border-green-600/50 transition-colors placeholder:text-gray-500"
+                  disabled={loading}
+                />
+                {input.trim() ? (
+                  <button
+                    onClick={loading ? stopResponse : sendMessage}
+                    disabled={!loading && !input.trim()}
+                    className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex-shrink-0 flex items-center justify-center cursor-pointer"
+                  >
+                    {loading ? (
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <circle cx="10" cy="10" r="8" />
+                      </svg>
+                    ) : (
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 12h14m0 0l-7-7m7 7l-7 7" />
+                      </svg>
+                    )}
+                  </button>
+                ) : (
+                  <VoiceInput 
+                    onTranscript={(text) => {
+                      setInput(text)
+                      setTimeout(() => sendMessage(), 100)
+                    }}
+                    language={language}
+                    onRecordingChange={setIsRecording}
+                  />
+                )}
+              </>
+            )}
           </div>
           <div className="flex items-center justify-center gap-2 text-xs text-gray-600 mt-2 flex-wrap">
             <span>Emergency? Call <span className="text-green-600 font-bold">112</span></span>
