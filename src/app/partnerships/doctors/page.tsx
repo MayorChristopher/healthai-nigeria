@@ -29,8 +29,8 @@ export default function DoctorsPartnershipPage() {
             Contact us to learn more about partnership opportunities
           </p>
           <a 
-            href="mailto:partnerships@healthai.ng?subject=Doctor Partnership Inquiry"
-            className="inline-block bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
+            href="mailto:partnerships@healthai-nigeria.vercel.app?subject=Doctor Partnership Inquiry"
+            className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
           >
             Contact Us
           </a>

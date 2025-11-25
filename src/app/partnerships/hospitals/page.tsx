@@ -29,7 +29,7 @@ export default function HospitalsPartnershipPage() {
             Contact us to register your hospital on our platform
           </p>
           <a 
-            href="mailto:partnerships@healthai.ng?subject=Hospital Partnership Inquiry"
+            href="mailto:partnerships@healthai-nigeria.vercel.app?subject=Hospital Partnership Inquiry"
             className="inline-block bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors"
           >
             Contact Us

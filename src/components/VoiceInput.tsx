@@ -39,17 +39,20 @@ export default function VoiceInput({ onTranscript, language, onRecordingChange }
     }
 
     recognition.onresult = (event: any) => {
+      let interimTranscript = ''
       let finalTranscript = ''
 
       for (let i = 0; i < event.results.length; i++) {
+        const transcriptPiece = event.results[i][0].transcript
         if (event.results[i].isFinal) {
-          finalTranscript += event.results[i][0].transcript + ' '
+          finalTranscript += transcriptPiece + ' '
+        } else {
+          interimTranscript += transcriptPiece
         }
       }
 
-      if (finalTranscript) {
-        setTranscript(prev => prev + finalTranscript)
-      }
+      // Show both final and interim (live) transcript
+      setTranscript(finalTranscript + interimTranscript)
     }
 
     recognition.onerror = () => {
@@ -91,7 +94,14 @@ export default function VoiceInput({ onTranscript, language, onRecordingChange }
     return (
       <>
         {/* Backdrop */}
-        <div className="fixed inset-0 bg-black/60 z-40" onClick={cancelRecording} />
+        <div 
+          className="fixed inset-0 bg-black/60 z-40" 
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            cancelRecording()
+          }}
+        />
         
         {/* Bottom Sheet */}
         <div className="fixed bottom-0 left-0 right-0 bg-zinc-900 rounded-t-3xl z-50 p-6 animate-slide-up">
@@ -112,17 +122,17 @@ export default function VoiceInput({ onTranscript, language, onRecordingChange }
               </div>
             </div>
 
-            {/* Transcript */}
-            {transcript ? (
-              <div className="bg-white/5 rounded-2xl p-4 mb-6 min-h-[80px] max-h-[200px] overflow-y-auto">
-                <p className="text-white text-base">{transcript}</p>
-              </div>
-            ) : (
-              <div className="text-center mb-6">
-                <p className="text-gray-400 text-lg">Listening...</p>
-                <p className="text-gray-600 text-sm mt-2">Start speaking</p>
-              </div>
-            )}
+            {/* Live Transcript */}
+            <div className="bg-white/5 rounded-2xl p-4 mb-6 min-h-[100px] max-h-[200px] overflow-y-auto">
+              {transcript ? (
+                <p className="text-white text-base leading-relaxed">{transcript}</p>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-gray-400 text-base">Listening...</p>
+                  <p className="text-gray-600 text-sm mt-1">Start speaking</p>
+                </div>
+              )}
+            </div>
 
             {/* Action Buttons */}
             <div className="flex gap-4">
@@ -164,8 +174,22 @@ export default function VoiceInput({ onTranscript, language, onRecordingChange }
 
   return (
     <button
-      onClick={startRecording}
-      className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 active:scale-95 transition-all flex-shrink-0"
+      onClick={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        startRecording()
+      }}
+      onTouchStart={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+      }}
+      onTouchEnd={(e) => {
+        e.preventDefault()
+        e.stopPropagation()
+        startRecording()
+      }}
+      className="p-3 bg-green-600 text-white rounded-full hover:bg-green-700 active:scale-95 transition-all flex-shrink-0 touch-none"
+      style={{ WebkitTapHighlightColor: 'transparent' }}
       type="button"
       title="Voice message"
     >
