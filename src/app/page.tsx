@@ -186,12 +186,13 @@ export default function Home() {
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-bold mb-6">Healthcare is out of reach for millions</h2>
               <div className="space-y-6 text-lg text-gray-400">
                 <p>
-                  In rural Nigeria, many people live far from the nearest hospital. 
+                  <strong className="text-white">56% of Nigerians</strong> live more than 5km from the nearest health facility (WHO 2023). 
                   When medical emergencies happen at night, families often don't know what to do.
                 </p>
                 <p>
-                  Language barriers, lack of information, and distance to healthcare facilities 
-                  create delays in getting proper medical attention.
+                  <strong className="text-white">80 million Pidgin speakers</strong> face language barriers, 
+                  while <strong className="text-white">70% lack health insurance</strong> (NHIS 2024). 
+                  Distance and lack of information create life-threatening delays.
                 </p>
               </div>
             </div>
@@ -199,16 +200,20 @@ export default function Home() {
               <h3 className="text-2xl font-bold mb-8">The Reality</h3>
               <div className="space-y-6">
                 <div>
-                  <div className="text-4xl font-bold text-red-400 mb-2">Far</div>
-                  <div className="text-sm text-gray-400">Distance to nearest hospital in many rural areas</div>
+                  <div className="text-4xl font-bold text-red-400 mb-2">56%</div>
+                  <div className="text-sm text-gray-400">Live >5km from nearest health facility (WHO 2023)</div>
                 </div>
                 <div>
-                  <div className="text-4xl font-bold text-red-400 mb-2">Night</div>
-                  <div className="text-sm text-gray-400">When most emergencies happen with no help available</div>
+                  <div className="text-4xl font-bold text-red-400 mb-2">80M</div>
+                  <div className="text-sm text-gray-400">Pidgin speakers with limited English proficiency</div>
                 </div>
                 <div>
-                  <div className="text-4xl font-bold text-green-600 mb-2">Now</div>
-                  <div className="text-sm text-gray-400">HealthAI provides instant guidance, 24/7</div>
+                  <div className="text-4xl font-bold text-red-400 mb-2">70%</div>
+                  <div className="text-sm text-gray-400">Lack health insurance (NHIS 2024)</div>
+                </div>
+                <div>
+                  <div className="text-4xl font-bold text-green-600 mb-2">24/7</div>
+                  <div className="text-sm text-gray-400">HealthAI provides instant guidance, free</div>
                 </div>
               </div>
             </div>

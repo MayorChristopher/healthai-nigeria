@@ -281,23 +281,17 @@ const slides = [
       <div className="space-y-8">
         <div className="grid md:grid-cols-2 gap-6">
           <div className="bg-green-600/10 border-2 border-green-600/40 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="text-3xl">👨⚕️</div>
-              <div>
-                <h3 className="text-lg font-bold text-green-400">Medical Expert</h3>
-                <p className="text-sm text-gray-400">Dr. Leonard Okonkwo</p>
-              </div>
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-green-400">Medical Expert</h3>
+              <p className="text-sm text-gray-400">Dr. Leonard Okonkwo</p>
             </div>
             <p className="text-xs text-gray-500 mb-3">Senior Registrar, Department of Surgery<br/>Federal Medical Centre, Umuahia</p>
             <p className="text-sm text-gray-300 italic">"Gave accurate results and analysis. Recommend adding more hospitals including private hospital partnerships."</p>
           </div>
-          <div className="bg-blue-600/10 border-2 border-blue-600/40 rounded-xl p-6">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="text-3xl">💻</div>
-              <div>
-                <h3 className="text-lg font-bold text-blue-400">AI Expert</h3>
-                <p className="text-sm text-gray-400">Technical Validation</p>
-              </div>
+          <div className="bg-green-600/10 border-2 border-green-600/40 rounded-xl p-6">
+            <div className="mb-4">
+              <h3 className="text-lg font-bold text-green-400">AI Expert</h3>
+              <p className="text-sm text-gray-400">Technical Validation</p>
             </div>
             <p className="text-sm text-gray-300">Validated AI implementation, response filtering, and emergency detection systems</p>
           </div>
@@ -337,16 +331,16 @@ const slides = [
     content: (
       <div className="space-y-6 max-w-3xl mx-auto">
         <div className="bg-white/5 border-2 border-white/10 rounded-xl p-8">
+          <h3 className="text-2xl font-bold mb-4 text-green-600">🎓 Mentorship</h3>
+          <p className="text-gray-300 text-lg">Guidance from healthcare and AI experts to refine our solution</p>
+        </div>
+        <div className="bg-white/5 border-2 border-white/10 rounded-xl p-8">
           <h3 className="text-2xl font-bold mb-4 text-green-600">💰 Funding</h3>
           <p className="text-gray-300 text-lg">Investment to scale infrastructure, expand features, and reach more communities</p>
         </div>
         <div className="bg-white/5 border-2 border-white/10 rounded-xl p-8">
           <h3 className="text-2xl font-bold mb-4 text-green-600">🤝 Partnerships</h3>
           <p className="text-gray-300 text-lg">Hospital collaborations for patient referrals and clinical validation</p>
-        </div>
-        <div className="bg-white/5 border-2 border-white/10 rounded-xl p-8">
-          <h3 className="text-2xl font-bold mb-4 text-green-600">🎓 Mentorship</h3>
-          <p className="text-gray-300 text-lg">Guidance from healthcare and AI experts to refine our solution</p>
         </div>
       </div>
     )
