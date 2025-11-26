@@ -121,15 +121,16 @@ export default function ChatPage() {
   useEffect(() => {
     if (!isOnline) {
       setConnectionStatus('offline')
+    } else if (isRecording) {
+      setConnectionStatus('typing')
     } else if (loading) {
       setConnectionStatus('typing')
     } else if (messages.slice(-3).some(m => m.isEmergency)) {
-      // Only show emergency mode if one of last 3 messages is emergency
       setConnectionStatus('emergency')
     } else {
       setConnectionStatus('online')
     }
-  }, [isOnline, loading, messages])
+  }, [isOnline, loading, messages, isRecording])
 
   useEffect(() => {
     if (mounted) {
@@ -557,7 +558,7 @@ export default function ChatPage() {
                   }`}></span>
                   <span className={connectionStatus === 'emergency' ? 'text-red-500' : 'text-gray-500'}>
                     {connectionStatus === 'online' ? 'Online now' :
-                     connectionStatus === 'typing' ? 'Typing...' :
+                     connectionStatus === 'typing' ? (isRecording ? 'Recording...' : 'Typing...') :
                      connectionStatus === 'emergency' ? 'Emergency mode' :
                      'Connection lost'}
                   </span>

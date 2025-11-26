@@ -59,6 +59,10 @@ const slides = [
           <h3 className="text-xl font-bold mb-2 text-white">Hospital Finder</h3>
           <p className="text-gray-300">Location-based recommendations</p>
         </div>
+        <div className="bg-green-600/10 border-2 border-green-600/40 rounded-xl p-6">
+          <h3 className="text-xl font-bold mb-2 text-white">Voice Recognition</h3>
+          <p className="text-gray-300">Speak your symptoms hands-free</p>
+        </div>
       </div>
     )
   },
