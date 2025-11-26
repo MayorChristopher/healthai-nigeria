@@ -147,7 +147,7 @@ const slides = [
     )
   },
   {
-    title: 'Competitors',
+    title: 'Competitor',
     subtitle: 'Market Landscape',
     content: (
       <div className="space-y-6">
@@ -293,7 +293,7 @@ const slides = [
           </div>
           <div className="bg-blue-600/10 border-2 border-blue-600/40 rounded-xl p-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="text-3xl">🤖</div>
+              <div className="text-3xl">💻</div>
               <div>
                 <h3 className="text-lg font-bold text-blue-400">AI Expert</h3>
                 <p className="text-sm text-gray-400">Technical Validation</p>
