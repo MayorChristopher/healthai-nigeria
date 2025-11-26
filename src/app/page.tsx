@@ -119,6 +119,9 @@ export default function Home() {
             <Link href="/partnerships" className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">
               Partners
             </Link>
+            <Link href="/technical" className="hidden md:block text-sm text-gray-400 hover:text-white transition-colors cursor-pointer">
+              Technical
+            </Link>
             <Link 
               href="/chat" 
               className="text-xs sm:text-sm bg-green-600 text-white px-3 sm:px-4 py-1.5 rounded-full hover:bg-green-700 transition-colors font-medium whitespace-nowrap cursor-pointer"
@@ -881,15 +884,26 @@ export default function Home() {
           <p className="text-base sm:text-lg text-gray-400 mb-8 sm:mb-12">
             Free. No registration. Available 24/7 across Nigeria.
           </p>
-          <Link 
-            href="/chat" 
-            className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-6 sm:px-8 py-3 rounded-md text-base sm:text-lg font-medium hover:bg-green-700 transition-colors cursor-pointer"
-          >
-            Launch Chat
-            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+            <Link 
+              href="/chat" 
+              className="inline-flex items-center justify-center gap-2 bg-green-600 text-white px-6 sm:px-8 py-3 rounded-md text-base sm:text-lg font-medium hover:bg-green-700 transition-colors cursor-pointer"
+            >
+              Launch Chat
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+              </svg>
+            </Link>
+            <Link 
+              href="/technical" 
+              className="inline-flex items-center justify-center gap-2 border border-white/10 px-6 sm:px-8 py-3 rounded-md text-base sm:text-lg font-medium hover:bg-white/5 transition-colors cursor-pointer"
+            >
+              View Technical Details
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+            </Link>
+          </div>
         </div>
       </section>
 
