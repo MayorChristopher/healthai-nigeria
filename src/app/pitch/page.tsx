@@ -1,6 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 
 const slides = [
   {
@@ -11,6 +12,38 @@ const slides = [
         <p className="text-2xl text-white font-semibold">AI-Powered Health Assistant</p>
         <p className="text-lg text-gray-400">Nigeria National AI Hackathon 2025</p>
         <p className="text-gray-500 mt-4">UN SDG 3: Good Health and Well-being</p>
+      </div>
+    )
+  },
+  {
+    title: 'Team Health Bridge',
+    subtitle: 'Meet the Builders',
+    content: (
+      <div className="grid md:grid-cols-3 gap-6">
+        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+          <div className="relative w-24 h-24 rounded-full bg-green-600 mx-auto mb-4 overflow-hidden">
+            <Image src="/team/mayor.jpg" alt="Mayor" width={96} height={96} className="w-full h-full object-cover" />
+          </div>
+          <h3 className="text-xl font-bold mb-1">Mayor Ugochukwu</h3>
+          <p className="text-green-600 text-sm mb-3">Full Stack Developer</p>
+          <p className="text-xs text-gray-400">Landing page, Chat UI, Backend API, Deployment</p>
+        </div>
+        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+          <div className="relative w-24 h-24 rounded-full bg-green-600 mx-auto mb-4 overflow-hidden">
+            <Image src="/team/victor.png" alt="Victor" width={96} height={96} className="w-full h-full object-cover" />
+          </div>
+          <h3 className="text-xl font-bold mb-1">Victor Chidoize</h3>
+          <p className="text-green-600 text-sm mb-3">Backend Developer</p>
+          <p className="text-xs text-gray-400">Backend API, AI logic, Gemini integration, Emergency detection</p>
+        </div>
+        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
+          <div className="relative w-24 h-24 rounded-full bg-green-600 mx-auto mb-4 overflow-hidden">
+            <Image src="/team/comfort.jpg" alt="Comfort" width={96} height={96} className="w-full h-full object-cover" />
+          </div>
+          <h3 className="text-xl font-bold mb-1">Asiribo Comfort</h3>
+          <p className="text-green-600 text-sm mb-3">Documentation & Frontend</p>
+          <p className="text-xs text-gray-400">Documentation, Chat UI, Frontend styling, User guides</p>
+        </div>
       </div>
     )
   },
@@ -67,6 +100,19 @@ const slides = [
     )
   },
   {
+    title: 'Technology Stack',
+    subtitle: 'Built with Modern Tools',
+    content: (
+      <div className="flex flex-wrap justify-center gap-4">
+        {['Next.js 14', 'TypeScript', 'Google Gemini AI', 'Tailwind CSS', 'Vercel'].map((tech) => (
+          <div key={tech} className="px-6 py-3 bg-white/5 border border-white/10 rounded-lg text-lg">
+            {tech}
+          </div>
+        ))}
+      </div>
+    )
+  },
+  {
     title: 'User Flow',
     subtitle: 'How It Works',
     content: (
@@ -101,24 +147,22 @@ const slides = [
     )
   },
   {
-    title: 'Market Target',
-    subtitle: 'Who We Serve',
+    title: 'Competitors',
+    subtitle: 'Market Landscape',
     content: (
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-          <div className="text-4xl mb-4">👥</div>
-          <h3 className="text-xl font-bold mb-2">Patients</h3>
-          <p className="text-gray-400">Rural communities needing medical guidance</p>
+      <div className="space-y-6">
+        <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center">
+          <h3 className="text-2xl font-bold mb-4">Ada Health</h3>
+          <p className="text-gray-400">Global symptom checker</p>
         </div>
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-          <div className="text-4xl mb-4">🏥</div>
-          <h3 className="text-xl font-bold mb-2">Hospitals</h3>
-          <p className="text-gray-400">Partnership for patient referrals</p>
-        </div>
-        <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-          <div className="text-4xl mb-4">👨‍⚕️</div>
-          <h3 className="text-xl font-bold mb-2">Doctors</h3>
-          <p className="text-gray-400">Teleconsultation services</p>
+        <div className="bg-green-600/10 border-2 border-green-600/40 rounded-xl p-6">
+          <h3 className="text-xl font-bold mb-3 text-green-600">Our Advantage</h3>
+          <ul className="space-y-2 text-gray-300">
+            <li>• Nigerian Pidgin support</li>
+            <li>• Local hospital integration</li>
+            <li>• No registration required</li>
+            <li>• Built for rural Nigeria</li>
+          </ul>
         </div>
       </div>
     )
@@ -144,18 +188,22 @@ const slides = [
     )
   },
   {
-    title: 'Target Area',
-    subtitle: 'Bringing AI to the Grassroots',
+    title: 'Unique Selling Points',
+    subtitle: 'What Makes Us Different',
     content: (
-      <div className="text-center space-y-8">
-        <div className="text-6xl">🌾</div>
-        <div className="space-y-4">
-          <h3 className="text-3xl font-bold">Rural Communities</h3>
-          <p className="text-xl text-gray-400">Taking AI health technology to the grassroots</p>
-          <div className="bg-green-600/10 border border-green-600/40 rounded-xl p-6 max-w-2xl mx-auto">
-            <p className="text-lg">Niche: <span className="text-green-600 font-bold">Public Health</span></p>
+      <div className="space-y-3">
+        {[
+          'Hospital finder based on location',
+          'Infrastructure & connectivity optimized',
+          'Handling public health crises',
+          'Language barrier breakthrough',
+          'Free registration - no barriers to access'
+        ].map((item, i) => (
+          <div key={i} className="flex items-start gap-4 bg-gradient-to-r from-green-600/20 to-transparent border-l-4 border-green-600 rounded-lg p-4">
+            <div className="text-green-600 text-xl mt-1">✓</div>
+            <p className="text-lg">{item}</p>
           </div>
-        </div>
+        ))}
       </div>
     )
   },
@@ -184,87 +232,6 @@ const slides = [
     )
   },
   {
-    title: 'Unique Selling Points',
-    subtitle: 'What Makes Us Different',
-    content: (
-      <div className="space-y-3">
-        {[
-          'Hospital finder based on location',
-          'Infrastructure & connectivity optimized',
-          'Handling public health crises',
-          'Language barrier breakthrough',
-          'Free registration - no barriers to access'
-        ].map((item, i) => (
-          <div key={i} className="flex items-start gap-4 bg-gradient-to-r from-green-600/20 to-transparent border-l-4 border-green-600 rounded-lg p-4">
-            <div className="text-green-600 text-xl mt-1">✓</div>
-            <p className="text-lg">{item}</p>
-          </div>
-        ))}
-      </div>
-    )
-  },
-  {
-    title: 'Competitors',
-    subtitle: 'Market Landscape',
-    content: (
-      <div className="space-y-6">
-        <div className="bg-white/5 border border-white/10 rounded-xl p-8 text-center">
-          <h3 className="text-2xl font-bold mb-4">Ada Health</h3>
-          <p className="text-gray-400">Global symptom checker</p>
-        </div>
-        <div className="bg-green-600/10 border-2 border-green-600/40 rounded-xl p-6">
-          <h3 className="text-xl font-bold mb-3 text-green-600">Our Advantage</h3>
-          <ul className="space-y-2 text-gray-300">
-            <li>• Nigerian Pidgin support</li>
-            <li>• Local hospital integration</li>
-            <li>• No registration required</li>
-            <li>• Built for rural Nigeria</li>
-          </ul>
-        </div>
-      </div>
-    )
-  },
-  {
-    title: 'Traction',
-    subtitle: 'Our Journey',
-    content: (
-      <div className="max-w-5xl mx-auto">
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-          <div className="bg-white/5 border-2 border-green-600/40 rounded-xl p-6 text-center">
-            <div className="text-4xl mb-3">💡</div>
-            <p className="font-bold text-lg mb-1">Ideation</p>
-            <p className="text-xs text-gray-400">Problem identification</p>
-          </div>
-          <div className="bg-white/5 border-2 border-green-600/40 rounded-xl p-6 text-center">
-            <div className="text-4xl mb-3">🎨</div>
-            <p className="font-bold text-lg mb-1">Design</p>
-            <p className="text-xs text-gray-400">UI/UX development</p>
-          </div>
-          <div className="bg-white/5 border-2 border-green-600/40 rounded-xl p-6 text-center">
-            <div className="text-4xl mb-3">⚙️</div>
-            <p className="font-bold text-lg mb-1">Implementation</p>
-            <p className="text-xs text-gray-400">Full-stack development</p>
-          </div>
-          <div className="bg-white/5 border-2 border-green-600/40 rounded-xl p-6 text-center">
-            <div className="text-4xl mb-3">🧪</div>
-            <p className="font-bold text-lg mb-1">Testing</p>
-            <p className="text-xs text-gray-400">Quality assurance</p>
-          </div>
-          <div className="bg-white/5 border-2 border-green-600/40 rounded-xl p-6 text-center">
-            <div className="text-4xl mb-3">📊</div>
-            <p className="font-bold text-lg mb-1">Evaluation</p>
-            <p className="text-xs text-gray-400">Expert review</p>
-          </div>
-          <div className="bg-white/5 border-2 border-green-600/40 rounded-xl p-6 text-center">
-            <div className="text-4xl mb-3">🚀</div>
-            <p className="font-bold text-lg mb-1">Improvement</p>
-            <p className="text-xs text-gray-400">Optimization</p>
-          </div>
-        </div>
-      </div>
-    )
-  },
-  {
     title: 'Marketing Strategy',
     subtitle: 'Building Trust & Reach',
     content: (
@@ -285,47 +252,82 @@ const slides = [
     )
   },
   {
-    title: 'Team Health Bridge',
-    subtitle: 'Meet the Builders',
+    title: 'Target Audience',
+    subtitle: 'Who We Serve',
     content: (
-      <div className="grid md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-          <div className="relative w-24 h-24 rounded-full bg-green-600 mx-auto mb-4 overflow-hidden">
-            <img src="/team/mayor.jpg" alt="Mayor" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; const parent = e.currentTarget.parentElement; if (parent) parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-2xl font-bold">M</div>' }} />
-          </div>
-          <h3 className="text-xl font-bold mb-1">Mayor Ugochukwu</h3>
-          <p className="text-green-600 text-sm mb-3">Full Stack Developer</p>
-          <p className="text-xs text-gray-400">Landing page, Chat UI, Backend API, Deployment</p>
+          <div className="text-4xl mb-4">👥</div>
+          <h3 className="text-xl font-bold mb-2">Patients</h3>
+          <p className="text-gray-400">Rural communities needing medical guidance</p>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-          <div className="relative w-24 h-24 rounded-full bg-green-600 mx-auto mb-4 overflow-hidden">
-            <img src="/team/victor.png" alt="Victor" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; const parent = e.currentTarget.parentElement; if (parent) parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-2xl font-bold">V</div>' }} />
-          </div>
-          <h3 className="text-xl font-bold mb-1">Victor Chidoize</h3>
-          <p className="text-green-600 text-sm mb-3">Backend Developer</p>
-          <p className="text-xs text-gray-400">Backend API, AI logic, Gemini integration, Emergency detection</p>
+          <div className="text-4xl mb-4">🏥</div>
+          <h3 className="text-xl font-bold mb-2">Hospitals</h3>
+          <p className="text-gray-400">Partnership for patient referrals</p>
         </div>
         <div className="bg-white/5 border border-white/10 rounded-xl p-6 text-center">
-          <div className="relative w-24 h-24 rounded-full bg-green-600 mx-auto mb-4 overflow-hidden">
-            <img src="/team/comfort.jpg" alt="Comfort" className="w-full h-full object-cover" onError={(e) => { e.currentTarget.style.display = 'none'; const parent = e.currentTarget.parentElement; if (parent) parent.innerHTML = '<div class="w-full h-full flex items-center justify-center text-2xl font-bold">C</div>' }} />
-          </div>
-          <h3 className="text-xl font-bold mb-1">Asiribo Comfort</h3>
-          <p className="text-green-600 text-sm mb-3">Documentation & Frontend</p>
-          <p className="text-xs text-gray-400">Documentation, Chat UI, Frontend styling, User guides</p>
+          <div className="text-4xl mb-4">👨⚕️</div>
+          <h3 className="text-xl font-bold mb-2">Doctors</h3>
+          <p className="text-gray-400">Teleconsultation services</p>
         </div>
       </div>
     )
   },
   {
-    title: 'Technology Stack',
-    subtitle: 'Built with Modern Tools',
+    title: 'Traction & Validation',
+    subtitle: 'Expert Reviews & Progress',
     content: (
-      <div className="flex flex-wrap justify-center gap-4">
-        {['Next.js 14', 'TypeScript', 'Google Gemini AI', 'Tailwind CSS', 'Vercel'].map((tech) => (
-          <div key={tech} className="px-6 py-3 bg-white/5 border border-white/10 rounded-lg text-lg">
-            {tech}
+      <div className="space-y-8">
+        <div className="grid md:grid-cols-2 gap-6">
+          <div className="bg-green-600/10 border-2 border-green-600/40 rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-3xl">👨⚕️</div>
+              <div>
+                <h3 className="text-lg font-bold text-green-400">Medical Expert</h3>
+                <p className="text-sm text-gray-400">Dr. Leonard Okonkwo</p>
+              </div>
+            </div>
+            <p className="text-xs text-gray-500 mb-3">Senior Registrar, Department of Surgery<br/>Federal Medical Centre, Umuahia</p>
+            <p className="text-sm text-gray-300 italic">"Gave accurate results and analysis. Recommend adding more hospitals including private hospital partnerships."</p>
           </div>
-        ))}
+          <div className="bg-blue-600/10 border-2 border-blue-600/40 rounded-xl p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="text-3xl">🤖</div>
+              <div>
+                <h3 className="text-lg font-bold text-blue-400">AI Expert</h3>
+                <p className="text-sm text-gray-400">Technical Validation</p>
+              </div>
+            </div>
+            <p className="text-sm text-gray-300">Validated AI implementation, response filtering, and emergency detection systems</p>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+          <div className="bg-white/5 border border-green-600/40 rounded-xl p-4 text-center">
+            <div className="text-3xl mb-2">💡</div>
+            <p className="font-bold text-sm">Ideation</p>
+          </div>
+          <div className="bg-white/5 border border-green-600/40 rounded-xl p-4 text-center">
+            <div className="text-3xl mb-2">🎨</div>
+            <p className="font-bold text-sm">Design</p>
+          </div>
+          <div className="bg-white/5 border border-green-600/40 rounded-xl p-4 text-center">
+            <div className="text-3xl mb-2">⚙️</div>
+            <p className="font-bold text-sm">Implementation</p>
+          </div>
+          <div className="bg-white/5 border border-green-600/40 rounded-xl p-4 text-center">
+            <div className="text-3xl mb-2">🧪</div>
+            <p className="font-bold text-sm">Testing</p>
+          </div>
+          <div className="bg-white/5 border border-green-600/40 rounded-xl p-4 text-center">
+            <div className="text-3xl mb-2">📊</div>
+            <p className="font-bold text-sm">Validation</p>
+          </div>
+          <div className="bg-white/5 border border-green-600/40 rounded-xl p-4 text-center">
+            <div className="text-3xl mb-2">🚀</div>
+            <p className="font-bold text-sm">Deployment</p>
+          </div>
+        </div>
       </div>
     )
   },
@@ -339,15 +341,19 @@ const slides = [
           <p className="text-gray-300 text-lg">Investment to scale infrastructure, expand features, and reach more communities</p>
         </div>
         <div className="bg-white/5 border-2 border-white/10 rounded-xl p-8">
-          <h3 className="text-2xl font-bold mb-4 text-green-600">🤝 Hospital Partnerships</h3>
-          <p className="text-gray-300 text-lg">Collaborations for social recognition, patient referrals, and clinical validation</p>
+          <h3 className="text-2xl font-bold mb-4 text-green-600">🤝 Partnerships</h3>
+          <p className="text-gray-300 text-lg">Hospital collaborations for patient referrals and clinical validation</p>
+        </div>
+        <div className="bg-white/5 border-2 border-white/10 rounded-xl p-8">
+          <h3 className="text-2xl font-bold mb-4 text-green-600">🎓 Mentorship</h3>
+          <p className="text-gray-300 text-lg">Guidance from healthcare and AI experts to refine our solution</p>
         </div>
       </div>
     )
   },
   {
     title: 'Thank You',
-    subtitle: 'Questions?',
+    subtitle: 'Try HealthAI Now',
     content: (
       <div className="space-y-10 text-center">
         <div className="text-8xl mb-6">🇳🇬</div>
