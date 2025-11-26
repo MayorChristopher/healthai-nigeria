@@ -66,27 +66,32 @@ const slides = [
     title: 'User Flow',
     subtitle: 'How It Works',
     content: (
-      <div className="flex items-center justify-center gap-4">
-        <div className="bg-green-600/20 border-2 border-green-600 rounded-xl p-4 text-center w-40">
-          <p className="font-bold text-sm">User Visits Site</p>
+      <div className="flex items-center justify-center gap-3">
+        <div className="bg-green-600/20 border-2 border-green-600 rounded-xl p-3 text-center w-36">
+          <p className="font-bold text-xs">User Visits Site</p>
         </div>
-        <div className="h-0.5 w-8 bg-green-600"></div>
-        <div className="bg-green-600/20 border-2 border-green-600 rounded-xl p-4 text-center w-40">
-          <p className="font-bold text-sm">Describes Symptoms</p>
-          <p className="text-xs text-gray-400 mt-1">English/Pidgin</p>
+        <div className="h-0.5 w-6 bg-green-600"></div>
+        <div className="bg-green-600/20 border-2 border-green-600 rounded-xl p-3 text-center w-36">
+          <p className="font-bold text-xs">Describes Symptoms</p>
+          <p className="text-[10px] text-gray-400 mt-1">English/Pidgin</p>
         </div>
-        <div className="h-0.5 w-8 bg-green-600"></div>
-        <div className="bg-green-600/20 border-2 border-green-600 rounded-xl p-4 text-center w-40">
-          <p className="font-bold text-sm">AI Analysis</p>
-          <p className="text-xs text-gray-400 mt-1">W.H.O Guidelines</p>
+        <div className="h-0.5 w-6 bg-green-600"></div>
+        <div className="bg-green-600/20 border-2 border-green-600 rounded-xl p-3 text-center w-36">
+          <p className="font-bold text-xs">Gemini AI Analysis</p>
+          <p className="text-[10px] text-gray-400 mt-1">W.H.O Guidelines</p>
         </div>
-        <div className="h-0.5 w-8 bg-green-600"></div>
-        <div className="bg-green-600/20 border-2 border-green-600 rounded-xl p-4 text-center w-40">
-          <p className="font-bold text-sm">Emergency Detection</p>
+        <div className="h-0.5 w-6 bg-green-600"></div>
+        <div className="bg-green-600/20 border-2 border-green-600 rounded-xl p-3 text-center w-36">
+          <p className="font-bold text-xs">Response Filter</p>
+          <p className="text-[10px] text-gray-400 mt-1">Safety Check</p>
         </div>
-        <div className="h-0.5 w-8 bg-green-600"></div>
-        <div className="bg-green-600 border-2 border-green-600 rounded-xl p-4 text-center w-40">
-          <p className="font-bold text-sm">Guidance</p>
+        <div className="h-0.5 w-6 bg-green-600"></div>
+        <div className="bg-green-600/20 border-2 border-green-600 rounded-xl p-3 text-center w-36">
+          <p className="font-bold text-xs">Emergency Detection</p>
+        </div>
+        <div className="h-0.5 w-6 bg-green-600"></div>
+        <div className="bg-green-600 border-2 border-green-600 rounded-xl p-3 text-center w-36">
+          <p className="font-bold text-xs">Guidance</p>
         </div>
       </div>
     )

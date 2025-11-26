@@ -171,9 +171,11 @@ export async function POST(req: NextRequest) {
         if (!isScopeValid) {
           response = "I'm a health assistant. I can only help with health concerns. Do you have any symptoms or health questions?"
         } else {
-          // Add source reference to response
-          const sourceReference = '\n\n---\n*Source: WHO Clinical Guidelines*'
-          response = filterResult.filteredResponse + sourceReference
+          response = filterResult.filteredResponse
+          // Add source reference only if not already present
+          if (!response.includes('Source: WHO')) {
+            response += '\n\n---\n*Source: WHO Clinical Guidelines*'
+          }
         }
         
         console.log(`✅ Successfully used model: ${modelName}`)
@@ -192,10 +194,9 @@ export async function POST(req: NextRequest) {
             // Emergency situation - provide immediate guidance
             const emergencyResponse = getEmergencyFallback(emergencyType, language)
             const hospitals = recommendHospitals(emergencyType)
-            const sourceRef = '\n\n---\n*Source: WHO Emergency Guidelines*'
             
             return NextResponse.json({
-              response: emergencyResponse + sourceRef,
+              response: emergencyResponse + '\n\n---\n*Source: WHO Emergency Guidelines*',
               isEmergency: true,
               hospitals,
               onlineDoctors: false,
@@ -206,10 +207,9 @@ export async function POST(req: NextRequest) {
           // Non-emergency - provide offline emergency guidance with hospitals
           const offlineResponse = generateOfflineEmergencyResponse(message, language as 'english' | 'pidgin')
           const fallbackHospitals = recommendHospitals('general') // Always provide major hospitals
-          const sourceRef = '\n\n---\n*Source: WHO Clinical Guidelines*'
             
           return NextResponse.json({
-            response: offlineResponse + sourceRef,
+            response: offlineResponse + '\n\n---\n*Source: WHO Clinical Guidelines*',
             isEmergency: false,
             hospitals: fallbackHospitals,
             onlineDoctors: false,
