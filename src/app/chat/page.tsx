@@ -267,7 +267,7 @@ export default function ChatPage() {
         onlineDoctors: data.onlineDoctors,
         timestamp: new Date(),
         needsLocation: data.needsLocation,
-        urgency
+        urgency: urgency || undefined
       }
       
       setMessages(prev => [...prev, aiMessage])
